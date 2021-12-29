@@ -26,3 +26,4 @@ skia_enable_skrive = false
 skia_enable_skshaper = false
 skia_enable_svg = false
 skia_use_icu = false
+skia_use_dng_sdk = false
