@@ -385,16 +385,22 @@ background-color: var(--red);
 @media screen and (max-width: 1200px) {
   body {
     overflow: auto;
+    min-height: 100vh;
   }
   #documentation-container {
-    flex-direction: column;
+    flex: 1;
+    flex-direction: column-reverse;
     max-height: none;
   }
-  #documentation-container > div.flex-right {
+  #sidebar-left-container {
     justify-content: flex-start;
-    align-self: end;
+    flex: none;
+  }
+  #sidebar-right-container {
+    display: none;
   }
   #content {
+    flex: 1;
     align-self: center;
     padding-left: 32px;
     padding-right: 32px;
@@ -405,15 +411,26 @@ background-color: var(--red);
     width: auto;
   }
   #sidebar-left {
-    background-color: var(--lighter);
+    display: flex;
+    flex-flow: row wrap;
+    width: 100vw;
+    background-color: var(--dark);
     position: static;
     padding: 16px;
-    margin: 16px;
+  }
+  #sidebar-left a {
+    color: white;
+    padding: 16px;
+    width: 30vw;
+    box-sizing: border-box;
+  }
+  #sidebar-left > br, hr {
+   display: none;
   }
   #sidebar-left > h1.hidden {
     display: none;
   }
-  #sidebar-right {
-    display: none;
+  pre {
+    white-space: normal;
   }
 }
