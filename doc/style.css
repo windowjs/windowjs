@@ -1,6 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps&display=swap');
 
 :root {
+--normal-2: 12px;
+--normal: 14px;
+--normal2: 16px;
+--normal4: 18px;
+--large: 32px;
+--large4: 36px;
+}
+
+@media screen and (max-width: 1200px) {
+  :root {
+  --normal-2: 22px;
+  --normal: 24px;
+  --normal2: 26px;
+  --normal4: 28px;
+  --large: 48px;
+  --large4: 48px;
+  }
+}
+
+:root {
 --dark: #023047;
 --blue: #007ab8;
 --light: #8ECAE6;
@@ -15,7 +35,7 @@ body {
 margin: 0;
 padding: 0;
 font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-font-size: 14px;
+font-size: var(--normal);
 display: flex;
 flex-direction: column;
 min-height: 100vh;
@@ -25,7 +45,7 @@ overflow: hidden;
 #top {
 padding-top: 16px;
 padding-bottom: 16px;
-font-size: 16px;
+font-size: var(--normal4);
 background-color: var(--dark);
 display: flex;
 flex-direction: row;
@@ -53,6 +73,7 @@ width: 720px;
 margin-top: 82px;
 display: flex;
 flex-direction: row;
+justify-content: center;
 overflow-y: auto;
 max-height: calc(100vh - 50px - 32px);
 }
@@ -64,7 +85,7 @@ padding-bottom: 32px;
 }
 
 .title {
-font-size: 32px;
+font-size: var(--large);
 }
 
 #content.main {
@@ -178,7 +199,7 @@ visibility: hidden;
 
 .windowjs {
 font-family: 'Oleo Script Swash Caps', cursive;
-font-size: 36px;
+font-size: var(--large4);
 }
 
 #top a.github-icon {
@@ -198,7 +219,7 @@ color: var(--red);
 
 h2 {
 padding-top: 16px;
-font-size: 16px;
+font-size: var(--normal2);
 }
 
 .code-object {
@@ -232,7 +253,7 @@ color: var(--magenta);
 .api {
 margin-top: 64px;
 font-family: monospace;
-font-size: 18px;
+font-size: var(--normal4);
 display: flex;
 flex-direction: row;
 justify-content: space-between;
@@ -246,7 +267,7 @@ font-weight: bold;
 .api-right {
 text-align: right;
 margin-left: 8px;
-font-size: 14px;
+font-size: var(--normal);
 max-width: 360px;
 }
 
@@ -266,7 +287,7 @@ padding: 8px;
 }
 
 pre.highlight code {
-font-size: 14px;
+font-size: var(--normal);
 font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
@@ -353,7 +374,7 @@ padding-right: 6px;
 padding-top: 2px;
 padding-bottom: 4px;
 border-radius: 6px;
-font-size: smaller;
+font-size: var(--normal-2);
 }
 
 .tag.extension {
@@ -362,8 +383,12 @@ background-color: var(--red);
 }
 
 @media screen and (max-width: 1200px) {
+  body {
+    overflow: auto;
+  }
   #documentation-container {
     flex-direction: column;
+    max-height: none;
   }
   #documentation-container > div.flex-right {
     justify-content: flex-start;
@@ -371,15 +396,19 @@ background-color: var(--red);
   }
   #content {
     align-self: center;
-    padding-left: 16px;
+    padding-left: 32px;
+    padding-right: 32px;
     padding-top: 0px;
+    width: auto;
+  }
+  #content.main {
+    width: auto;
   }
   #sidebar-left {
     background-color: var(--lighter);
     position: static;
     padding: 16px;
     margin: 16px;
-    font-size: larger;
   }
   #sidebar-left > h1.hidden {
     display: none;
