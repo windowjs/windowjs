@@ -367,8 +367,10 @@ background-color: var(--red);
   }
   #documentation-container > div.flex-right {
     justify-content: flex-start;
+    align-self: end;
   }
   #content {
+    align-self: center;
     padding-left: 16px;
     padding-top: 0px;
   }
@@ -377,6 +379,7 @@ background-color: var(--red);
     position: static;
     padding: 16px;
     margin: 16px;
+    font-size: larger;
   }
   #sidebar-left > h1.hidden {
     display: none;
