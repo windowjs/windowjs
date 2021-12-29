@@ -38,7 +38,7 @@ canvas.fillStyle = 'magenta';
 canvas.fillRect(100, 100, 200, 200);
 ```
 
-<p align="center"><img src="/window.png" style="width: 601px" /></p>
+<p align="center"><img src="/window.png" style="width: 608px" /></p>
 
 <p>&nbsp;</p>
 
