@@ -1,4 +1,10 @@
-# Window.js
+---
+layout: about
+title: Window.js | About
+---
+
+Introduction
+============
 
 Window.js is an open-source Javascript runtime for desktop graphics programming.
 
@@ -68,15 +74,6 @@ Google Groups, or via its email address `windowjs@googlegroups.com`.
 Github users can also use the
 [Github Discussions](https://github.com/windowjs/windowjs/discussions) page
 for the project.
-
-Report issues the Github
-[issues tracker](https://github.com/windowjs/windowjs/issues).
-
-
-## Contributing
-
-See the documentation for [contributions](/dev/contributing) and a list of
-[planned features](/dev/plans) for ideas.
 
 
 ## License

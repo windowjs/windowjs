@@ -1,0 +1,26 @@
+is_official_build = true
+is_component_build = false
+is_debug = false
+
+skia_enable_android_utils = false
+skia_enable_skvm_jit_when_possible = false
+skia_enable_tools = false
+skia_enable_gpu_debug_layers = false
+skia_use_libheif = false
+skia_use_lua = false
+
+clang_win = "edit_llvm_path_here"
+skia_use_system_expat = false
+# skia_use_system_harfbuzz = false
+# skia_use_system_icu = false
+skia_use_system_libjpeg_turbo = false
+skia_use_system_libpng = false
+skia_use_system_libwebp = false
+skia_use_system_zlib = false
+skia_enable_pdf = false
+skia_enable_skottie = false
+skia_enable_skparagraph = false
+skia_enable_skrive = false
+skia_enable_skshaper = false
+skia_enable_svg = false
+skia_use_icu = false

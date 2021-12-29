@@ -1,0 +1,3 @@
+{% if include.extension %}
+<span class="tag extension" title="This is an extension in Window.js that isn't part of HTML5.">Extension</span>
+{% endif %}

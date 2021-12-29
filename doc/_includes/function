@@ -1,0 +1,1 @@
+<a id="{{include.name}}" class="api"><span class="api-left"><span class="code-name">{{ include.name }}()</span></span><span class="api-right">{% if include.type != "" %}<span class="code-type">{{ include.type | escape }}</span>{% endif %}</span></a>

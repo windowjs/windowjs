@@ -1,0 +1,29 @@
+is_component_build = false
+is_debug = false
+v8_monolithic = true
+
+# This makes the build much larger: windowjs.exe goes from 17.8MB to 21.3MB.
+# is_official_build = true
+
+target_cpu = "x64"
+v8_target_cpu = "x64"
+
+# v8_enable_backtrace = true
+v8_enable_slow_dchecks = false
+
+is_clang = true
+clang_base_path = "edit_llvm_path_here"
+clang_use_chrome_plugins = false
+clang_version = "12.0.0"
+use_custom_libcxx = false
+
+v8_enable_i18n_support = false
+
+v8_use_external_startup_data = false
+
+archive_seed_corpus = false
+exclude_unwind_tables = true
+chrome_pgo_phase = 0
+
+msan_track_origins = 0
+symbol_level = 0

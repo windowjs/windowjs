@@ -1,0 +1,47 @@
+diff --git a/.gn b/.gn
+index a691fa339b..c037d087c9 100644
+--- a/.gn
++++ b/.gn
+@@ -9,7 +9,7 @@ buildconfig = "//build/config/BUILDCONFIG.gn"
+ 
+ # The python interpreter to use by default. On Windows, this will look
+ # for python3.exe and python3.bat.
+-script_executable = "python3"
++#script_executable = "python3"
+ 
+ # These are the targets to check headers for by default. The files in targets
+ # matching these patterns (see "gn help label_pattern" for format) will have
+diff --git a/src/compiler/backend/register-allocator-verifier.cc b/src/compiler/backend/register-allocator-verifier.cc
+index b4099c5fad..9073b18b8d 100644
+--- a/src/compiler/backend/register-allocator-verifier.cc
++++ b/src/compiler/backend/register-allocator-verifier.cc
+@@ -362,7 +362,7 @@ bool BlockAssessments::IsStaleReferenceStackSlot(InstructionOperand op) {
+ 
+ void BlockAssessments::Print() const {
+   StdoutStream os;
+-  for (const auto pair : map()) {
++  for (const auto& pair : map()) {
+     const InstructionOperand op = pair.first;
+     const Assessment* assessment = pair.second;
+     // Use operator<< so we can write the assessment on the same
+diff --git a/src/deoptimizer/deoptimizer.h b/src/deoptimizer/deoptimizer.h
+index 173a8a4e02..7e099518c2 100644
+--- a/src/deoptimizer/deoptimizer.h
++++ b/src/deoptimizer/deoptimizer.h
+@@ -107,6 +107,8 @@ class Deoptimizer : public Malloced {
+   static bool IsDeoptimizationEntry(Isolate* isolate, Address addr,
+                                     DeoptimizeKind* type_out);
+ 
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Winvalid-offsetof"
+   // Code generation support.
+   static int input_offset() { return offsetof(Deoptimizer, input_); }
+   static int output_count_offset() {
+@@ -117,6 +119,7 @@ class Deoptimizer : public Malloced {
+   static int caller_frame_top_offset() {
+     return offsetof(Deoptimizer, caller_frame_top_);
+   }
++#pragma clang diagnostic pop
+ 
+   V8_EXPORT_PRIVATE static int GetDeoptimizedCodeCount(Isolate* isolate);
+ 

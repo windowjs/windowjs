@@ -1,0 +1,414 @@
+diff --git a/docs/intro.dox b/docs/intro.dox
+index e563b505..4bd4ec5f 100644
+--- a/docs/intro.dox
++++ b/docs/intro.dox
+@@ -101,14 +101,22 @@ __GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
+ a nib or manually, when the first window is created, which is when AppKit is
+ initialized.  Set this with @ref glfwInitHint.
+ 
++@anchor GLFW_WIN32_MESSAGES_IN_FIBER_hint
++__GLFW_WIN32_MESSAGES_IN_FIBER__ specifies whether to use separate fiber for
++processing Windows message, and not the main thread. This allows to unblock
++window move and resize operations, and application can do updates and rendering
++in its main loop. __Warning__ - setting this hint is not safe for environments
++or frameworks where stack inspection is required (for example, moving garbage
++collected languages such as Java or C#).  Set this with @ref glfwInitHint.
+ 
+ @subsubsection init_hints_values Supported and default values
+ 
+-Initialization hint             | Default value | Supported values
+-------------------------------- | ------------- | ----------------
+-@ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
+-@ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
+-@ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
++Initialization hint               | Default value | Supported values
++--------------------------------- | ------------- | ----------------
++@ref GLFW_JOYSTICK_HAT_BUTTONS    | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
++@ref GLFW_COCOA_CHDIR_RESOURCES   | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
++@ref GLFW_COCOA_MENUBAR           | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
++@ref GLFW_WIN32_MESSAGES_IN_FIBER | `GLFW_FALSE`  | `GLFW_TRUE` or `GLFW_FALSE`
+ 
+ 
+ @subsection intro_init_terminate Terminating GLFW
+diff --git a/include/GLFW/glfw3.h b/include/GLFW/glfw3.h
+index 9503dd0d..4aece364 100644
+--- a/include/GLFW/glfw3.h
++++ b/include/GLFW/glfw3.h
+@@ -1124,6 +1124,11 @@ extern "C" {
+  *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
+  */
+ #define GLFW_COCOA_MENUBAR          0x00051002
++/*! @brief Windows specific init hint.
++ *
++ *  Windows specific [init hint](@ref GLFW_WIN32_MESSAGES_IN_FIBER_hint).
++ */
++#define GLFW_WIN32_MESSAGES_IN_FIBER 0x00051003
+ /*! @} */
+ 
+ #define GLFW_DONT_CARE              -1
+@@ -1235,6 +1240,10 @@ typedef void (* GLFWerrorfun)(int error_code, const char* description);
+  *  @param[in] ypos The new y-coordinate, in screen coordinates, of the
+  *  upper-left corner of the content area of the window.
+  *
++ *  @remark @win32 On Windows moving or resizing of window will block event
++ *  processing. Workaround for this is @ref GLFW_WIN32_MESSAGES_IN_FIBER init
++ *  hint.
++ *
+  *  @sa @ref window_pos
+  *  @sa @ref glfwSetWindowPosCallback
+  *
+@@ -1256,6 +1265,10 @@ typedef void (* GLFWwindowposfun)(GLFWwindow* window, int xpos, int ypos);
+  *  @param[in] width The new width, in screen coordinates, of the window.
+  *  @param[in] height The new height, in screen coordinates, of the window.
+  *
++ *  @remark @win32 On Windows moving or resizing of window will block event
++ *  processing. Workaround for this is @ref GLFW_WIN32_MESSAGES_IN_FIBER init
++ *  hint.
++ *
+  *  @sa @ref window_size
+  *  @sa @ref glfwSetWindowSizeCallback
+  *
+diff --git a/src/init.c b/src/init.c
+index aebbece4..19857e49 100644
+--- a/src/init.c
++++ b/src/init.c
+@@ -55,6 +55,9 @@ static _GLFWinitconfig _glfwInitHints =
+     {
+         GLFW_TRUE,  // macOS menu bar
+         GLFW_TRUE   // macOS bundle chdir
++    },
++    {
++        GLFW_FALSE, // Win32 messages in fiber
+     }
+ };
+ 
+@@ -274,6 +277,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
+         case GLFW_COCOA_MENUBAR:
+             _glfwInitHints.ns.menubar = value;
+             return;
++        case GLFW_WIN32_MESSAGES_IN_FIBER:
++            _glfwInitHints.win32.msgInFiber = value;
++            return;
+     }
+ 
+     _glfwInputError(GLFW_INVALID_ENUM,
+diff --git a/src/internal.h b/src/internal.h
+index ad619b4e..5fd27be0 100644
+--- a/src/internal.h
++++ b/src/internal.h
+@@ -244,6 +244,9 @@ struct _GLFWinitconfig
+         GLFWbool  menubar;
+         GLFWbool  chdir;
+     } ns;
++    struct {
++        GLFWbool  msgInFiber;
++    } win32;
+ };
+ 
+ // Window configuration
+diff --git a/src/wgl_context.c b/src/wgl_context.c
+index 72ad11de..bfb41e00 100644
+--- a/src/wgl_context.c
++++ b/src/wgl_context.c
+@@ -453,6 +453,7 @@ GLFWbool _glfwInitWGL(void)
+     pfd.iPixelType = PFD_TYPE_RGBA;
+     pfd.cColorBits = 24;
+ 
++    // TODO: slow step, 40ms. Not much we can do, this is win32 and depends on the GL driver.
+     if (!SetPixelFormat(dc, ChoosePixelFormat(dc, &pfd), &pfd))
+     {
+         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+@@ -471,6 +472,7 @@ GLFWbool _glfwInitWGL(void)
+     pdc = wglGetCurrentDC();
+     prc = wglGetCurrentContext();
+ 
++    // TODO: slow step, 40ms.
+     if (!wglMakeCurrent(dc, rc))
+     {
+         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+diff --git a/src/win32_init.c b/src/win32_init.c
+index 40eb795f..cb9a06c9 100644
+--- a/src/win32_init.c
++++ b/src/win32_init.c
+@@ -325,8 +325,6 @@ static void createKeyTables(void)
+ //
+ static GLFWbool createHelperWindow(void)
+ {
+-    MSG msg;
+-
+     _glfw.win32.helperWindowHandle =
+         CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
+                         _GLFW_WNDCLASSNAME,
+@@ -362,13 +360,21 @@ static GLFWbool createHelperWindow(void)
+                                         DEVICE_NOTIFY_WINDOW_HANDLE);
+     }
+ 
+-    while (PeekMessageW(&msg, _glfw.win32.helperWindowHandle, 0, 0, PM_REMOVE))
++    if (_glfw.hints.init.win32.msgInFiber)
+     {
+-        TranslateMessage(&msg);
+-        DispatchMessageW(&msg);
++        SwitchToFiber(_glfw.win32.messageFiber);
++    }
++    else
++    {
++        MSG msg;
++        while (PeekMessageW(&msg, _glfw.win32.helperWindowHandle, 0, 0, PM_REMOVE))
++        {
++            TranslateMessage(&msg);
++            DispatchMessageW(&msg);
++        }
+     }
+ 
+-   return GLFW_TRUE;
++    return GLFW_TRUE;
+ }
+ 
+ 
+@@ -537,6 +543,44 @@ BOOL _glfwIsWindows10BuildOrGreaterWin32(WORD build)
+     return RtlVerifyVersionInfo(&osvi, mask, cond) == 0;
+ }
+ 
++void _glfwPollMessageLoopWin32(void)
++{
++    _GLFWwindow* window;
++    MSG msg;
++    while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
++    {
++        if (msg.message == WM_QUIT)
++        {
++            // NOTE: While GLFW does not itself post WM_QUIT, other processes
++            //       may post it to this one, for example Task Manager
++            // HACK: Treat WM_QUIT as a close on all windows
++
++            window = _glfw.windowListHead;
++            while (window)
++            {
++                _glfwInputWindowCloseRequest(window);
++                window = window->next;
++            }
++        }
++        else
++        {
++            TranslateMessage(&msg);
++            DispatchMessageW(&msg);
++        }
++    }
++}
++
++// Windows message dispatch fiber
++void CALLBACK messageFiberProc(LPVOID lpFiberParameter)
++{
++    (void)lpFiberParameter;
++
++    for (;;)
++    {
++        _glfwPollMessageLoopWin32();
++        SwitchToFiber(_glfw.win32.mainFiber);
++    }
++}
+ 
+ //////////////////////////////////////////////////////////////////////////
+ //////                       GLFW platform API                      //////
+@@ -565,6 +609,17 @@ int _glfwPlatformInit(void)
+     else if (IsWindowsVistaOrGreater())
+         SetProcessDPIAware();
+ 
++    if (_glfw.hints.init.win32.msgInFiber)
++    {
++        _glfw.win32.mainFiber = ConvertThreadToFiber(NULL);
++        if (!_glfw.win32.mainFiber)
++            return GLFW_FALSE;
++
++        _glfw.win32.messageFiber = CreateFiber(0, &messageFiberProc, NULL);
++        if (!_glfw.win32.messageFiber)
++            return GLFW_FALSE;
++    }
++
+     if (!_glfwRegisterWindowClassWin32())
+         return GLFW_FALSE;
+ 
+@@ -588,6 +643,12 @@ void _glfwPlatformTerminate(void)
+ 
+     _glfwUnregisterWindowClassWin32();
+ 
++    if (_glfw.hints.init.win32.msgInFiber)
++    {
++        DeleteFiber(_glfw.win32.messageFiber);
++        ConvertFiberToThread();
++    }
++
+     // Restore previous foreground lock timeout system setting
+     SystemParametersInfoW(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
+                           UIntToPtr(_glfw.win32.foregroundLockTimeout),
+diff --git a/src/win32_platform.h b/src/win32_platform.h
+index b964e135..a7aaef10 100644
+--- a/src/win32_platform.h
++++ b/src/win32_platform.h
+@@ -324,6 +324,11 @@ typedef struct _GLFWwindowWin32
+     int                 lastCursorPosX, lastCursorPosY;
+     // The last recevied high surrogate when decoding pairs of UTF-16 messages
+     WCHAR               highSurrogate;
++
++    // If user pressed mouse button on window title bar
++    UINT                ncMouseButton;
++    LPARAM              ncMousePos;
++
+ } _GLFWwindowWin32;
+ 
+ // Win32-specific global data
+@@ -345,6 +350,8 @@ typedef struct _GLFWlibraryWin32
+     RAWINPUT*           rawInput;
+     int                 rawInputSize;
+     UINT                mouseTrailSize;
++    LPVOID              messageFiber;
++    LPVOID              mainFiber;
+ 
+     struct {
+         HINSTANCE                       instance;
+@@ -450,3 +457,4 @@ void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+ void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor);
+ void _glfwGetMonitorContentScaleWin32(HMONITOR handle, float* xscale, float* yscale);
+ 
++void _glfwPollMessageLoopWin32(void);
+diff --git a/src/win32_window.c b/src/win32_window.c
+index 2fa4f2e1..f3d53c52 100644
+--- a/src/win32_window.c
++++ b/src/win32_window.c
+@@ -821,11 +821,46 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
+             return 0;
+         }
+ 
++        case WM_NCLBUTTONDOWN:
++        {
++            if (wParam == HTCAPTION)
++            {
++                window->win32.ncMouseButton = uMsg;
++                window->win32.ncMousePos = lParam;
++                return 0;
++            }
++            break;
++        }
++
++        case WM_NCMOUSEMOVE:
++        {
++            if (window->win32.ncMouseButton)
++            {
++                if (GET_X_LPARAM(window->win32.ncMousePos) != GET_X_LPARAM(lParam) ||
++                    GET_Y_LPARAM(window->win32.ncMousePos) != GET_Y_LPARAM(lParam))
++                {
++                    DefWindowProcW(hWnd, window->win32.ncMouseButton, HTCAPTION, window->win32.ncMousePos);
++                    window->win32.ncMouseButton = 0;
++                }
++            }
++            break;
++        }
++
+         case WM_MOUSEMOVE:
+         {
+             const int x = GET_X_LPARAM(lParam);
+             const int y = GET_Y_LPARAM(lParam);
+ 
++            if (window->win32.ncMouseButton)
++            {
++                if (GET_X_LPARAM(window->win32.ncMousePos) != x ||
++                    GET_Y_LPARAM(window->win32.ncMousePos) != y)
++                {
++                    DefWindowProcW(hWnd, window->win32.ncMouseButton, HTCAPTION, window->win32.ncMousePos);
++                    window->win32.ncMouseButton = 0;
++                }
++            }
++
+             if (!window->win32.cursorTracked)
+             {
+                 TRACKMOUSEEVENT tme;
+@@ -937,6 +972,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
+         case WM_ENTERSIZEMOVE:
+         case WM_ENTERMENULOOP:
+         {
++            if (_glfw.hints.init.win32.msgInFiber)
++                SetTimer(hWnd, 1, 1, NULL);
++
+             if (window->win32.frameAction)
+                 break;
+ 
+@@ -951,6 +989,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
+         case WM_EXITSIZEMOVE:
+         case WM_EXITMENULOOP:
+         {
++            if (_glfw.hints.init.win32.msgInFiber)
++                KillTimer(hWnd, 1);
++
+             if (window->win32.frameAction)
+                 break;
+ 
+@@ -962,6 +1003,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
+             break;
+         }
+ 
++        case WM_TIMER:
++        {
++            if (_glfw.hints.init.win32.msgInFiber && wParam == 1)
++                SwitchToFiber(_glfw.win32.mainFiber);
++            break;
++        }
++
+         case WM_SIZE:
+         {
+             const int width = LOWORD(lParam);
+@@ -1397,6 +1445,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
+     {
+         if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
+         {
++            // TODO: slow step, 90ms.
+             if (!_glfwInitWGL())
+                 return GLFW_FALSE;
+             if (!_glfwCreateContextWGL(window, ctxconfig, fbconfig))
+@@ -1923,31 +1972,13 @@ GLFWbool _glfwPlatformRawMouseMotionSupported(void)
+ 
+ void _glfwPlatformPollEvents(void)
+ {
+-    MSG msg;
+     HWND handle;
+     _GLFWwindow* window;
+ 
+-    while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
+-    {
+-        if (msg.message == WM_QUIT)
+-        {
+-            // NOTE: While GLFW does not itself post WM_QUIT, other processes
+-            //       may post it to this one, for example Task Manager
+-            // HACK: Treat WM_QUIT as a close on all windows
+-
+-            window = _glfw.windowListHead;
+-            while (window)
+-            {
+-                _glfwInputWindowCloseRequest(window);
+-                window = window->next;
+-            }
+-        }
+-        else
+-        {
+-            TranslateMessage(&msg);
+-            DispatchMessageW(&msg);
+-        }
+-    }
++    if (_glfw.hints.init.win32.msgInFiber)
++        SwitchToFiber(_glfw.win32.messageFiber);
++    else
++        _glfwPollMessageLoopWin32();
+ 
+     // HACK: Release modifier keys that the system did not emit KEYUP for
+     // NOTE: Shift keys on Windows tend to "stick" when both are pressed as
+diff --git a/src/window.c b/src/window.c
+index b87a2609..6aed705e 100644
+--- a/src/window.c
++++ b/src/window.c
+@@ -221,6 +221,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
+         return NULL;
+     }
+ 
++    // TODO: slow step, 50ms.
+     if (ctxconfig.client != GLFW_NO_API)
+     {
+         if (!_glfwRefreshContextAttribs(window, &ctxconfig))

@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c4031a6..3e567f3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -138,6 +138,7 @@ add_custom_command(
+     --generator=${GLAD_GENERATOR}
+     ${GLAD_EXTENSIONS_ARG}
+     --spec=${ARG_GLAD_SPEC}
++    --quiet
+     ${GLAD_NO_LOADER_ARG}
+     ${GLAD_REPRODUCIBLE_ARG}
+   WORKING_DIRECTORY ${GLAD_DIR}

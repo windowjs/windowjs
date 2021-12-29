@@ -1,0 +1,2 @@
+{% assign path = page.url | remove: ".html" %}
+<a href="{{include.path}}" {% if path == include.path %}class="link-selected"{% endif %}>{{include.name}}</a><br>

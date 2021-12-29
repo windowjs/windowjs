@@ -1,0 +1,5 @@
+#include <string_view>
+
+extern const std::string_view kGitHash{"@GIT_HASH@"};
+
+extern const std::string_view kGitTag{"@GIT_TAG@"};

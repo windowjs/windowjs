@@ -1,0 +1,12 @@
+*.swp
+.cipd
+.gclient_entries
+doc/.jekyll-cache
+doc/_site
+libraries/glad
+libraries/glfw
+libraries/libuv
+libraries/skia
+libraries/v8
+tags
+out*

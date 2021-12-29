@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+
+{% include head.html %}
+
+<body>
+
+{% include top.html %}
+
+<div id="documentation-container">
+
+<div class="flex1 flex-right">
+<div id="sidebar-left">
+<h1 class="hidden">.</h1>
+{% include link name="Development" path="/dev/" %}
+<hr>
+{% include link name="Checkout" path="/dev/checkout" %}
+{% include link name="Build" path="/dev/build" %}
+{% include link name="Troubleshooting" path="/dev/trouble" %}
+<hr>
+{% include link name="Dependencies" path="/dev/dependencies" %}
+{% include link name="Documentation" path="/dev/documentation" %}
+{% include link name="Tests" path="/dev/tests" %}
+<hr>
+{% include link name="Plans" path="/dev/plans" %}
+{% include link name="Contributing" path="/dev/contributing" %}
+</div>
+</div>
+
+<div id="content">
+
+{{ content }}
+
+<p>&nbsp;<p>
+
+</div>
+
+<div class="flex1">
+<div id="sidebar-right">
+
+{% if page.events %}
+{% for item in page.events %}
+<a href="#event-{{item}}"><span class="code-event">"{{item}}"</span></a><br>
+{% endfor %}
+<p>
+{% endif %}
+
+{% if page.properties %}
+{% for item in page.properties %}
+<a href="#{{ item }}"><span class="code-name">{{item}}</span></a><br>
+{% endfor %}
+<p>
+{% endif %}
+
+{% if page.functions %}
+{% for item in page.functions %}
+<a href="#{{ item }}"><span class="code-name">{{item}}()</span></a><br>
+{% endfor %}
+<p>
+{% endif %}
+
+{% if page.constructors %}
+{% for item in page.constructors %}
+<a href="#{{ item }}"><span class="code-class">{{item}}</span></a><br>
+{% endfor %}
+<p>
+{% endif %}
+
+{% if page.class-properties %}
+{% for item in page.class-properties %}
+<a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}</span></a><br>
+{% endfor %}
+<p>
+{% endif %}
+
+{% if page.class-methods %}
+{% for item in page.class-methods %}
+<a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
+{% endfor %}
+<p>
+{% endif %}
+
+{% if page.object-properties %}
+{% for item in page.object-properties %}
+<a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}</span></a><br>
+{% endfor %}
+<p>
+{% endif %}
+
+{% if page.object-methods %}
+{% for item in page.object-methods %}
+<a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
+{% endfor %}
+<p>
+{% endif %}
+
+</div>
+</div>
+
+</div>
+
+</body>
+</html>

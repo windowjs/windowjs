@@ -1,0 +1,22 @@
+title: Window.js
+email: joaodasilvagithub@gmail.com
+description: >-
+  Window.js project website and documentation online.
+  Window.js is an open-source Javascript runtime for desktop graphics programming.
+#baseurl: "https://windowjs.org/"
+url: "https://windowjs.org"
+github_username: windowjs
+theme: minima
+plugins:
+  - jekyll-feed
+lsi: false
+safe: true
+#source: "https://github.com/windowjs/windowjs"
+incremental: false
+highlighter: rouge
+gist:
+  noscript: false
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+  syntax_highlighter: rouge
