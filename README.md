@@ -2,8 +2,13 @@
 
 Window.js is an open-source Javascript runtime for desktop graphics programming.
 
-It provides APIs for [window](https://windowjs.org/doc/window) creation and
-manipulation via [GLFW](https://glfw.org) and the HTML5
+It is documented at [windowjs.org](https://windowjs.org).
+
+
+## Introduction
+
+Window.js provides APIs for [window](https://windowjs.org/doc/window) creation
+and manipulation via [GLFW](https://glfw.org) and the HTML5
 [Canvas API](https://windowjs.org/doc/canvas) via the
 [Skia](https://skia.org) graphics library, backed by the [v8](https://v8.dev)
 Javascript engine.
@@ -20,8 +25,8 @@ release.
 See the [FAQ](https://windowjs.org/about/faq) for more details.
 
 **Note**: Window.js is a very recent project and hasn't been widely tested yet.
-Please report any [issues](https://windowjs.org/about/issues) and get in
-[contact](https://windowjs.org/about/contact) for help.
+Please report any [issues](https://github.com/windowjs/windowjs/issues) and get
+in [contact](https://windowjs.org/about/contact) for help.
 
 
 ## Quick start
