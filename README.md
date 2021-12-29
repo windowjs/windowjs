@@ -2,33 +2,35 @@
 
 Window.js is an open-source Javascript runtime for desktop graphics programming.
 
-It provides APIs for [window](/doc/window) creation and manipulation via
-[GLFW](https://glfw.org) and the HTML5 [Canvas API](/doc/canvas) via the
+It provides APIs for [window](https://windowjs.org/doc/window) creation and
+manipulation via [GLFW](https://glfw.org) and the HTML5
+[Canvas API](https://windowjs.org/doc/canvas) via the
 [Skia](https://skia.org) graphics library, backed by the [v8](https://v8.dev)
 Javascript engine.
 
 Window.js comes with familiar APIs for web developers for
-[input](/doc/window#window.addEventListener) event handling and
-[animated rendering](/doc/global#requestAnimationFrame), and has additional,
-convenient APIs for [file access](/doc/file).
+[input](https://windowjs.org/doc/window#window.addEventListener) event handling
+and [animated rendering](https://windowjs.org/doc/global#requestAnimationFrame),
+and has additional, convenient APIs for
+[file access](https://windowjs.org/doc/file).
 
 Additional APIs for sound, networking and WebGL are planned for a future
 release.
 
-See the [FAQ](/about/faq) for more details.
+See the [FAQ](https://windowjs.org/about/faq) for more details.
 
 **Note**: Window.js is a very recent project and hasn't been widely tested yet.
-Please report any [issues](/about/issues) and get in
-[contact](/about/contact) for help.
+Please report any [issues](https://windowjs.org/about/issues) and get in
+[contact](https://windowjs.org/about/contact) for help.
 
 
 ## Quick start
 
 Window.js is distributed as a single binary that can be
-[downloaded](/download) for Windows and macOS.
+[downloaded](https://windowjs.org/download) for Windows and macOS.
 
-It can also be [built](/dev/build) from the sources for Windows, macOS and
-Linux.
+It can also be [built](https://windowjs.org/dev/build) from the sources for
+Windows, macOS and Linux.
 
 Window.js runs a Javascript source file directly:
 
@@ -55,8 +57,8 @@ Uncaught exceptions and console log errors are also shown in the main window.
 That overlay can be toggled with `F4`. See `help()` in the console for more
 development tools.
 
-See the [example](/about/examples) applications and the
-[API documentation](/doc) for more.
+See the [example](https://windowjs.org/about/examples) applications and the
+[API documentation](https://windowjs.org/doc) for more.
 
 
 ## Contact
@@ -75,10 +77,10 @@ Report issues the Github
 
 ## Contributing
 
-See the documentation for [contributions](/dev/contributing) and a list of
-[planned features](/dev/plans) for ideas.
+See the documentation for [contributions](https://windowjs.org/dev/contributing)
+and a list of [planned features](https://windowjs.org/dev/plans) for ideas.
 
 
 ## License
 
-Window.js is licensed under the [MIT License](/about/license).
+Window.js is licensed under the [MIT License](LICENSE).
