@@ -360,3 +360,28 @@ font-size: smaller;
 color: white;
 background-color: var(--red);
 }
+
+@media screen and (max-width: 1200px) {
+  #documentation-container {
+    flex-direction: column;
+  }
+  #documentation-container > div.flex-right {
+    justify-content: flex-start;
+  }
+  #content {
+    padding-left: 16px;
+    padding-top: 0px;
+  }
+  #sidebar-left {
+    background-color: var(--lighter);
+    position: static;
+    padding: 16px;
+    margin: 16px;
+  }
+  #sidebar-left > h1.hidden {
+    display: none;
+  }
+  #sidebar-right {
+    display: none;
+  }
+}
