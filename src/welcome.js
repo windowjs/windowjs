@@ -3,7 +3,7 @@ window.title = 'Welcome';
 const canvas = window.canvas;
 
 let font = 'sans';
-const fonts = [ 'Segoe UI', 'Verdana', 'Arial' ];
+const fonts = [ 'Segoe UI', 'Verdana', 'Arial', 'DejaVu Sans' ];
 for (const f of fonts) {
   if (window.fonts.includes(f)) {
     font = f;
