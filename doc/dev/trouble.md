@@ -27,3 +27,9 @@ See [here](/dev/checkout#4-fetching-the-dependencies).
 The Chrome
 [depot_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up)
 must be in the `PATH`.
+
+
+You must installWindows 10 SDK version 10.0.19041.0 including the "Debugging Tools for Windows" feature.
+-------------------
+
+See [these steps](https://stackoverflow.com/questions/66710286/you-must-installwindows-10-sdk-version-10-0-19041-0-including-the-debugging-too).
