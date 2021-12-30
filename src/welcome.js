@@ -113,6 +113,8 @@ window.addEventListener('click', function(event) {
   }
 });
 
+window.addEventListener('resize', draw);
+
 async function loadOleoFont() {
   await window.loadFont('examples/data/OleoScriptSwashCaps.ttf',
                         'OleoScriptSwashCaps');
