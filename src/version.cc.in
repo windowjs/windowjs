@@ -10,7 +10,7 @@ std::string GetVersionString() {
   std::stringstream ss;
   ss << "Window.js revision " << kGitHash;
   if (!kGitTag.empty()) {
-    ss << "version " << kGitTag;
+    ss << " version " << kGitTag;
   }
   return ss.str();
 }
