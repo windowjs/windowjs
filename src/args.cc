@@ -43,7 +43,7 @@ void InitArgs(int argc, char* argv[]) {
     if (strcmp(argv[i], "--version") == 0) {
       std::cout << "Window.js revision " << kGitHash;
       if (!kGitTag.empty()) {
-        std::cout << "version " << kGitTag;
+        std::cout << " version " << kGitTag;
       }
       std::cout << std::endl;
       exit(0);
