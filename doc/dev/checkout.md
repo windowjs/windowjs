@@ -27,7 +27,9 @@ below:
 These tools must be installed and available in the `PATH` in a terminal.
 
 *  git
-*  [depot_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up) from Chrome
+*  [depot_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up) from Chrome.
+   The `depot_tools` directory should be at the front of the `PATH` for the
+   Window.js build, to set up the Python interpreters correctly.
 *  the `gn.exe` or `gn`  binary in the `PATH`; the version from `depot_tools` doesn't work.
    Download [here](https://gn.googlesource.com/gn/+/refs/heads/main#getting-a-binary)
 *  [CMake](https://cmake.org/) 3.15 or later
@@ -38,7 +40,6 @@ These tools must be installed and available in the `PATH` in a terminal.
 *  [LLVM](http://llvm.org) 12 or later
 *  [Visual Studio 2022](https://visualstudio.microsoft.com/)
 *  [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/) (10.0.19041.0)
-*  [Python](https://python.org)
 
 
 **Linux**
