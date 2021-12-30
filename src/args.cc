@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "fail.h"
-#include "version.h"
 
 static CommandLineArgs* args = nullptr;
 
@@ -41,12 +40,8 @@ void InitArgs(int argc, char* argv[]) {
       continue;
     }
     if (strcmp(argv[i], "--version") == 0) {
-      std::cout << "Window.js revision " << kGitHash;
-      if (!kGitTag.empty()) {
-        std::cout << "version " << kGitTag;
-      }
-      std::cout << std::endl;
-      exit(0);
+      args->version = true;
+      continue;
     }
     if (strcmp(argv[i], "--") == 0) {
       for (i++; i < argc; i++) {

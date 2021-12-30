@@ -370,6 +370,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(Unidentified);
   SET_STRING(usedJSHeapSize);
   SET_STRING(v);
+  SET_STRING(version);
   SET_STRING(visible);
   SET_STRING(vsync);
   SET_STRING(w);

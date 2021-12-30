@@ -10,6 +10,7 @@
 #include "js_api_process.h"
 #include "json.h"
 #include "thread.h"
+#include "version.h"
 
 int main(int argc, char* argv[]) {
   InitFail();
@@ -18,6 +19,11 @@ int main(int argc, char* argv[]) {
   InitMainThread();
   uv_setup_args(argc, argv);
   uv_disable_stdio_inheritance();
+
+  if (Args().version) {
+    std::cout << GetVersionString() << std::endl;
+    exit(0);
+  }
 
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] main() enter: " << glfwGetTime();

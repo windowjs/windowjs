@@ -175,7 +175,7 @@ void InitLog() {
   // TODO: this works but doesn't update the cursor position. It is left at
   // its starting position when the process terminates, which is annoying.
 
-  if (!Args().is_child_process && Args().log) {
+  if (!Args().is_child_process && (Args().log || Args().version)) {
     if (_get_osfhandle(0) < 0) {
       _close(0);
     }

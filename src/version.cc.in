@@ -1,5 +1,16 @@
+#include <sstream>
+#include <string>
 #include <string_view>
 
 extern const std::string_view kGitHash{"@GIT_HASH@"};
 
 extern const std::string_view kGitTag{"@GIT_TAG@"};
+
+std::string GetVersionString() {
+  std::stringstream ss;
+  ss << "Window.js revision " << kGitHash;
+  if (!kGitTag.empty()) {
+    ss << "version " << kGitTag;
+  }
+  return ss.str();
+}

@@ -31,12 +31,7 @@ static LONG OnUnhandledException(_EXCEPTION_POINTERS* ExceptionInfo) {
   description += v8::base::debug::StackTrace().ToString();
 #endif
 
-  description += "\n\nRevision ";
-  description += kGitHash;
-  if (!kGitTag.empty()) {
-    description += "\nVersion tag ";
-    description += kGitTag;
-  }
+  description += "\n\n" + GetVersionString();
 
   UINT flags = MB_OK | MB_ICONERROR | MB_SETFOREGROUND;
   MessageBox(nullptr, description.c_str(), "Crash in Window.js", flags);
@@ -58,12 +53,7 @@ void Fail(const char* reason, ...) {
       "Use Ctrl+C to copy the message below and include it in the "
       "bug report.\n\n";
   description += buffer;
-  description += "\n\nRevision ";
-  description += kGitHash;
-  if (!kGitTag.empty()) {
-    description += "\nVersion tag ";
-    description += kGitTag;
-  }
+  description += "\n\n" + GetVersionString();
 
   UINT flags = MB_OK | MB_ICONERROR | MB_SETFOREGROUND;
   MessageBox(nullptr, description.c_str(), "Crash in Window.js", flags);
@@ -81,10 +71,7 @@ static void HandleSegfault(int ignored) {
           v8::base::debug::StackTrace().ToString().c_str());
 #endif
 
-  fprintf(stderr, "Revision %*s\n", (int) kGitHash.size(), kGitHash.data());
-  if (!kGitTag.empty()) {
-    fprintf(stderr, "Version tag %*s\n", (int) kGitTag.size(), kGitTag.data());
-  }
+  fprintf(stderr, "%s\n", GetVersionString().c_str());
 
   abort();
 }
@@ -101,10 +88,7 @@ void Fail(const char* reason, ...) {
   vfprintf(stderr, reason, ap);
   fprintf(stderr, "\n");
 
-  fprintf(stderr, "Revision %*s\n", (int) kGitHash.size(), kGitHash.data());
-  if (!kGitTag.empty()) {
-    fprintf(stderr, "Version tag %*s\n", (int) kGitTag.size(), kGitTag.data());
-  }
+  fprintf(stderr, "%s\n", GetVersionString().c_str());
 
   abort();
 }

@@ -365,6 +365,7 @@ enum class StringId {
   Unidentified,
   usedJSHeapSize,
   v,
+  version,
   visible,
   vsync,
   w,

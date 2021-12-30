@@ -14,6 +14,7 @@
 #include "js_api_file.h"
 #include "js_api_process.h"
 #include "platform.h"
+#include "version.h"
 
 #if defined(WINDOWJS_WIN)
 // Must come first:
@@ -512,6 +513,13 @@ void GetRetinaScale(v8::Local<v8::Name> property,
   info.GetReturnValue().Set(api->window()->retina_scale());
 }
 
+void GetVersion(v8::Local<v8::Name> property,
+                const v8::PropertyCallbackInfo<v8::Value>& info) {
+  ASSERT(IsMainThread());
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  info.GetReturnValue().Set(api->js()->MakeString(GetVersionString()));
+}
+
 }  // namespace
 
 JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
@@ -599,6 +607,7 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   scope.Set(window, StringId::loadFont, LoadFont);
   scope.Set(window, StringId::open, Open);
   scope.Set(window, StringId::retinaScale, GetRetinaScale);
+  scope.Set(window, StringId::version, GetVersion);
   scope.Set(global, StringId::window, window);
 
   v8::Local<v8::Object> debug = v8::Object::New(scope.isolate);
