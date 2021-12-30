@@ -43,6 +43,7 @@ object-properties:
   - resizable
   - retinaScale
   - title
+  - version
   - visible
   - vsync
   - width
@@ -426,6 +427,11 @@ sizes expected by the user.
 
 The title of the native window. Defaults to the filename of the initial
 module.
+
+
+{% include property object="window" name="version" type="string" %}
+
+The git hash and tag of the current Window.js build.
 
 
 {% include property object="window" name="visible" type="boolean" %}

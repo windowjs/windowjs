@@ -9,6 +9,13 @@ Command line
 Window.js supports the following command-line arguments.
 
 
+`--version`
+-------
+
+Outputs the git hash and tag of the Window.js build. This is also available
+as [window.version](/doc/window#window.version).
+
+
 `--log`
 -------
 

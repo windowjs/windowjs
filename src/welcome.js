@@ -93,6 +93,9 @@ function draw() {
   } else {
     canvas.fillRect(canvas.width - 100, canvas.height - 100, 100, 100);
   }
+
+  canvas.fillStyle = 'gray';
+  canvas.fillText(window.version, 12, canvas.height - 14 * devicePixelRatio);
 }
 
 window.addEventListener('mousemove', function(event) {
