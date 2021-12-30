@@ -206,14 +206,13 @@ void Window::RenderAndSwapBuffers() {
 
   SetCurrentContext(window_);
 
-#if defined(WINDOWJS_MAC)
-  // TODO: figure why this is needed on the Mac. Clearing the color buffer
-  // doesn't seem to actually do anything; but if one of the overlays is shown
-  // then it works as expected. Seems like a bug in the GL driver?
+  // TODO: figure why this is needed on some machines and not others.
+  // Clearing the color buffer doesn't seem to actually do anything;
+  // but if one of the overlays is shown then it works as expected.
+  // Seems like a bug in the GL driver?
+  // Or a sync issue with the target texture passed as the Skia backend?
   texture_shader_->Clear(1, 1, 0, 0);
-#else
-  glClear(GL_COLOR_BUFFER_BIT);
-#endif
+  // glClear(GL_COLOR_BUFFER_BIT);
 
   float sw = (float) canvas_->GetWidthForDraw() / width_;
   float sh = (float) canvas_->GetHeightForDraw() / height_;
