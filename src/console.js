@@ -325,7 +325,7 @@ function onEvalResult(result) {
 
 function onSubmitted(input) {
   const color = '#808080ff';
-  const lines = ['> ' + input];
+  const lines = [ '> ' + input ];
   pushBlock({lines, color});
 }
 
@@ -365,7 +365,6 @@ function requestEval(source) {
     return;
   }
   Process.parent.postMessage({"type" : "eval", "source" : source});
-
 }
 
 function sendRequest(type) {
@@ -436,8 +435,12 @@ function onKeyDown(event) {
     } else if (event.ctrlKey || event.altKey) {
       if (inputIndex > 0) {
         let index = inputIndex - 1;
-        while (index > 0 && input[index] == ' ') index--;
-        while (index > 0 && !isSkipChar(input[index-1])) index--;
+        while (index > 0 && input[index] == ' ') {
+          index--;
+        }
+        while (index > 0 && !isSkipChar(input[index - 1])) {
+          index--;
+        }
         input = input.substr(0, index) + input.substr(inputIndex);
         inputIndex = index;
       }
@@ -452,8 +455,12 @@ function onKeyDown(event) {
     } else if (event.ctrlKey || event.altKey) {
       if (inputIndex < input.length) {
         let index = inputIndex + 1;
-        while (index < input.length && input[index] == ' ') index++;
-        while (index < input.length && !isSkipChar(input[index])) index++;
+        while (index < input.length && input[index] == ' ') {
+          index++;
+        }
+        while (index < input.length && !isSkipChar(input[index])) {
+          index++;
+        }
         input = input.substr(0, inputIndex) + input.substr(index);
       }
     } else if (inputIndex < input.length) {
@@ -504,8 +511,12 @@ function onKeyDown(event) {
     if (inputIndex > 0) {
       inputIndex--;
       if (event.ctrlKey || event.altKey) {
-        while (inputIndex > 0 && input[inputIndex] == ' ') inputIndex--;
-        while (inputIndex > 0 && !isSkipChar(input[inputIndex-1])) inputIndex--;
+        while (inputIndex > 0 && input[inputIndex] == ' ') {
+          inputIndex--;
+        }
+        while (inputIndex > 0 && !isSkipChar(input[inputIndex - 1])) {
+          inputIndex--;
+        }
       }
       requestDraw();
     }

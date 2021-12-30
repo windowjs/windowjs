@@ -223,7 +223,8 @@ void ShutdownLog() {
 
 void Log(std::string message, ConsoleLogLevel level) {
   if (Args().log) {
-    std::cerr << "[" << ConsoleLogLevelToString(level) << "] " << message << "\n";
+    std::cerr << "[" << ConsoleLogLevelToString(level) << "] " << message
+              << "\n";
   }
 
   std::lock_guard lock(g_log_store->lock);

@@ -977,13 +977,13 @@ function draw(timestamp) {
 
   // Input.
   if (state == PLAYING || state == LOST || state == LEVEL_LOST) {
-    if (x + dt*ballVelocity.x > WIDTH - ballRadius ||
-        x + dt*ballVelocity.x < ballRadius) {
+    if (x + dt * ballVelocity.x > WIDTH - ballRadius ||
+        x + dt * ballVelocity.x < ballRadius) {
       ballVelocity.x = -ballVelocity.x;
     }
-    if (y + dt*ballVelocity.y <= ballRadius) {
+    if (y + dt * ballVelocity.y <= ballRadius) {
       ballVelocity.y = -ballVelocity.y;
-    } else if (y + dt*ballVelocity.y > HEIGHT - ballRadius) {
+    } else if (y + dt * ballVelocity.y > HEIGHT - ballRadius) {
       if (state == PLAYING) {
         lives--;
         state = lives <= 0 ? LOST : LEVEL_LOST;
@@ -993,15 +993,15 @@ function draw(timestamp) {
         destroyPaddle();
         resetHintTimestamp(1000);
       }
-    } else if (y + dt*ballVelocity.y > HEIGHT - ballRadius - paddleHeight &&
+    } else if (y + dt * ballVelocity.y > HEIGHT - ballRadius - paddleHeight &&
                (x >= paddleX && x <= paddleX + paddleWidth)) {
       combo = 0;
       reflectBallOnPaddle();
       paddleHitTimestamp = timestamp;
     }
 
-    x += dt*ballVelocity.x;
-    y += dt*ballVelocity.y;
+    x += dt * ballVelocity.x;
+    y += dt * ballVelocity.y;
   }
 
   if (state == PLAYING || state == STARTING_LEVEL) {

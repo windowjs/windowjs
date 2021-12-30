@@ -351,7 +351,8 @@ void Window::SetKeepAspectRatio(bool keep) {
     if (loading_) {
       // Make sure that the window size reflects its intended size before
       // forcing the aspect ratio, otherwise it will resize to unexpected sizes.
-      glfwSetWindowSize(window_, width_ / retina_scale_, height_ / retina_scale_);
+      glfwSetWindowSize(window_, width_ / retina_scale_,
+                        height_ / retina_scale_);
     }
     if (!reloading_) {
       glfwSetWindowAspectRatio(window_, width_, height_);

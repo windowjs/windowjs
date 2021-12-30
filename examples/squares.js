@@ -25,7 +25,7 @@ function draw(now) {
   canvas.fillStyle = 'blue';
   canvas.fillRect(0, 0, 100, 100);
   canvas.fillRect(canvas.width - 100, 0, 100, 100);
-  canvas.fillRect(0, canvas.height-100, 100, 100);
+  canvas.fillRect(0, canvas.height - 100, 100, 100);
   canvas.drawImage(boxBitmap, canvas.width - 100, canvas.height - 100, 100,
                    100);
 
@@ -112,14 +112,15 @@ async function init() {
   tilesheet = await File.readImageData('examples/data/tilesheet.png');
   const box = new ImageData(tilesheet, 6 * 128, 0, 128, 128);
   boxBitmap = new ImageBitmap(box);
-  window.icon = [box];
+  window.icon = [ box ];
 
   requestAnimationFrame(draw);
 
   window.debug.showOverlayConsole = true;
   window.debug.overlayConsoleTextColor = 'yellow';
   window.debug.showOverlayStats = true;
-  console.info('squares.js loaded. DevicePixelRatio ' + devicePixelRatio + ' RetinaScale ' + window.retinaScale);
+  console.info('squares.js loaded. DevicePixelRatio ' + devicePixelRatio +
+               ' RetinaScale ' + window.retinaScale);
   console.log('j/p/w: save screenshots as Jpeg, Png or Webp.');
   console.log('v: toggle vsync.');
   console.log('e: throw an exception.');
