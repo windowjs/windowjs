@@ -30,7 +30,7 @@ These tools must be installed and available in the `PATH` in a terminal.
 *  [depot_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up) from Chrome
 *  the `gn.exe` or `gn`  binary in the `PATH`; the version from `depot_tools` doesn't work.
    Download [here](https://gn.googlesource.com/gn/+/refs/heads/main#getting-a-binary)
-*  [CMake](https://cmake.org/)
+*  [CMake](https://cmake.org/) 3.15 or later
 
 
 **Windows**
