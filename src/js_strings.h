@@ -313,6 +313,7 @@ enum class StringId {
   resizable,
   resize,
   restore,
+  retinaScale,
   right,
   rotate,
   round,

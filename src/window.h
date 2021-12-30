@@ -95,6 +95,7 @@ class Window final {
   int height() const { return height_; }
   void SetWidth(int width);
   void SetHeight(int height);
+  float retina_scale() const { return retina_scale_; }
 
   bool keep_aspect_ratio() const { return keep_aspect_ratio_; }
   void SetKeepAspectRatio(bool keep);
@@ -146,8 +147,15 @@ class Window final {
   Delegate* delegate_;
   GLFWwindow* window_;
   std::string title_;
+
+  // Width and height in pixel sizes; this matches the OpenGL sizes.
+  // On Retina displays, the window sizes might be different from these
+  // sizes; retina_scale_ indicates the scaling factor.
+  // Window.js exposes all sizes in pixels units to the application.
   int width_;
   int height_;
+  float retina_scale_;
+
   bool visible_;
   bool vsync_;
   bool keep_aspect_ratio_;

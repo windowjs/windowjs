@@ -41,6 +41,7 @@ object-properties:
   - maximized
   - minimized
   - resizable
+  - retinaScale
   - title
   - visible
   - vsync
@@ -404,6 +405,21 @@ Whether the window is minimized.
 {% include property object="window" name="resizable" type="boolean" %}
 
 Whether the native window can be resized by the user. Defaults to true.
+
+
+{% include property object="window" name="retinaScale" type="number" %}
+
+On Retina displays, the window units may be different from the OpenGL (pixel)
+units by a scaling factor, which is the value in `retinaScale`.
+
+Window.js automatically converts all units to pixels, so that
+[window.width](#window.width), [canvas.width](/doc/canvas#canvas.width) and
+mouse [click events](#event-click) are all in pixel units and no further
+conversions are needed.
+
+Applications should still scale their content by
+[devicePixelRatio](/doc/global#devicePixelRatio), to match the UI and text
+sizes expected by the user.
 
 
 {% include property object="window" name="title" type="string" %}

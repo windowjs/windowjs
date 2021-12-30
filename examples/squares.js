@@ -119,7 +119,7 @@ async function init() {
   window.debug.showOverlayConsole = true;
   window.debug.overlayConsoleTextColor = 'yellow';
   window.debug.showOverlayStats = true;
-  console.info('squares.js loaded.');
+  console.info('squares.js loaded. DevicePixelRatio ' + devicePixelRatio + ' RetinaScale ' + window.retinaScale);
   console.log('j/p/w: save screenshots as Jpeg, Png or Webp.');
   console.log('v: toggle vsync.');
   console.log('e: throw an exception.');

@@ -318,6 +318,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(resizable);
   SET_STRING(resize);
   SET_STRING(restore);
+  SET_STRING(retinaScale);
   SET_STRING(right);
   SET_STRING(rotate);
   SET_STRING(round);

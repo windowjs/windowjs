@@ -22,6 +22,7 @@ Window::Window(Delegate* delegate, int width, int height)
     : delegate_(delegate),
       width_(width),
       height_(height),
+      retina_scale_(1.0f),
       visible_(true),
       vsync_(true),
       keep_aspect_ratio_(false),
@@ -47,6 +48,7 @@ Window::Window(Delegate* delegate, int width, int height)
   glfwWindowHint(GLFW_DEPTH_BITS, 24);
   glfwWindowHint(GLFW_STENCIL_BITS, 8);
   glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+  glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
 
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] create window start: " << glfwGetTime();
@@ -112,7 +114,10 @@ Window::Window(Delegate* delegate, int width, int height)
     }
   }
 
-  glfwGetWindowSize(window_, &width_, &height_);
+  int window_width;
+  glfwGetFramebufferSize(window_, &width_, &height_);
+  glfwGetWindowSize(window_, &window_width, nullptr);
+  retina_scale_ = (float) width_ / window_width;
 
   glEnable(GL_BLEND);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -162,6 +167,8 @@ void Window::OnLoadingFinished() {
   int width = 0;
   int height = 0;
   glfwGetWindowSize(window_, &width, &height);
+  width *= retina_scale_;
+  height *= retina_scale_;
   if (width != width_ || height != height_) {
     glfwSetWindowSize(window_, width_, height_);
   }
@@ -325,7 +332,7 @@ void Window::SetWidth(int width) {
       OnResize(width, height_);
     }
   } else {
-    glfwSetWindowSize(window_, width, height_);
+    glfwSetWindowSize(window_, width / retina_scale_, height_ / retina_scale_);
   }
 }
 
@@ -335,7 +342,7 @@ void Window::SetHeight(int height) {
       OnResize(width_, height);
     }
   } else {
-    glfwSetWindowSize(window_, width_, height);
+    glfwSetWindowSize(window_, width_ / retina_scale_, height / retina_scale_);
   }
 }
 
@@ -345,7 +352,7 @@ void Window::SetKeepAspectRatio(bool keep) {
     if (loading_) {
       // Make sure that the window size reflects its intended size before
       // forcing the aspect ratio, otherwise it will resize to unexpected sizes.
-      glfwSetWindowSize(window_, width_, height_);
+      glfwSetWindowSize(window_, width_ / retina_scale_, height_ / retina_scale_);
     }
     if (!reloading_) {
       glfwSetWindowAspectRatio(window_, width_, height_);
@@ -394,24 +401,28 @@ void Window::SetVsync(bool wait_for_vsync) {
 int Window::frame_left() const {
   int value;
   glfwGetWindowFrameSize(window_, &value, nullptr, nullptr, nullptr);
+  value *= retina_scale_;
   return value;
 }
 
 int Window::frame_right() const {
   int value;
   glfwGetWindowFrameSize(window_, nullptr, nullptr, &value, nullptr);
+  value *= retina_scale_;
   return value;
 }
 
 int Window::frame_top() const {
   int value;
   glfwGetWindowFrameSize(window_, nullptr, &value, nullptr, nullptr);
+  value *= retina_scale_;
   return value;
 }
 
 int Window::frame_bottom() const {
   int value;
   glfwGetWindowFrameSize(window_, nullptr, nullptr, nullptr, &value);
+  value *= retina_scale_;
   return value;
 }
 
@@ -420,6 +431,7 @@ int Window::avail_width() const {
   ASSERT(monitor);
   int value;
   glfwGetMonitorWorkarea(monitor, nullptr, nullptr, &value, nullptr);
+  value *= retina_scale_;
   return value;
 }
 
@@ -428,6 +440,7 @@ int Window::avail_height() const {
   ASSERT(monitor);
   int value;
   glfwGetMonitorWorkarea(monitor, nullptr, nullptr, nullptr, &value);
+  value *= retina_scale_;
   return value;
 }
 
@@ -436,7 +449,7 @@ int Window::screen_width() const {
   ASSERT(monitor);
   const GLFWvidmode* mode = glfwGetVideoMode(monitor);
   ASSERT(mode);
-  return mode->width;
+  return mode->width * retina_scale_;
 }
 
 int Window::screen_height() const {
@@ -444,7 +457,7 @@ int Window::screen_height() const {
   ASSERT(monitor);
   const GLFWvidmode* mode = glfwGetVideoMode(monitor);
   ASSERT(mode);
-  return mode->height;
+  return mode->height * retina_scale_;
 }
 
 float Window::device_pixel_ratio() const {
@@ -508,7 +521,10 @@ void Window::CharCallback(GLFWwindow* window, unsigned int codepoint) {
 
 // static
 void Window::CursorPosCallback(GLFWwindow* window, double x, double y) {
-  GetDelegate(window)->OnMouseMove(x, y);
+  Window* w = Get(window);
+  x *= w->retina_scale_;
+  y *= w->retina_scale_;
+  w->delegate_->OnMouseMove(x, y);
 }
 
 // static
@@ -517,7 +533,10 @@ void Window::MouseButtonCallback(GLFWwindow* window, int button, int action,
   double x = 0;
   double y = 0;
   glfwGetCursorPos(window, &x, &y);
-  GetDelegate(window)->OnMouseButton(button, action == GLFW_PRESS, x, y);
+  Window* w = Get(window);
+  x *= w->retina_scale_;
+  y *= w->retina_scale_;
+  w->delegate_->OnMouseButton(button, action == GLFW_PRESS, x, y);
 }
 
 // static

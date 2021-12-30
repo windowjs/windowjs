@@ -505,6 +505,13 @@ void Open(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
+void GetRetinaScale(v8::Local<v8::Name> property,
+                    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  ASSERT(IsMainThread());
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  info.GetReturnValue().Set(api->window()->retina_scale());
+}
+
 }  // namespace
 
 JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
@@ -591,6 +598,7 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   scope.Set(window, StringId::setClipboardText, SetClipboardText);
   scope.Set(window, StringId::loadFont, LoadFont);
   scope.Set(window, StringId::open, Open);
+  scope.Set(window, StringId::retinaScale, GetRetinaScale);
   scope.Set(global, StringId::window, window);
 
   v8::Local<v8::Object> debug = v8::Object::New(scope.isolate);
