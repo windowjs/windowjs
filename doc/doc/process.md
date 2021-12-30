@@ -185,8 +185,6 @@ Terminates the current process immediately, with the given status code value.
 If the current process is a child process then its parent process will receive
 an ["exit"](#event-exit) event in its handle for this process.
 
-TODO: verify the link below:
-
 `process.exit()` is an abrupt termination that is appropriate for unrecoverable
 errors. Normal process termination should call
 [window.close](/doc/window#window.close) instead.
