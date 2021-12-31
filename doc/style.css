@@ -431,6 +431,9 @@ background-color: var(--red);
     display: none;
   }
   pre {
-    white-space: normal;
+    white-space: break-spaces;
+  }
+  pre.highlight code {
+    font-size: 16px;
   }
 }
