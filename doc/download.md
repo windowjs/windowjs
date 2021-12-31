@@ -15,3 +15,30 @@ Binaries for Windows and macOS are available in the
 
 Window.js can be [built](/dev/build) from the [sources](/dev/checkout) for
 Windows, macOS and Linux.
+
+
+**Windows**
+
+Google Chrome and other browsers may issue a warning because the download
+isn't a common file. Choose "Keep" to download the zip file.
+
+The current releases are not signed. Running `windowjs.exe` for the first time
+may result in a Windows Defender warning. Click on "More info" and then
+"Run anyway" to launch the application.
+
+Alternatively, `windowjs.exe` can be
+[built](/dev/build) from the [sources](/dev/checkout).
+
+
+**macOS**
+
+Google Chrome and other browsers may issue a warning because the download
+isn't a common file. Choose "Keep" to download the zip file.
+
+The current releases are not signed. The first execution of `windowjs` might get
+blocked by macOS for this reason. Click "OK" and then open the "Security"
+setting in the "System Preferences"; it will mention `windowjs` having been
+blocked, and there's a button to "Open" the application.
+
+Alternatively, `windowjs.exe` can be
+[built](/dev/build) from the [sources](/dev/checkout).
