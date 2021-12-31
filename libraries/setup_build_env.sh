@@ -106,5 +106,10 @@ echo
 gn --version
 ninja --version
 
+
+export CC=clang
+export CXX=clang++
+
+
 echo
 echo "FINISHED -- ready to fetch dependencies with ./libraries/sync.sh"
