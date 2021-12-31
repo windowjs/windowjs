@@ -6,7 +6,8 @@ title: Window.js | Build
 Build
 =====
 
-Window.js can be built after [checking out the sources](/dev/checkout).
+Window.js can be built after [checking out the sources](/dev/checkout) and
+setting up the build environment.
 
 The build involves four steps:
 
@@ -15,74 +16,64 @@ The build involves four steps:
 3.  Configuring the Window.js build
 4.  Building Window.js
 
-Skia and v8 build with `gn` and `ninja`; Window.js builds with `cmake` and
-`ninja`.
 
-
-Building Skia
+1 Building Skia
 -------------
 
 **Windows**
 
 ```
-$ libraries\build_skia.bat <path to LLVM directory>
+$ libraries\build_skia.bat
 ```
 
-**Mac and Linux**
+**Linux and macOS**
 
 ```
 $ ./libraries/build_skia.sh
 ```
 
 
-Building v8
+2 Building v8
 -----------
 
 **Windows**
 
 ```
-$ libraries\build_v8.bat <path to LLVM directory>
+$ libraries\build_v8.bat
 ```
 
-**Mac and Linux**
+**Linux and macOS**
 
 ```
 $ ./libraries/build_v8.sh
 ```
 
 
-Configuring Window.js
+3 Configuring Window.js
 ---------------------
+
+Run this once to set up the build directory, *`out`*:
 
 ```shell
 $ cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
 ```
 
-Additional cmake parameters are available to customize the build:
 
-{: .strings}
-| `-DCMAKE_BUILD_TYPE=Debug` | Builds with debug symbols. |
-| `-DLLVM_DIR=c:/llvm` | **(Windows)** The LLVM installation directory. |
-
-**Windows**: if `LLVM_DIR` is set then Window.js is built with clang; otherwise
-it's built with MSVC.
-
-
-Building Window.js
+4 Building Window.js
 ------------------
+
+This is the main build command, to build Window.js and rebuild again after code
+modifications:
 
 ```shell
 $ cmake --build out
 ```
 
+
 Running Window.js
 -----------------
 
 Try running some of the examples once the build is finished:
-
-```shell
-$ out/src/windowjs.exe examples/breakout.js
-```
 
 ```shell
 $ out/src/windowjs examples/breakout.js

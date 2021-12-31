@@ -27,19 +27,14 @@ below:
 These tools must be installed and available in the `PATH` in a terminal.
 
 *  git
-*  [depot_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up) from Chrome.
-   The `depot_tools` directory should be at the front of the `PATH` for the
-   Window.js build, to set up the Python interpreters correctly.
-*  the `gn.exe` or `gn`  binary in the `PATH`; the version from `depot_tools` doesn't work.
-   Download [here](https://gn.googlesource.com/gn/+/refs/heads/main#getting-a-binary)
 *  [CMake](https://cmake.org/) 3.15 or later
 
 
 **Windows**
 
 *  [LLVM](http://llvm.org) 12 or later
-*  [Visual Studio 2022](https://visualstudio.microsoft.com/)
-*  [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/) (10.0.19041.0)
+*  [Visual Studio 2022](https://visualstudio.microsoft.com/) (Choose the *Desktop development with C++* workflow in the installer)
+*  [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/) (10.0.19041.0 -- can be installed with Visual Studio 2022)
 
 
 **Linux**
@@ -61,48 +56,47 @@ $ git checkout https://github.com/windowjs/windowjs
 ```
 
 
-3 (Windows) setup the build environment
----------------------------------------
+3 Setup the build environment
+-----------------------------
 
-Windows requires additional setup to have a build environment with the x64
-native tools, and additional settings for the v8 and Skia builds.
+**Windows**
 
-For terminals using the Windows command prompt:
-
-```
-libraries\setup_build_env.bat
-```
-
-For terminals using Powershell:
-
-```
-libraries\setup_build_env.ps1
-```
-
-
-3 (Linux) setup the build environment
----------------------------------------
-
-Window.js requires clang to build. The `CC` and `CXX` environment variables
-must be set correctly:
+For Windows command prompt terminals, run this script:
 
 ```shell
-$ export CC=/usr/bin/clang
-$ export CXX=/usr/bin/clang++
+$ libraries\setup_build_env.bat
+```
+
+For Windows Powershell terminals, run this script instead:
+
+```shell
+$ libraries\setup_build_env.ps1
+```
+
+
+**Linux and macOS**
+
+```shell
+$ source libraries/setup_build_env.sh
 ```
 
 
 4 Fetching the dependencies
 ---------------------------
 
-The `gclient` tool (from the Chrome `depot_tools`) is used to fetch dependencies
-for Skia and v8.
+**Windows**
 
 ```shell
-$ gclient sync --shallow --no-history -D -R
+$ libraries\sync.bat
 ```
 
-This command can take several minutes to complete.
+
+**Linux and macOS**
+
+```shell
+$ ./libraries/sync.sh
+```
+
 
 5 Build
 -------
