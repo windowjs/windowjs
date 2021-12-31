@@ -58,7 +58,7 @@ depot_tools="$PWD/libraries/depot_tools"
 echo
 echo "Verifying depot_tools gclient version (this may download additional tools)"
 echo
-${depot_tools}/gclient --version
+"${depot_tools}/gclient" --version
 
 
 if [ ! -d "libraries/gn" ]; then
@@ -79,8 +79,8 @@ if [ ! -f "libraries/gn/out/gn" ]; then
   echo "Building the gn build tool"
   echo
   pushd libraries/gn
-  ${depot_tools}/vpython build/gen.py
-  ${depot_tools}/ninja -C out gn
+  "${depot_tools}/vpython" build/gen.py
+  "${depot_tools}/ninja" -C out gn
   popd
 fi
 
@@ -95,7 +95,7 @@ echo
 echo "Updating PATH to use depot_tools and gn"
 echo
 
-export PATH=`${depot_tools}/vpython libraries/update_path.py "$PWD"`
+export PATH=`"${depot_tools}/vpython" libraries/update_path.py "$PWD"`
 # Forgets all remembered locations:
 hash -r
 
