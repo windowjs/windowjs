@@ -96,3 +96,15 @@ echo "Updating PATH to use depot_tools and gn"
 echo
 
 export PATH=`${depot_tools}/vpython libraries/update_path.py "$PWD"`
+# Forgets all remembered locations:
+hash -r
+
+
+echo
+echo "Verifying gn and ninja in PATH"
+echo
+gn --version
+ninja --version
+
+echo
+echo "FINISHED -- ready to fetch dependencies with ./libraries/sync.sh"

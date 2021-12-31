@@ -108,7 +108,7 @@ if (-not(Test-Path -Path 'libraries\gn\out\gn.exe' -PathType Leaf)) {
 
 Write-Host ""
 Write-Host "Updating PATH to use depot_tools and gn"
-$env:path = Invoke-Expression "${depot_tools}/python.bat libraries\win_update_path.py $(pwd)"
+$env:path = Invoke-Expression "${depot_tools}/python.bat libraries\update_path.py $(pwd)"
 
 Write-Host ""
 Write-Host "Verifying gn and ninja in PATH"

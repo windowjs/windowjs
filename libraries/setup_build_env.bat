@@ -124,7 +124,7 @@ if not exist libraries\gn\out\gn.exe (
 echo.
 echo Updating PATH to use depot_tools and gn
 
-for /f "tokens=* USEBACKQ" %%f in (`%depot_tools%/python libraries\win_update_path.py %cd%`) do (
+for /f "tokens=* USEBACKQ" %%f in (`%depot_tools%/python libraries\update_path.py %cd%`) do (
   set PATH=%%f
 )
 
