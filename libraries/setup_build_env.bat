@@ -8,6 +8,13 @@ if not exist libraries\setup_build_env.bat (
 )
 
 
+if not "%cd%"=="%cd: =%" (
+  echo This script doesn't work with paths that contain spaces.
+  echo FAILED
+  exit /b 1
+)
+
+
 echo Setting up repository at %cd%
 
 
@@ -94,6 +101,12 @@ echo Verifying depot_tools gclient version (this may download additional tools)
 echo.
 call %depot_tools%/gclient --version
 
+if %errorlevel% neq 0 (
+  echo.
+  echo FAILED
+  exit /b 1
+)
+
 
 if not exist libraries\gn\ (
   echo.
@@ -110,6 +123,11 @@ if not exist libraries\gn\out\gn.exe (
   pushd libraries\gn
   call %depot_tools%/python build/gen.py
   call %depot_tools%/ninja -C out gn.exe
+  if %errorlevel% neq 0 (
+    echo.
+    echo FAILED
+    exit /b 1
+  )
   popd
 )
 

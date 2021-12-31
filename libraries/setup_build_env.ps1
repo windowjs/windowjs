@@ -5,6 +5,13 @@ if (-not(Test-Path -Path 'libraries\setup_build_env.ps1' -PathType Leaf)) {
 }
 
 
+if ($(pwd) -like "* *") {
+  Write-Host "This script doesn't work with paths that contain spaces."
+  Write-Host "FAILED"
+  exit 1
+}
+
+
 Write-Host "Setting up repository at $(pwd)"
 
 
