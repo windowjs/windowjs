@@ -8,9 +8,10 @@ skia_enable_tools = false
 skia_enable_gpu_debug_layers = false
 skia_use_libheif = false
 skia_use_lua = false
+skia_use_expat = false
 
 clang_win = "edit_llvm_path_here"
-skia_use_system_expat = false
+# skia_use_system_expat = false
 # skia_use_system_harfbuzz = false
 # skia_use_system_icu = false
 skia_use_system_libjpeg_turbo = false
