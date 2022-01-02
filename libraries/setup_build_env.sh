@@ -54,6 +54,9 @@ fi
 
 depot_tools="$PWD/libraries/depot_tools"
 
+# Update PATH before the gclient --version check, to use cipd.
+export PATH="${depot_tools}:$PATH"
+
 
 echo
 echo "Verifying depot_tools gclient version (this may download additional tools)"
