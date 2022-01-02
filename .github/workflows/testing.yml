@@ -1,6 +1,4 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
+name: Linux build
 
 # Controls when the workflow will run
 on:
@@ -13,7 +11,6 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
@@ -24,12 +21,23 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      
+      - name: Cache build
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-build
+        with:
+          path: |
+            libraries/depot_tools
+            libraries/gn
+            libraries/glad
+            libraries/glfw
+            libraries/skia
+            libraries/v8
+            libraries/libuv
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-todo-put-a-tag-here
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      - name: Checkout and build
+      - name: Build
         run: |
           source libraries/setup_build_env.sh
           libraries/sync.sh
@@ -37,11 +45,3 @@ jobs:
           libraries/build_v8.sh
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
           cmake --build out
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
-          ls
-          echo CC is ${CC}, CXX is ${CXX}, PATH is ${PATH}
