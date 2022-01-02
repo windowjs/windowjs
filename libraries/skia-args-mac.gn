@@ -8,6 +8,7 @@ skia_enable_tools = false
 skia_enable_gpu_debug_layers = false
 skia_use_libheif = false
 skia_use_lua = false
+skia_use_dng_sdk = false
 
 cc = "clang"
 cxx = "clang++"
