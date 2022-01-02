@@ -20,12 +20,14 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
       
-      - name: Cache build
+      - name: Install packages
+        run: sudo apt-get install cmake clang libfontconfig-dev libglx-dev libjpeg-turbo8-dev libwebp-dev libglx-dev
+      
+      - name: Cache
         uses: actions/cache@v2
-        env:
-          cache-name: cache-build
         with:
           path: |
             libraries/depot_tools
@@ -35,7 +37,7 @@ jobs:
             libraries/skia
             libraries/v8
             libraries/libuv
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-todo-put-a-tag-here
+          key: ${{ runner.os }}-build-cache-todo-put-a-tag-here
 
       - name: Build
         run: |
