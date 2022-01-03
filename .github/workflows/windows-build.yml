@@ -23,6 +23,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install packages
+        run: choco install upx
+
       - name: Cache
         id: cache-libraries
         uses: actions/cache@v2
@@ -62,4 +65,9 @@ jobs:
           cmake --build out
 
       - name: Binary size
-        run: Write-Host((Get-Item out/src/windowjs.exe).length)
+        run: |
+          Write-Host "Size after build:"
+          Write-Host((Get-Item out/src/windowjs.exe).length)
+          upx -9 out/src/windowjs.exe
+          Write-Host "Size after upx:"
+          Write-Host((Get-Item out/src/windowjs.exe).length)
