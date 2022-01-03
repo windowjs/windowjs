@@ -42,8 +42,15 @@ jobs:
           cd doc
           bundle exec jekyll build
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: site
-          path: doc/_site/*
+      - name: Checkout site
+        run: git clone https://github.com/windowjs/windowjs.github.io
+
+      - name: Update site
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          cd windowjs.github.io
+          cp -r ../doc/_site/* .
+          git add -A
+          git commit -a -m "Site update for commit ${GITHUB_SHA}"
+          git push
