@@ -25,11 +25,6 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      # TODO: remove.
-      - name: Git config list
-        run: | 
-          git config --list
-
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v2
@@ -47,11 +42,7 @@ jobs:
             libraries/glad
             libraries/glfw
             libraries/skia
-            #!libraries/skia/out
-            #libraries/skia/out/Release/skia.lib
             libraries/v8
-            #!libraries/v8/out
-            #libraries/v8/out/Release/obj/v8_monolith.lib
             libraries/libuv
           # The key should invalidate if these files change:
           # .gclient, setup_build_env.ps1, sync.ps1, build_skia.bat, build_v8.bat, skia-args-windows.gn, v8-args-windows.gn
@@ -66,17 +57,17 @@ jobs:
       - name: Build Skia
         if: steps.cache-libraries.outputs.cache-hit != 'true'
         run: |
-          source libraries/setup_build_env.ps1
+          libraries/setup_build_env.ps1
           libraries/build_skia.bat
 
       - name: Build v8
         if: steps.cache-libraries.outputs.cache-hit != 'true'
         run: |
-          source libraries/setup_build_env.ps1
+          libraries/setup_build_env.ps1
           libraries/build_v8.bat
 
       - name: Build
         run: |
-          source libraries/setup_build_env.ps1
+          libraries/setup_build_env.ps1
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
           cmake --build out

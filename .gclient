@@ -179,17 +179,6 @@ hooks = [
     "action": [
       "git",
       "apply",
-      "-v",
-      "--check",
-      "--directory",
-      "libraries/glfw",
-      "libraries/glfw.patch",
-    ],
-  },
-  {
-    "action": [
-      "git",
-      "apply",
       "--directory",
       "libraries/glfw",
       "libraries/glfw.patch",
