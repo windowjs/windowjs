@@ -1,0 +1,27 @@
+name: Update site
+
+on:
+#  push:
+#    branches: [ main ]
+
+  # Allows running this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Jekyll build
+        run: |
+          cd doc
+          bundle exec jekyll build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: site
+          path: doc/_site/*
