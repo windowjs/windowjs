@@ -47,6 +47,8 @@ jobs:
 
       - name: Update site
         run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
           cd windowjs.github.io
           cp -r ../doc/_site/* .
           git add -A
