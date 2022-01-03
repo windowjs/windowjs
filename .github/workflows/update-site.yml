@@ -42,15 +42,8 @@ jobs:
           cd doc
           bundle exec jekyll build
 
-      - name: Checkout site
-        run: git clone https://github.com/windowjs/windowjs.github.io
-
-      - name: Update site
-        run: |
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          cd windowjs.github.io
-          cp -r ../doc/_site/* .
-          git add -A
-          git commit -a -m "Site update for commit ${GITHUB_SHA}"
-          git push "https://$API_TOKEN_GITHUB@github.com/windowjs/windowjs.github.io.git" --set-upstream "main"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: site
+          path: doc/_site/*
