@@ -47,10 +47,8 @@ jobs:
 
       - name: Update site
         run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
           cd windowjs.github.io
           cp -r ../doc/_site/* .
           git add -A
           git commit -a -m "Site update for commit ${GITHUB_SHA}"
-          git push
+          git push "https://$API_TOKEN_GITHUB@github.com/windowjs/windowjs.github.io.git" --set-upstream "main"
