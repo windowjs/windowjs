@@ -58,3 +58,9 @@ jobs:
 
       - name: Binary size
         run: stat -f%z out/src/windowjs
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: windowjs
+          path: out/src/windowjs

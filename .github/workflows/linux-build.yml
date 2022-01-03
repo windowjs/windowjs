@@ -72,3 +72,9 @@ jobs:
           upx -9 out/src/windowjs
           echo "Size after upx:"
           du -b out/src/windowjs
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: windowjs
+          path: out/src/windowjs

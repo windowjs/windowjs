@@ -71,3 +71,9 @@ jobs:
           upx -9 out/src/windowjs.exe
           Write-Host "Size after upx:"
           Write-Host((Get-Item out/src/windowjs.exe).length)
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: windowjs.exe
+          path: out/src/windowjs.exe
