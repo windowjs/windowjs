@@ -36,11 +36,15 @@ jobs:
             libraries/glad
             libraries/glfw
             libraries/skia
+            !libraries/skia/out
+            libraries/skia/out/Release/skia.lib
             libraries/v8
+            !libraries/v8/out
+            libraries/v8/out/Release/obj/v8_monolith.lib
             libraries/libuv
           # The key should invalidate if these files change:
           # .gclient, setup_build_env.sh, sync.sh, build_skia.sh, build_v8.sh, skia-build-args.gn, v8-build-args.gn
-          key: ${{ runner.os }}-build-cache-todo-put-a-tag-here
+          key: ${{ runner.os }}-build-cache-todo-put-a-tag-here-v2
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'
