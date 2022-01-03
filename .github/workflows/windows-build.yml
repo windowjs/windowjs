@@ -26,6 +26,11 @@ jobs:
       #- name: Install packages
       #  run: sudo apt-get install cmake clang libfontconfig-dev libjpeg-turbo8-dev libwebp-dev libgl-dev libglx-dev libxrandr-dev xorg-dev
 
+      # TODO: remove.
+      - name: Git config
+        run: | 
+          git config --list
+
       - name: Cache
         id: cache-libraries
         uses: actions/cache@v2
