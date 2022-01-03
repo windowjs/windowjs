@@ -32,15 +32,13 @@ These tools must be installed and available in the `PATH` in a terminal.
 
 **Windows**
 
-*  [LLVM](http://llvm.org) 12 or later
 *  [Visual Studio 2022](https://visualstudio.microsoft.com/) (Choose the *Desktop development with C++* workflow in the installer)
 *  [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/) (10.0.19041.0 -- can be installed with Visual Studio 2022)
 
 
 **Linux**
 
-*  clang++-11 or later
-*  libwebp-dev
+*  `apt-get install cmake clang libfontconfig-dev libjpeg-turbo8-dev libwebp-dev libgl-dev libglx-dev libxrandr-dev xorg-dev`
 
 
 **Mac**

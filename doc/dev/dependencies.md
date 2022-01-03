@@ -19,20 +19,29 @@ The main dependencies are listed at the top, in the `vars` object:
 
 The commit hash for each one is the version that gets checked out.
 
-`gclient` then fetches the v8 dependencies as well.
+The Skia and v8 dependencies are copied *manually* to `.gclient`, for a couple
+of reasons: it's easier to skip unnecessary (and large) dependencies, and
+`gclient --no-history` makes smaller checkouts this way.
 
-The Skia dependencies are *manually* copied to `.gclient`, because their
-configuration breaks during the `gclient sync` otherwise.
 
-See the `solutions` object at the end of `.gclient` for the actual checkout
-configuration; notice the special handling for the skia dependencies.
+Reused dependencies from v8 and Skia
+------------------------------------
+
+Some of the v8 and Skia dependencies are also used by Window.js and its build
+directly:
+
+*  `libraries/v8/third_party/llvm-build` is an LLVM and clang installation that
+   is used on the Windows build.
+
+*  `libraries/v8/third_party/zlib` is used for compression support.
+
 
 Hooks
 -----
 
-The hooks listed at the bottom of `.gclient` run after each `gclient sync`.
+The hooks listed at the bottom of `.gclient` run after each `sync`.
 
-They are used to apply custom patches to the libraries, mainly to make them
+They apply custom patches to the libraries, mainly to make them
 build for Window.js.
 
 *  `libraries/v8.patch`: fixes the build with clang.
@@ -61,14 +70,13 @@ $ gclient sync --shallow --no-history -D -R
 *  Apply the v8 patches manually, and update them if needed.
 *  Verify that v8 builds, and fix as needed:
    ```shell
-$ cd libraries/v8
-$ ninja -C out/Release v8_monolith
+$ libraries/build_v8.sh
 ```
 *  Update the v8 patches with any changes:
    ```shell
-$ git diff --patch --color=never HEAD --output ..\v8.patch
+$ git diff --patch --color=never HEAD --output ../v8.patch
 $ cd build
-$ git diff --patch --color=never HEAD --output ..\..\v8_build.patch
+$ git diff --patch --color=never HEAD --output ../../v8_build.patch
 ```
 *  Restore the hooks and verify that `gclient sync` applies the patches
    correctly:
@@ -77,8 +85,7 @@ $ gclient sync --shallow --no-history -D -R
 ```
 *  Verify that v8 builds:
    ```shell
-$ cd libraries/v8
-$ ninja -C out/Release v8_monolith
+$ libraries/build_v8.sh
 ```
 *  Verify that Window.js builds and run the tests.
 
@@ -91,11 +98,10 @@ Updating Skia
    ```shell
 $ gclient sync --shallow --no-history -D -R
 ```
-*  Copy the skia `deps` from `libraries/skia/DEPS` to `skia_deps` in `.gclient`
+*  Update the skia `deps` from `libraries/skia/DEPS` to `skia_deps` in `.gclient`
 *  Sync gclient again
 *  Build skia:
    ```
-$ cd libraries/skia
-$ ninja -C out/Release skia
+$ libraries/build_skia.sh
 ```
 *  Verify that Window.js builds and run the tests.
