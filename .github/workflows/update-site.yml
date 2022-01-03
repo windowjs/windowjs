@@ -15,8 +15,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install packages
+        run: |
+          sudo apt-get install ruby-full build-essential zlib1g-dev
+          export GEM_HOME="$HOME/gems"
+          gem install bundler jekyll
+          cd doc
+          bundle install
+
       - name: Jekyll build
         run: |
+          export GEM_HOME="$HOME/gems"
           cd doc
           bundle exec jekyll build
 
