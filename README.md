@@ -4,6 +4,10 @@ Window.js is an open-source Javascript runtime for desktop graphics programming.
 
 It is documented at [windowjs.org](https://windowjs.org).
 
+[![Windows](https://github.com/glfw/glfw/actions/workflows/windows-build.yml/badge.svg)](https://github.com/windowjs/windowjs/actions/workflows/windows-build.yml)
+[![Linux](https://github.com/glfw/glfw/actions/workflows/linux-build.yml/badge.svg)](https://github.com/windowjs/windowjs/actions/workflows/linux-build.yml)
+[![macOS](https://github.com/glfw/glfw/actions/workflows/macos-build.yml/badge.svg)](https://github.com/windowjs/windowjs/actions/workflows/macos-build.yml)
+
 
 ## Introduction
 

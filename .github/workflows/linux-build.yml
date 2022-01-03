@@ -1,25 +1,19 @@
 name: Linux build
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  #push:
-    #branches: [ main ]
-  #pull_request:
-    #branches: [ main ]
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-  # Allows you to run this workflow manually from the Actions tab
+  # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
 
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -42,9 +36,7 @@ jobs:
             !libraries/v8/out
             libraries/v8/out/Release/obj/v8_monolith.lib
             libraries/libuv
-          # The key should invalidate if these files change:
-          # .gclient, setup_build_env.sh, sync.sh, build_skia.sh, build_v8.sh, skia-build-args.gn, v8-build-args.gn
-          key: ${{ runner.os }}-build-cache-todo-put-a-tag-here-v2
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-linux.gn') }}
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'
@@ -69,3 +61,6 @@ jobs:
           source libraries/setup_build_env.sh
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
           cmake --build out
+
+      - name: Binary size
+        run: du -b out/src/windowjs
