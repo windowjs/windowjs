@@ -174,7 +174,18 @@ hooks = [
     'condition': 'host_os != "aix"',
     'action': ['python3', 'tools/clang/scripts/update.py'],
   },
-
+  
+  {
+    "action": [
+      "git",
+      "apply",
+      "-v",
+      "--check",
+      "--directory",
+      "libraries/glfw",
+      "libraries/glfw.patch",
+    ],
+  },
   {
     "action": [
       "git",
