@@ -54,6 +54,7 @@ jobs:
           source libraries/setup_build_env.sh
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
           cmake --build out
+          strip out/src/windowjs
 
       - name: Binary size
-        run: du -b out/src/windowjs
+        run: stat -f%z out/src/windowjs
