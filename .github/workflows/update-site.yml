@@ -15,19 +15,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Cache
+        id: cache-libraries
+        uses: actions/cache@v2
+        with:
+          path: gems
+          key: update-site-gems-cache-v1
+
       - name: Install packages
         run: |
           sudo apt-get install ruby-full build-essential zlib1g-dev
-          export GEM_HOME="$HOME/gems"
-          export PATH="$HOME/gems/bin:$PATH"
+          export GEM_HOME="$PWD/gems"
+          export PATH="$PWD/gems/bin:$PATH"
           gem install bundler jekyll
           cd doc
           bundle install
 
       - name: Jekyll build
         run: |
-          export GEM_HOME="$HOME/gems"
-          export PATH="$HOME/gems/bin:$PATH"
+          export GEM_HOME="$PWD/gems"
+          export PATH="$PWD/gems/bin:$PATH"
           cd doc
           bundle exec jekyll build
 
