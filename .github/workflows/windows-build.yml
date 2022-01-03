@@ -19,17 +19,23 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # Prevent newline conversions on Windows checkouts.
+      - name: Git config
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      # TODO: remove.
+      - name: Git config list
+        run: | 
+          git config --list
+
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v2
 
       #- name: Install packages
       #  run: sudo apt-get install cmake clang libfontconfig-dev libjpeg-turbo8-dev libwebp-dev libgl-dev libglx-dev libxrandr-dev xorg-dev
-
-      # TODO: remove.
-      - name: Git config
-        run: | 
-          git config --list
 
       - name: Cache
         id: cache-libraries
