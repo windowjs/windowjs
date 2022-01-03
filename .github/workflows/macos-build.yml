@@ -1,10 +1,10 @@
 name: macOS build
 
 on:
-#  push:
-#   branches: [ main ]
-#  pull_request:
-#    branches: [ main ]
+  push:
+   branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
   # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
@@ -16,6 +16,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Install packages
+        run: brew install upx
 
       - name: Cache
         id: cache-libraries
@@ -57,7 +60,12 @@ jobs:
           strip out/src/windowjs
 
       - name: Binary size
-        run: stat -f%z out/src/windowjs
+        run: |
+          echo "Binary size after build:"
+          stat -f%z out/src/windowjs
+          upx -9 out/src/windowjs
+          echo "Binary size after upx:"
+          stat -f%z out/src/windowjs
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
