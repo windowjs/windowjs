@@ -19,6 +19,7 @@ jobs:
         run: |
           sudo apt-get install ruby-full build-essential zlib1g-dev
           export GEM_HOME="$HOME/gems"
+          export PATH="$HOME/gems/bin:$PATH"
           gem install bundler jekyll
           cd doc
           bundle install
@@ -26,6 +27,7 @@ jobs:
       - name: Jekyll build
         run: |
           export GEM_HOME="$HOME/gems"
+          export PATH="$HOME/gems/bin:$PATH"
           cd doc
           bundle exec jekyll build
 
