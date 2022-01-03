@@ -64,20 +64,6 @@ if %errorlevel% neq 0 (
 )
 
 
-echo.
-echo Checking Clang version
-echo.
-clang-cl --version
-
-if %errorlevel% neq 0 (
-  echo.
-  echo Failed to check clang -- is it installed?
-  echo.
-  echo FAILED
-  exit /b 1
-)
-
-
 if not exist libraries\depot_tools\ (
   echo.
   echo Checking out the Chrome depot_tools at libraries\depot_tools

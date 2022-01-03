@@ -56,19 +56,6 @@ try {
   exit 1
 }
 
-try {
-  Write-Host ""
-  Write-Host "Checking Clang version"
-  Write-Host ""
-  clang-cl --version
-} catch {
-  Write-Host "Failed to check clang -- is it installed?"
-  Write-Host ""
-  Write-Host "FAILED"
-  exit 1
-}
-
-
 if (-not(Test-Path -Path 'libraries\depot_tools' -PathType Container)) {
   Write-Host ""
   Write-Host "Checking out the Chrome depot_tools at libraries\depot_tools"

@@ -12,9 +12,9 @@ v8_target_cpu = "x64"
 v8_enable_slow_dchecks = false
 
 is_clang = true
-clang_base_path = "edit_llvm_path_here"
+clang_base_path = "../../../third_party/llvm-build/Release+Asserts"
 clang_use_chrome_plugins = false
-clang_version = "12.0.0"
+clang_version = "14.0.0"
 use_custom_libcxx = false
 
 v8_enable_i18n_support = false

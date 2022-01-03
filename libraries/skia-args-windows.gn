@@ -2,6 +2,8 @@ is_official_build = true
 is_component_build = false
 is_debug = false
 
+clang_win = "../../../v8/third_party/llvm-build/Release+Asserts"
+
 skia_enable_android_utils = false
 skia_enable_skvm_jit_when_possible = false
 skia_enable_tools = false
@@ -10,7 +12,6 @@ skia_use_libheif = false
 skia_use_lua = false
 skia_use_expat = false
 
-clang_win = "edit_llvm_path_here"
 # skia_use_system_expat = false
 # skia_use_system_harfbuzz = false
 # skia_use_system_icu = false
