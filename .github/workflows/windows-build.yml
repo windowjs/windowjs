@@ -1,0 +1,71 @@
+name: Windows build
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  #push:
+    #branches: [ main ]
+  #pull_request:
+    #branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      #- name: Install packages
+      #  run: sudo apt-get install cmake clang libfontconfig-dev libjpeg-turbo8-dev libwebp-dev libgl-dev libglx-dev libxrandr-dev xorg-dev
+
+      - name: Cache
+        id: cache-libraries
+        uses: actions/cache@v2
+        with:
+          path: |
+            libraries/depot_tools
+            libraries/gn
+            libraries/glad
+            libraries/glfw
+            libraries/skia
+            #!libraries/skia/out
+            #libraries/skia/out/Release/skia.lib
+            libraries/v8
+            #!libraries/v8/out
+            #libraries/v8/out/Release/obj/v8_monolith.lib
+            libraries/libuv
+          # The key should invalidate if these files change:
+          # .gclient, setup_build_env.ps1, sync.ps1, build_skia.bat, build_v8.bat, skia-args-windows.gn, v8-args-windows.gn
+          key: ${{ runner.os }}-build-cache-todo-put-a-tag-here-v2
+
+      - name: Sync
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          libraries/setup_build_env.ps1
+          libraries/sync.ps1
+
+      - name: Build Skia
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          source libraries/setup_build_env.ps1
+          libraries/build_skia.bat
+
+      - name: Build v8
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          source libraries/setup_build_env.ps1
+          libraries/build_v8.bat
+
+      - name: Build
+        run: |
+          source libraries/setup_build_env.ps1
+          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake --build out
