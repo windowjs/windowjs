@@ -3,6 +3,8 @@ name: Update site
 on:
 #  push:
 #    branches: [ main ]
+#    paths:
+#      - 'doc/**'
 
   # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
@@ -42,8 +44,19 @@ jobs:
           cd doc
           bundle exec jekyll build
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: site
-          path: doc/_site/*
+      - name: Update windowjs.github.io
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "${GITHUB_ACTOR}@bots.github.com"
+          git clone https://github.com/windowjs/windowjs.github.io
+          cd windowjs.github.io
+          cp -r ../doc/_site/* .
+          git add -A
+          git commit -a -m "Updated site at commit ${GITHUB_SHA}"
+          if [ $? -ne 0 ]; then
+              echo "Nothing changed, done."
+              exit 0
+          fi
+          uri="https://x-access-token:${GITHUB_TOKEN}@github.com/windowjs/windowjs.github.io.git"
+          git remote set-url origin "$uri"
+          git push origin main
