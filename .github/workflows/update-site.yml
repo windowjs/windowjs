@@ -46,10 +46,10 @@ jobs:
 
       - name: Update windowjs.github.io
         run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "${GITHUB_ACTOR}@bots.github.com"
           git clone https://github.com/windowjs/windowjs.github.io
           cd windowjs.github.io
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "${GITHUB_ACTOR}@bots.github.com"
           cp -r ../doc/_site/* .
           git add -A
           git commit -a -m "Updated site at commit ${GITHUB_SHA}"
