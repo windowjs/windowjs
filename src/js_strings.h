@@ -18,6 +18,7 @@ enum class StringId {
   altKey,
   AltLeft,
   AltRight,
+  alwaysOnTop,
   antialias,
   arc,
   arcTo,

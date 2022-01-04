@@ -371,6 +371,8 @@ void Main::HandleMessageFromConsoleProcess(std::string message) {
   } else if (type.String() == "overlay-console") {
     window_.console_overlay()->SetEnabled(
         !window_.console_overlay()->is_enabled());
+  } else if (type.String() == "always-on-top") {
+    window_.SetAlwaysOnTop(!window_.always_on_top());
   } else if (type.String() == "clear-logs") {
     OnClearLogs();
   } else if (type.String() == "eval") {
@@ -491,6 +493,12 @@ void Main::OnKey(int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_F5 && action == GLFW_PRESS) {
       if (!Args().is_child_process || (mods & GLFW_MOD_CONTROL) != 0) {
         reload_requested_ = true;
+        return;
+      }
+    }
+    if (key == GLFW_KEY_F6 && action == GLFW_PRESS) {
+      if (!Args().is_child_process || (mods & GLFW_MOD_CONTROL) != 0) {
+        window_.SetAlwaysOnTop(!window_.always_on_top());
         return;
       }
     }

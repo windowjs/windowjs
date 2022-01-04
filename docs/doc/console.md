@@ -23,6 +23,7 @@ These shortcuts work in the main window and the console window.
 | F3     | Continuously logs frame times to the console. See [details](#frame-times) below. |
 | F4     | Overlays console logs in the main window.                           |
 | F5     | Reloads the initial module and refreshes the main window.           |
+| F6     | Keeps the window always on top.                                     |
 | F8     | Saves a screenshot named ScreenshotN.png to the current directory.  |
 
 These shortcuts work in the console window only.

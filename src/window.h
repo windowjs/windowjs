@@ -103,6 +103,9 @@ class Window final {
   bool resizable() const;
   void SetResizable(bool resizable);
 
+  bool always_on_top() const;
+  void SetAlwaysOnTop(bool always_on_top);
+
   bool fullscreen() const;
   void SetFullscreen(bool fullscreen);
 

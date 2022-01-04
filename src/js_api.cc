@@ -241,6 +241,22 @@ void SetResizable(v8::Local<v8::Name> property, v8::Local<v8::Value> value,
   }
 }
 
+void GetAlwaysOnTop(v8::Local<v8::Name> property,
+                    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  ASSERT(IsMainThread());
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  info.GetReturnValue().Set(api->window()->always_on_top());
+}
+
+void SetAlwaysOnTop(v8::Local<v8::Name> property, v8::Local<v8::Value> value,
+                    const v8::PropertyCallbackInfo<void>& info) {
+  ASSERT(IsMainThread());
+  if (value->IsBoolean()) {
+    JsApi* api = JsApi::Get(info.GetIsolate());
+    api->window()->SetAlwaysOnTop(value.As<v8::Boolean>()->Value());
+  }
+}
+
 void GetKeepAspectRatio(v8::Local<v8::Name> property,
                         const v8::PropertyCallbackInfo<v8::Value>& info) {
   ASSERT(IsMainThread());
@@ -585,6 +601,7 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   scope.Set(window, StringId::visible, GetVisible, SetVisible);
   scope.Set(window, StringId::decorated, GetDecorated, SetDecorated);
   scope.Set(window, StringId::resizable, GetResizable, SetResizable);
+  scope.Set(window, StringId::alwaysOnTop, GetAlwaysOnTop, SetAlwaysOnTop);
   scope.Set(window, StringId::keepAspectRatio, GetKeepAspectRatio,
             SetKeepAspectRatio);
   scope.Set(window, StringId::focused, GetFocused);

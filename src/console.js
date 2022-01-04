@@ -360,6 +360,7 @@ function requestEval(source) {
         'F3         Toggles frame profiling.\n' +
         'F4         Overlays console logs in the main window.\n' +
         'F5         Reloads the main application.\n' +
+        'F6         Toggles always on top.\n' +
         'F8         Saves a screenshot.\n' +
         'Escape     Closes the console.\n');
     return;
@@ -396,6 +397,8 @@ function onKeyDown(event) {
     sendRequest('overlay-console');
   } else if (key == 'F5') {
     sendRequest('reload');
+  } else if (key == 'F6') {
+    sendRequest('always-on-top');
   } else if (key == 'F8') {
     sendRequest('screenshot');
   } else if (key == 'PageUp') {

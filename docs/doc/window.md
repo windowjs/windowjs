@@ -22,6 +22,7 @@ events:
   - wheel
 object-name: window
 object-properties:
+  - alwaysOnTop
   - canvas
   - cursor
   - cursorOffsetX
@@ -274,6 +275,13 @@ The event listener receives an Object with these properties:
 {: .parameters}
 | deltaX | number | The amount that was scrolled in the horizontal axis.       |
 | deltaY | number | The amount that was scrolled in the vertical axis.         |
+
+
+{% include property object="window" name="alwaysOnTop" type="boolean" %}
+
+Whether to keep the window always on top of other windows.
+
+This can also be toggled with `F6` during development.
 
 
 {% include property object="window" name="canvas"

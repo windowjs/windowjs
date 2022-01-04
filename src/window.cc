@@ -371,6 +371,15 @@ void Window::SetResizable(bool resizable) {
                       resizable ? GLFW_TRUE : GLFW_FALSE);
 }
 
+bool Window::always_on_top() const {
+  return glfwGetWindowAttrib(window_, GLFW_FLOATING) == GLFW_TRUE;
+}
+
+void Window::SetAlwaysOnTop(bool always_on_top) {
+  glfwSetWindowAttrib(window_, GLFW_FLOATING,
+                      always_on_top ? GLFW_TRUE : GLFW_FALSE);
+}
+
 bool Window::fullscreen() const {
   return glfwGetWindowMonitor(window_) != nullptr;
 }

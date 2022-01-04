@@ -23,6 +23,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(altKey);
   SET_STRING(AltLeft);
   SET_STRING(AltRight);
+  SET_STRING(alwaysOnTop);
   SET_STRING(antialias);
   SET_STRING(arc);
   SET_STRING(arcTo);
