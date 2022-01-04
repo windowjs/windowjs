@@ -60,6 +60,6 @@ jobs:
               echo "Nothing changed, done."
               exit 0
           fi
-          uri="https://x-access-token:${{ secrets.github_token }}@github.com/windowjs/windowjs.github.io.git"
+          uri="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/windowjs/windowjs.github.io.git"
           git remote set-url origin "$uri"
           git push origin main
