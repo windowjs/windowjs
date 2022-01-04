@@ -5,13 +5,13 @@ on:
     branches: [ main ]
     paths-ignore:
       - '.github/**'
-      - 'doc/**'
+      - 'docs/**'
       - 'examples/**'
   pull_request:
     branches: [ main ]
     paths-ignore:
       - '.github/**'
-      - 'doc/**'
+      - 'docs/**'
       - 'examples/**'
 
   # Allows running this workflow manually from the Actions tab.
