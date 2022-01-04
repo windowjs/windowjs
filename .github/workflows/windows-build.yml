@@ -3,8 +3,16 @@ name: Windows build
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '.github/**'
+      - 'doc/**'
+      - 'examples/**'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - '.github/**'
+      - 'doc/**'
+      - 'examples/**'
 
   # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
