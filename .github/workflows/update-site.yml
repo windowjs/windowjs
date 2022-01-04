@@ -16,6 +16,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
 
       - name: Cache
         id: cache-gems
@@ -48,8 +51,8 @@ jobs:
         run: |
           git clone https://github.com/windowjs/windowjs.github.io
           cd windowjs.github.io
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "${GITHUB_ACTOR}@bots.github.com"
+          git config user.name "github-actions"
+          git config user.email "github-actions@bots.github.com"
           cp -r ../doc/_site/* .
           git add -A
           git commit -a -m "Updated site at commit ${GITHUB_SHA}"
