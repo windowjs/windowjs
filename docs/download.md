@@ -40,5 +40,5 @@ blocked by macOS for this reason. Click "OK" and then open the "Security"
 setting in the "System Preferences"; it will mention `windowjs` having been
 blocked, and there's a button to "Open" the application.
 
-Alternatively, `windowjs.exe` can be
+Alternatively, the `windowjs` binary can be
 [built](/dev/build) from the [sources](/dev/checkout).

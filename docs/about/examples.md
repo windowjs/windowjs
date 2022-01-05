@@ -6,8 +6,11 @@ title: Window.js | Examples
 Examples
 ========
 
-There are a few example applications in the `examples` directory of the
-Window.js checkout.
+There are a few example applications in the
+[`examples`](https://github.com/windowjs/windowjs/tree/main/examples)
+directory of the Window.js
+[checkout](/dev/checkout#2-checkout-the-repository) from the Github
+[repository](https://github.com/windowjs/windowjs).
 
 
 Breakout

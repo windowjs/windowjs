@@ -3,8 +3,6 @@ layout: default
 title: Window.js
 ---
 
-<p>&nbsp;</p>
-
 <span class="title"><span class="magenta">**Window.js**</span> is an
 open-source Javascript runtime for desktop graphics programming.
 </span>
@@ -24,7 +22,7 @@ convenient APIs for [file access](/doc/file).
 See the **[documentation](/doc)** and the **[quick start](/about#quick-start)**
 guide to get started.
 
-<p>&nbsp;</p>
+<br>
 
 ```javascript
 window.title = 'Hello!';
@@ -34,14 +32,15 @@ const canvas = window.canvas;
 canvas.fillStyle = '#023047';
 canvas.fillRect(0, 0, canvas.width, canvas.height);
 
-canvas.fillStyle = 'magenta';
+canvas.fillStyle = '#eb005a';
 canvas.fillRect(100, 100, 200, 200);
+
+canvas.fillStyle = 'darkorange';
+canvas.translate(450, 200);
+canvas.rotate(Math.PI / 5);
+canvas.fillRect(0, 0, 200, 200);
 ```
 
+<br>
+
 <p align="center"><img src="/window.png" style="width: 608px" /></p>
-
-<p>&nbsp;</p>
-
-Window.js is developed on its
-[Github project](https://github.com/windowjs/windowjs) page.
-

@@ -41,10 +41,10 @@ Now let's clear the background and draw a square:
 
 ```javascript
 const canvas = window.canvas;
-canvas.fillStyle = 'dodgerblue';
+canvas.fillStyle = '#023047';
 canvas.fillRect(0, 0, canvas.width, canvas.height);
 
-canvas.fillStyle = '#ff00ff';
+canvas.fillStyle = '#eb005a';
 canvas.fillRect(100, 100, 200, 200);
 ```
 
