@@ -181,6 +181,9 @@ void Main::RunUntilClosed() {
         $(DEV) << "[profile-startup] first requestAnimationFrame: "
                << glfwGetTime();
       }
+
+      // Log any Promise failures that didn't have a handler.
+      js_->HandleUncaughtExceptionsInPromises();
     }
 
     // Let the background thread do a GC pass now while we wait for vsync.

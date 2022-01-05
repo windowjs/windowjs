@@ -49,6 +49,20 @@ std::string MakeInvalidImportError(std::string_view name) {
   return ss.str();
 }
 
+v8::Local<v8::Message> MakeErrorMessage(v8::Isolate* isolate,
+                                        v8::Local<v8::Value> exception) {
+  v8::Local<v8::Message> message =
+      v8::Exception::CreateMessage(isolate, exception);
+  if (!exception->IsNativeError() &&
+      (message.IsEmpty() || message->GetStackTrace().IsEmpty())) {
+    // Create a stack trace manually if it's missing.
+    exception = v8::Exception::Error(
+        v8::String::NewFromUtf8Literal(isolate, "Uncaught Exception."));
+    message = v8::Exception::CreateMessage(isolate, exception);
+  }
+  return message;
+}
+
 }  // namespace
 
 // static
@@ -97,6 +111,7 @@ Js::Js(Delegate* delegate, std::filesystem::path base_path,
   isolate_->SetData(0, this);
   isolate_->SetCaptureStackTraceForUncaughtExceptions(true);
   isolate_->SetHostImportModuleDynamicallyCallback(ImportDynamic);
+  isolate_->SetPromiseRejectCallback(HandlePromiseRejectCallback);
 
   v8::debug::SetConsoleDelegate(isolate_, console_delegate_.get());
 
@@ -188,11 +203,6 @@ void Js::ReportException(v8::Local<v8::Message> message) {
   }
 
   delegate_->OnJavascriptException(std::move(str), std::move(trace));
-}
-
-void Js::ReportException(v8::Local<v8::Value> value) {
-  std::string str = ToString(value);
-  delegate_->OnJavascriptException(std::move(str), {});
 }
 
 void Js::SuppressNextScriptResult() {
@@ -465,7 +475,8 @@ void Js::OnMainModuleFailure(const v8::FunctionCallbackInfo<v8::Value>& info) {
 void Js::OnModuleFailure(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() >= 1) {
     v8::Local<v8::Value> error = info[0];
-    Js::Get(info.GetIsolate())->ReportException(error);
+    v8::Local<v8::Message> message = MakeErrorMessage(info.GetIsolate(), error);
+    Js::Get(info.GetIsolate())->ReportException(message);
   }
 }
 
@@ -550,5 +561,50 @@ void Js::ImportDynamic(std::string path_str) {
   } else {
     ASSERT(resolver->Resolve(scope.context, module->GetModuleNamespace())
                .FromMaybe(false));
+  }
+}
+
+// static
+void Js::HandlePromiseRejectCallback(v8::PromiseRejectMessage data) {
+  if (data.GetEvent() == v8::kPromiseRejectAfterResolved ||
+      data.GetEvent() == v8::kPromiseResolveAfterResolved) {
+    return;
+  }
+
+  v8::Local<v8::Promise> promise = data.GetPromise();
+  v8::Isolate* isolate = promise->GetIsolate();
+  Js* js = Js::Get(isolate);
+
+  if (data.GetEvent() == v8::kPromiseRejectWithNoHandler) {
+    // An promise has been rejected and there is no failure handler yet.
+    // A handler might be added asynchronously later, so keep this failure
+    // around until Javascript has returned to native;
+    // see HandleUncaughtExceptionsInPromises below.
+    v8::Local<v8::Value> exception = data.GetValue();
+    v8::Local<v8::Message> message = MakeErrorMessage(isolate, exception);
+    js->failed_promises_.emplace_back(
+        v8::Global<v8::Promise>(isolate, promise),
+        v8::Global<v8::Message>(isolate, message));
+  } else if (data.GetEvent() == v8::kPromiseHandlerAddedAfterReject) {
+    // A handler has been added after a promise has failed;
+    // ignore its exception and don't report it.
+    auto it = js->failed_promises_.begin();
+    while (it != js->failed_promises_.end()) {
+      v8::Local<v8::Promise> failed_promise = it->first.Get(isolate);
+      if (failed_promise == promise) {
+        it = js->failed_promises_.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+}
+
+void Js::HandleUncaughtExceptionsInPromises() {
+  std::vector<std::pair<v8::Global<v8::Promise>, v8::Global<v8::Message>>> list;
+  failed_promises_.swap(list);
+
+  for (auto& p : list) {
+    ReportException(p.second.Get(isolate_));
   }
 }

@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <v8/include/v8.h>
@@ -71,7 +72,7 @@ class Js final {
   void ThrowError(std::string_view error);
   void ThrowInvalidArgument();
   void ReportException(v8::Local<v8::Message> message);
-  void ReportException(v8::Local<v8::Value> value);
+  void HandleUncaughtExceptionsInPromises();
 
   void LoadMainModule(std::string_view name);
 
@@ -115,6 +116,8 @@ class Js final {
 
   void ImportDynamic(std::string path_str);
 
+  static void HandlePromiseRejectCallback(v8::PromiseRejectMessage message);
+
   Delegate* delegate_;
   std::filesystem::path base_path_;
   TaskQueue* task_queue_;
@@ -128,6 +131,8 @@ class Js final {
   std::unordered_map<int, std::string> module_path_by_id_;
   std::unordered_map<std::string, v8::Global<v8::Promise::Resolver>>
       dynamic_imports_;
+  std::vector<std::pair<v8::Global<v8::Promise>, v8::Global<v8::Message>>>
+      failed_promises_;
 
   std::unique_ptr<JsStrings> strings_;
 
