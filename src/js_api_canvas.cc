@@ -1270,7 +1270,11 @@ void CanvasApi::LineTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
   float x = info[0].As<v8::Number>()->Value();
   float y = info[1].As<v8::Number>()->Value();
   CanvasApi* api = CanvasApi::Get(info.This());
-  api->path_.lineTo(x, y);
+  if (api->path_.isEmpty() || api->path_.isLastContourClosed()) {
+    api->path_.moveTo(x, y);
+  } else {
+    api->path_.lineTo(x, y);
+  }
 }
 
 // static

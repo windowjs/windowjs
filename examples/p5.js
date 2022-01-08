@@ -195,7 +195,7 @@ async function run() {
   const icon = File.readImageData('examples/p5/p5.ico');
 
   setupEnvironment();
-  // await import('./data/p5/p5.js');
+  //await import('./p5/p5.js');
   await import('./p5/p5.min.js');
   // Calling eval() with the indirection makes it use a global scope (instead
   // of a local scope), which makes setup() and draw() available in globalThis.
