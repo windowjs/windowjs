@@ -26,9 +26,9 @@ function draw() {
       fill(200);
     } else {
       fill(51);
-      noStroke();
-      rect(i * w, generation * w, w, w);
     }
+    noStroke();
+    rect(i * w, generation * w, w, w);
   }
   if (generation < height/w) {
     generate();
