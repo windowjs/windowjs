@@ -1,20 +1,8 @@
 // Run processing files like this:
 //
-//   $ windowjs.exe p5.js -- processing-file.js
+//   $ windowjs.exe examples/p5.js -- examples/p5/simulate-particles.js
 
-// TODO: Make the window resizable but keep the aspect ratio given in
-//       createCanvas. Also scale the canvas to match those dimensions.
-// TODO: there's a 2x scale being applied to the canvas.
-// TODO: antialias? Circles look weird. Maybe it's the 2x scaling.
-//       p5.js is making the <canvas> 400x400 but the "internal" is 800x800.
-//       Ideally, p5.js would use the scaled stuff and see devicePixelRatio as 1.
-//       But it also resets the transform manually...
-
-// TODO: remove WINDOWJS notes.
-
-// TODO: p5/simple-shapes.js: transparency not working.
-
-const DEBUG = true;
+const DEBUG = false;
 
 // The current "window" is the Window.js main window;
 // it will be replaced with a fake "DOM window" below, that will also be
