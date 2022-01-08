@@ -188,6 +188,17 @@ function setupEnvironment() {
   globalThis.removeEventListener = _window.removeEventListener.bind(_window);
 }
 
+function setupOverrides() {
+  const resize = p5.Renderer2D.prototype.resize;
+  p5.Renderer2D.prototype.resize = function(w, h) {
+    resize.call(this, w, h);
+    // Renderer2D.resize() is called from createCanvas(). It applies a scale
+    // by _pixelDensity again, doubling the scaling; call resetMatrix() from
+    // here to restore the intended scaling.
+    this.resetMatrix();
+  };
+}
+
 async function run() {
   // Note that "source" and "icon" are Promises.
   const path = Process.args[0] || 'examples/p5/hello.js';
@@ -195,11 +206,18 @@ async function run() {
   const icon = File.readImageData('examples/p5/p5.ico');
 
   setupEnvironment();
-  //await import('./p5/p5.js');
-  await import('./p5/p5.min.js');
+
+  if (DEBUG) {
+    await import('./p5/p5.js');
+  } else {
+    await import('./p5/p5.min.js');
+  }
+
   // Calling eval() with the indirection makes it use a global scope (instead
   // of a local scope), which makes setup() and draw() available in globalThis.
   (0, eval)(await source);
+
+  setupOverrides();
 
   document.readyState = 'complete';
   for (const listener of loadListeners) {

@@ -2,8 +2,7 @@ function setup() {
   createCanvas(400, 400);
   background(220);
   fill(255, 204, 0);
-  // TODO: this draws with the wrong scaling: (works fine on the web)
-  // ellipse(50, 50, 80, 80);
+  ellipse(50, 50, 80, 80);
 }
 
 function draw() {  
