@@ -42,6 +42,17 @@ class Element {
     this.classList = new Set();
     this.dataset = debugProxy('<' + tag + '>.dataset', {});
     this.style = debugProxy('<' + tag + '>.style', {});
+    this._width = 100;
+    this._height = 100;
+    if (tag == 'canvas') {
+      this._isMainCanvas = false;
+      this._context = null;
+    }
+  }
+
+  _setIsMainCanvas() {
+    this._isMainCanvas = true;
+    this._context = _window.canvas;
   }
 
   get id() {
@@ -57,50 +68,80 @@ class Element {
     // Ignore.
   }
 
-  get offsetWidth() {
-    return _window.width;
-  }
-
-  get offsetHeight() {
-    return _window.height;
-  }
-
   get width() {
-    return _window.width;
+    if (this._isMainCanvas) {
+      return _window.width;
+    } else {
+      return this._width;
+    }
   }
 
   get height() {
-    return _window.height;
+    if (this._isMainCanvas) {
+      return _window.height;
+    } else {
+      return this._height;
+    }
   }
 
   set width(value) {
-    _window.width = value;
+    if (this._isMainCanvas) {
+      _window.width = value;
+    } else {
+      this._width = value;
+      if (this._context) {
+        this._context.width = value;
+      }
+    }
   }
 
   set height(value) {
-    _window.height = value;
+    if (this._isMainCanvas) {
+      _window.height = value;
+    } else {
+      this._height = value;
+      if (this._context) {
+        this._context.height = value;
+      }
+    }
+  }
+
+  get offsetWidth() {
+    return this.width;
+  }
+
+  get offsetHeight() {
+    return this.height;
   }
 
   get scrollWidth() {
-    return _window.width;
+    return this.width;
   }
 
   get scrollHeight() {
-    return _window.height;
+    return this.height;
   }
 
   getBoundingClientRect() {
     return {
       top : 0,
       left : 0,
-      right : _window.width,
-      bottom : _window.height,
+      right : this.width,
+      bottom : this.height,
     };
   }
 
   getContext(type) {
     if (type == '2d') {
-      return _window.canvas;
+      if (this._isMainCanvas) {
+        return _window.canvas;
+      } else {
+        if (!this._context) {
+          this._context =
+              new CanvasRenderingContext2D(this._width, this._height);
+        }
+        return this._context;
+      }
     } else {
       throw new Error('Context not supported: ' + type);
     }
@@ -112,11 +153,15 @@ class Document {
     this._elementsById = new Map();
     this._main = debugProxy('<main>', new Element(this, 'main'));
     this._canvasList = [];
+    this.body = new Element(this, 'body');
   }
 
   createElement(tag) {
     if (tag == 'canvas') {
       const canvas = debugProxy('<canvas>', new Element(this, tag));
+      if (this._canvasList.length == 0) {
+        canvas._setIsMainCanvas();
+      }
       this._canvasList.push(canvas);
       return canvas;
     } else if (tag == 'script') {
@@ -186,6 +231,16 @@ function setupEnvironment() {
   }
 
   globalThis.removeEventListener = _window.removeEventListener.bind(_window);
+
+  // CanvasRenderingContext2D.drawImage takes a <canvas> argument in HTML5,
+  // but another CanvasRenderingContext2D directly in Window.js.
+  const drawImage = CanvasRenderingContext2D.prototype.drawImage;
+  CanvasRenderingContext2D.prototype.drawImage = function(image, ...args) {
+    if (image instanceof Element) {
+      image = image._context;
+    }
+    return drawImage.call(this, image, ...args);
+  };
 }
 
 function setupOverrides() {
