@@ -7,22 +7,20 @@ title: Window.js
 open-source Javascript runtime for desktop graphics programming.
 </span>
 
-<p>&nbsp;</p>
+Window.js comes with APIs familiar to web and desktop developers:
+*  [Canvas API](/doc/canvas) for 2D graphics and
+   [animated rendering](/doc/global#requestAnimationFrame)
+*  [Input](/doc/window#window.addEventListener) event handling and
+   [window](/doc/window) manipulation
+*  Additional APIs for [file access](/doc/file) and
+   [subprocesses](/doc/process)
+*  Distributed as a [single binary](/download) with no external dependencies
 
-It provides APIs for [window](/doc/window) creation and manipulation via
-[GLFW](https://glfw.org) and the HTML5 [Canvas API](/doc/canvas) via the
-[Skia](https://skia.org) graphics library, backed by the [v8](https://v8.dev)
-Javascript engine.
+The [documentation](/doc) covers all APIs and how to
+**[get started quickly](/doc)**.
 
-Window.js comes with familiar APIs for web developers for
-[input](/doc/window#window.addEventListener) event handling and
-[animated rendering](/doc/global#requestAnimationFrame), and has additional,
-convenient APIs for [file access](/doc/file).
-
-See the **[documentation](/doc)** and the **[quick start](/about#quick-start)**
-guide to get started.
-
-<br>
+Get in [contact](/about/contact) to report issues and to
+[contribute](/dev/contributing) to the project.
 
 ```javascript
 window.title = 'Hello!';
@@ -40,7 +38,5 @@ canvas.translate(450, 200);
 canvas.rotate(Math.PI / 5);
 canvas.fillRect(0, 0, 200, 200);
 ```
-
-<br>
 
 <p align="center"><img src="/window.png" style="width: 608px" /></p>
