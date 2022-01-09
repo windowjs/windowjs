@@ -73,10 +73,10 @@ RenderCanvas::RenderCanvas(RenderCanvasSharedContext* shared_context, int width,
       texture_(0),
       previous_texture_(0),
       create_generation_(0),
-      width_(width),
-      height_(height),
-      previous_width_(width),
-      previous_height_(height) {
+      width_(-1),
+      height_(-1),
+      previous_width_(-1),
+      previous_height_(-1) {
   Resize(width, height);
 }
 
@@ -128,6 +128,10 @@ GLuint RenderCanvas::GetTextureForDraw() {
 }
 
 void RenderCanvas::Resize(int width, int height) {
+  if (width == width_ && height == height_) {
+    return;
+  }
+
   SetCurrentContext();
 
   SkM44 matrix;
