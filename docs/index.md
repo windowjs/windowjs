@@ -14,6 +14,7 @@ Window.js comes with APIs familiar to web and desktop developers:
    [window](/doc/window) manipulation
 *  Additional APIs for [file access](/doc/file) and
    [subprocesses](/doc/process)
+*  Runs [Processing](/about/processing) scripts for [p5.js](https://p5js.org)
 *  Distributed as a [single binary](/download) with no external dependencies
 
 The [documentation](/doc) covers all APIs and how to

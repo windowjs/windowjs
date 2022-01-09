@@ -73,7 +73,7 @@ class XMLHttpRequest {
   async send() {
     try {
       if (this.responseType == 'arraybuffer') {
-        // TODO: fix path.
+        // TODO: fix the path.
         this.response = await File.readArrayBuffer('examples/p5/' + this._path);
         if (this.onload) {
           try {

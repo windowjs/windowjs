@@ -256,3 +256,6 @@ community.
 
 Window.js provides a better way to bundle the app as a standalone application,
 and has more APIs for desktop integration.
+
+There is [experimental support](/about/processing) to run p5.js scripts in
+Window.js.
