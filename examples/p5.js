@@ -15,12 +15,12 @@ const loadListeners = [];
 const debugProxyHandler = {
   get : function(target, prop, receiver) {
     const name = typeof(prop) == 'symbol' ? prop.toString() : prop;
-    console.log('-- PROXY get on ' + target._debugName + ': ' + name);
+    console.log('PROXY get on ' + target._debugName + ': ' + name);
     return Reflect.get(...arguments);
   },
   set : function(target, prop, value) {
     const name = typeof(prop) == 'symbol' ? prop.toString() : prop;
-    console.log('-- PROXY set on ' + target._debugName + ': ' + name + ' = ' +
+    console.log('PROXY set on ' + target._debugName + ': ' + name + ' = ' +
                 value);
     return Reflect.set(...arguments);
   },
@@ -55,6 +55,43 @@ async function setCursor(value) {
     _window.cursor = image;
     _window.cursorOffsetX = parseInt(parts[1] || '0');
     _window.cursorOffsetY = parseInt(parts[2] || '0');
+  }
+}
+
+// Used by loadFont().
+class XMLHttpRequest {
+  constructor() {
+    this.onload = null;
+    this.onerror = null;
+    this.responseType = '';
+  }
+
+  open(method, path) {
+    this._path = path;
+  }
+
+  async send() {
+    try {
+      if (this.responseType == 'arraybuffer') {
+        // TODO: fix path.
+        this.response = await File.readArrayBuffer('examples/p5/' + this._path);
+        if (this.onload) {
+          try {
+            this.onload();
+          } catch (e) {
+            console.log('Exception from onload: ', e);
+          }
+        }
+      } else {
+        if (this.onerror) {
+          this.onerror('Unsupported responseType: ' + this.responseType);
+        }
+      }
+    } catch (e) {
+      if (this.onerror) {
+        this.onerror(e);
+      }
+    }
   }
 }
 
@@ -192,6 +229,7 @@ class Document {
     this._loading.id = 'p5_loading';
     this._main.appendChild(this._loading);
     this._canvasList = [];
+    this.head = new Element(this, 'head');
     this.body = new Element(this, 'body');
   }
 
@@ -202,6 +240,8 @@ class Document {
       return canvas;
     } else if (tag == 'script') {
       return debugProxy('<script>', new Element(this, tag));
+    } else if (tag == 'style') {
+      return debugProxy('<style>', new Element(this, tag));
     } else {
       throw new Error('Unsupported element: ' + tag);
     }
@@ -213,6 +253,10 @@ class Document {
     } else {
       throw new Error('Unsupported element with namespace: ' + tag);
     }
+  }
+
+  createTextNode(text) {
+    return new Element(this, '#text');
   }
 
   getElementById(id) {
@@ -291,10 +335,11 @@ async function fetch(path, request) {
 }
 
 function setupEnvironment() {
-  globalThis.window = globalThis;
   globalThis.Image = Image;
   globalThis.Request = Request;
+  globalThis.XMLHttpRequest = XMLHttpRequest;
   globalThis.fetch = fetch;
+  globalThis.window = globalThis;
   globalThis.document = debugProxy('<document>', new Document());
   globalThis.navigator = {
     userAgent : '',
