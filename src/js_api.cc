@@ -1047,8 +1047,8 @@ void JsApi::SetCursorOffsetX(v8::Local<v8::Name> property,
                              const v8::PropertyCallbackInfo<void>& info) {
   ASSERT(IsMainThread());
   JsApi* api = JsApi::Get(info.GetIsolate());
-  if (value->IsUint32()) {
-    api->cursor_x_ = value.As<v8::Uint32>()->Value();
+  if (value->IsNumber()) {
+    api->cursor_x_ = value.As<v8::Number>()->Value();
     if (api->cursor_shape_ == 0 && api->cursor_image_ != nullptr) {
       api->UpdateCursor();
     }
@@ -1071,8 +1071,8 @@ void JsApi::SetCursorOffsetY(v8::Local<v8::Name> property,
                              const v8::PropertyCallbackInfo<void>& info) {
   ASSERT(IsMainThread());
   JsApi* api = JsApi::Get(info.GetIsolate());
-  if (value->IsUint32()) {
-    api->cursor_y_ = value.As<v8::Uint32>()->Value();
+  if (value->IsNumber()) {
+    api->cursor_y_ = value.As<v8::Number>()->Value();
     if (api->cursor_shape_ == 0 && api->cursor_image_ != nullptr) {
       api->UpdateCursor();
     }

@@ -35,6 +35,29 @@ function debugProxy(name, object) {
   }
 }
 
+function defineGetter(object, name, getter) {
+  Object.defineProperty(object, name, {get : getter});
+}
+
+function defineGetterSetter(object, name, getter, setter) {
+  Object.defineProperty(object, name, {get : getter, set : setter});
+}
+
+async function setCursor(value) {
+  const parts = value.split(',')[0].split(' ');
+  if (parts[0] == 'none') {
+    _window.cursor = 'hidden';
+  } else if (parts[0].startsWith('url(')) {
+    const len = parts[0].length;
+    const path = parts[0].substring(4, len - 1);
+    // TODO: fix the path.
+    const image = await File.readImageData('examples/p5/' + path);
+    _window.cursor = image;
+    _window.cursorOffsetX = parseInt(parts[1] || '0');
+    _window.cursorOffsetY = parseInt(parts[2] || '0');
+  }
+}
+
 // A generic Element that takes that whole screen. This is used for the <canvas>
 // instance, as well as <main> and <script> elements.
 class Element {
@@ -53,8 +76,12 @@ class Element {
   }
 
   _setIsMainCanvas() {
+    if (this._isMainCanvas) {
+      return;
+    }
     this._isMainCanvas = true;
     this._context = _window.canvas;
+    defineGetterSetter(this.style, 'cursor', () => _window.cursor, setCursor);
   }
 
   get id() {
@@ -261,10 +288,6 @@ async function fetch(path, request) {
   return {
     headers,
   };
-}
-
-function defineGetter(object, name, getter) {
-  Object.defineProperty(object, name, {get : getter});
 }
 
 function setupEnvironment() {
