@@ -14,11 +14,13 @@ const loadListeners = [];
 
 const debugProxyHandler = {
   get : function(target, prop, receiver) {
-    console.log('-- PROXY get on ' + target._debugName + ': ' + prop);
+    const name = typeof(prop) == 'symbol' ? prop.toString() : prop;
+    console.log('-- PROXY get on ' + target._debugName + ': ' + name);
     return Reflect.get(...arguments);
   },
   set : function(target, prop, value) {
-    console.log('-- PROXY set on ' + target._debugName + ': ' + prop + ' = ' +
+    const name = typeof(prop) == 'symbol' ? prop.toString() : prop;
+    console.log('-- PROXY set on ' + target._debugName + ': ' + name + ' = ' +
                 value);
     return Reflect.set(...arguments);
   },
@@ -68,6 +70,11 @@ class Element {
     if (this.tagName == 'main' && c.tagName == 'canvas') {
       c._setIsMainCanvas();
     }
+    c.parentNode = this;
+  }
+
+  removeChild(c) {
+    c.parentNode = null;
   }
 
   get width() {
@@ -154,6 +161,9 @@ class Document {
   constructor() {
     this._elementsById = new Map();
     this._main = debugProxy('<main>', new Element(this, 'main'));
+    this._loading = debugProxy('<div#p5_loading>', new Element(this, 'div'));
+    this._loading.id = 'p5_loading';
+    this._main.appendChild(this._loading);
     this._canvasList = [];
     this.body = new Element(this, 'body');
   }
@@ -179,13 +189,6 @@ class Document {
   }
 
   getElementById(id) {
-    if (id == 'p5_loading') {
-      if (!this._elementsById.has(id)) {
-        this._elementsById.set(
-            'p5_loading',
-            debugProxy('<div#p5_loading>', new Element(this, 'div')));
-      }
-    }
     return this._elementsById.get(id);
   }
 
@@ -208,12 +211,67 @@ class Document {
   }
 }
 
+// Used by loadImage().
+class Image {
+  constructor() {
+    this.onload = null;
+    this.onerror = null;
+    this._src = null;
+    this._imageBitmap = null;
+  }
+
+  get src() {
+    return this._src;
+  }
+
+  set src(value) {
+    this._src = value;
+    this._loadImage(value);
+  }
+
+  async _loadImage(path) {
+    // TODO: fix the path.
+    try {
+      const image = await File.readImageBitmap('examples/p5/' + path);
+      this.width = image.width;
+      this.height = image.height;
+      this._imageBitmap = image;
+      if (this.onload) {
+        this.onload();
+      }
+    } catch (e) {
+      if (this.onerror) {
+        this.onerror(e);
+      }
+    }
+  }
+}
+
+class Request {
+  constructor(path, options) {
+    this.path = path;
+    this.options = options;
+  }
+}
+
+async function fetch(path, request) {
+  // Used by loadImage().
+  const headers = new Map();
+  headers.set('content-type', 'image/not-a-gif');
+  return {
+    headers,
+  };
+}
+
 function defineGetter(object, name, getter) {
   Object.defineProperty(object, name, {get : getter});
 }
 
 function setupEnvironment() {
   globalThis.window = globalThis;
+  globalThis.Image = Image;
+  globalThis.Request = Request;
+  globalThis.fetch = fetch;
   globalThis.document = debugProxy('<document>', new Document());
   globalThis.navigator = {
     userAgent : '',
@@ -244,6 +302,8 @@ function setupEnvironment() {
   CanvasRenderingContext2D.prototype.drawImage = function(image, ...args) {
     if (image instanceof Element) {
       image = image._context;
+    } else if (image instanceof Image) {
+      image = image._imageBitmap;
     }
     return drawImage.call(this, image, ...args);
   };
@@ -297,6 +357,3 @@ async function run() {
 }
 
 await run();
-
-// TODO: support loadImage.
-// It also loads using the fetch API, so we'll have to fake that too.
