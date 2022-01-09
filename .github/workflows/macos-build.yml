@@ -73,10 +73,9 @@ jobs:
         run: |
           echo "Binary size after build:"
           stat -f%z out/src/windowjs
-          # TODO: the binary doesn't run on macOS 11.6.2 with UPX.
-          # upx -9 out/src/windowjs
-          # echo "Binary size after upx:"
-          # stat -f%z out/src/windowjs
+          upx -9 out/src/windowjs
+          echo "Binary size after upx:"
+          stat -f%z out/src/windowjs
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
