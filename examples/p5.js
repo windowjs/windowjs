@@ -180,6 +180,13 @@ class Document {
   }
 
   getElementById(id) {
+    if (id == 'p5_loading') {
+      if (!this._elementsById.has(id)) {
+        this._elementsById.set(
+            'p5_loading',
+            debugProxy('<div#p5_loading>', new Element(this, 'div')));
+      }
+    }
     return this._elementsById.get(id);
   }
 
