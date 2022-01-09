@@ -65,7 +65,9 @@ class Element {
   }
 
   appendChild(c) {
-    // Ignore.
+    if (this.tagName == 'main' && c.tagName == 'canvas') {
+      c._setIsMainCanvas();
+    }
   }
 
   get width() {
@@ -159,9 +161,6 @@ class Document {
   createElement(tag) {
     if (tag == 'canvas') {
       const canvas = debugProxy('<canvas>', new Element(this, tag));
-      if (this._canvasList.length == 0) {
-        canvas._setIsMainCanvas();
-      }
       this._canvasList.push(canvas);
       return canvas;
     } else if (tag == 'script') {
@@ -298,3 +297,6 @@ async function run() {
 }
 
 await run();
+
+// TODO: support loadImage.
+// It also loads using the fetch API, so we'll have to fake that too.
