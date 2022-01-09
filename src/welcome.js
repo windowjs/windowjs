@@ -119,10 +119,13 @@ window.addEventListener('click', function(event) {
 window.addEventListener('resize', draw);
 
 async function loadOleoFont() {
-  await window.loadFont('examples/data/OleoScriptSwashCaps.ttf',
-                        'OleoScriptSwashCaps');
-  titleFont = 'OleoScriptSwashCaps';
-  requestAnimationFrame(draw);
+  try {
+    await window.loadFont('examples/data/OleoScriptSwashCaps.ttf',
+                          'OleoScriptSwashCaps');
+    titleFont = 'OleoScriptSwashCaps';
+    requestAnimationFrame(draw);
+  } catch (e) {
+  }
 }
 
 loadOleoFont();
