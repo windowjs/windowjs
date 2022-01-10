@@ -382,6 +382,8 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(x);
   SET_STRING(y);
   SET_STRING(z);
+  SET_STRING(__dirname);
+  SET_STRING(__filename);
 
   SET_SPECIAL(_0_, "0");
   SET_SPECIAL(_1_, "1");

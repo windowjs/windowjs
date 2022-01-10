@@ -377,6 +377,8 @@ enum class StringId {
   x,
   y,
   z,
+  __dirname,
+  __filename,
 
   _0_,
   _1_,

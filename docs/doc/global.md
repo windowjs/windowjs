@@ -5,6 +5,8 @@ properties:
   - devicePixelRatio
   - performance
   - window
+  - __dirname
+  - __filename
 functions:
   - cancelAnimationFrame
   - clearTimeout
@@ -47,6 +49,16 @@ Utilities to measure elapsed times and the Javascript VM memory usage. See the
 {% include global name="window" type="Window" %}
 
 The main [window](/doc/window).
+
+
+{% include global name="__dirname" type="string" %}
+
+`__dirname` is the path to the directory of the currently executing module.
+
+
+{% include global name="__filename" type="string" %}
+
+`__filename` is the path of the currently executing module.
 
 
 {% include function name="cancelAnimationFrame" type="(number) => void" %}

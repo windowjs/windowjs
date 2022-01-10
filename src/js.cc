@@ -13,6 +13,7 @@
 #include "args.h"
 #include "file.h"
 #include "js_scope.h"
+#include "json.h"
 #include "util.h"
 #include "zip.h"
 
@@ -401,26 +402,28 @@ v8::MaybeLocal<v8::Module> Js::ResolveModule(
 v8::Local<v8::String> Js::LoadModuleSource(
     const std::filesystem::path& path,
     const std::vector<std::filesystem::path>& paths) {
+  std::string content;
   if (path == "--console") {
-    return MakeString(GzipUncompress(kEmbeddedConsoleSource));
+    content = GzipUncompress(kEmbeddedConsoleSource);
   } else if (path == "--welcome") {
-    return MakeString(GzipUncompress(kEmbeddedWelcomeSource));
+    content = GzipUncompress(kEmbeddedWelcomeSource);
   } else if (path.string().substr(0, 2) == "--") {
     ThrowError("Invalid module name: " + path.string());
     return {};
+  } else {
+    std::string error;
+    if (!ReadFile(path, &content, &error)) {
+      std::stringstream ss;
+      ss << error << "\n";
+      AppendModulePath(&ss, base_path_, paths);
+      ThrowError(ss.str());
+      return {};
+    }
   }
 
-  std::string content;
-  std::string error;
-  if (ReadFile(path, &content, &error)) {
-    return MakeString(content);
-  }
-
-  std::stringstream ss;
-  ss << error << "\n";
-  AppendModulePath(&ss, base_path_, paths);
-  ThrowError(ss.str());
-  return {};
+  return MakeString("const __filename = " + Json::EscapeString(path.string()) +
+                    ";const __dirname = " +
+                    Json::EscapeString(Dirname(path).string()) + ";" + content);
 }
 
 v8::Local<v8::Module> Js::CompileModule(
