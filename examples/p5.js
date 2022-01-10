@@ -10,6 +10,8 @@ const DEBUG = false;
 const _window = window;
 globalThis._window = _window;
 
+let _scriptDir = '.';
+
 const loadListeners = [];
 
 const debugProxyHandler = {
@@ -50,8 +52,7 @@ async function setCursor(value) {
   } else if (parts[0].startsWith('url(')) {
     const len = parts[0].length;
     const path = parts[0].substring(4, len - 1);
-    // TODO: fix the path.
-    const image = await File.readImageData('examples/p5/' + path);
+    const image = await File.readImageData(_scriptDir + '/' + path);
     _window.cursor = image;
     _window.cursorOffsetX = parseInt(parts[1] || '0');
     _window.cursorOffsetY = parseInt(parts[2] || '0');
@@ -73,8 +74,8 @@ class XMLHttpRequest {
   async send() {
     try {
       if (this.responseType == 'arraybuffer') {
-        // TODO: fix the path.
-        this.response = await File.readArrayBuffer('examples/p5/' + this._path);
+        this.response =
+            await File.readArrayBuffer(_scriptDir + '/' + this._path);
         if (this.onload) {
           try {
             this.onload();
@@ -301,9 +302,8 @@ class Image {
   }
 
   async _loadImage(path) {
-    // TODO: fix the path.
     try {
-      const image = await File.readImageBitmap('examples/p5/' + path);
+      const image = await File.readImageBitmap(_scriptDir + '/' + path);
       this.width = image.width;
       this.height = image.height;
       this._imageBitmap = image;
@@ -391,6 +391,7 @@ function setupOverrides() {
 async function run() {
   // Note that "source" and "icon" are Promises.
   const path = Process.args[0] || 'examples/p5/hello.js';
+  _scriptDir = File.dirname(path);
   const source = File.readText(path);
   const icon = File.readImageData('examples/p5/p5.ico');
 
