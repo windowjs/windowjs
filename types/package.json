@@ -1,0 +1,15 @@
+{
+  "name": "@types/window",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typedoc": "^0.22.10",
+    "typescript": "^4.5.4"
+  }
+}
