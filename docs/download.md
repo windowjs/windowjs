@@ -22,9 +22,9 @@ Windows, macOS and Linux.
 Google Chrome and other browsers may issue a warning because the download
 isn't a common file. Choose "Keep" to download the zip file.
 
-The current releases are not signed. Running `windowjs.exe` for the first time
-may result in a Windows Defender warning. Click on "More info" and then
-"Run anyway" to launch the application.
+The current releases are signed and should not trigger a warning from
+Windows Defender. Please file an [issue](/about/issues) if Windows shows any
+warnings.
 
 Alternatively, `windowjs.exe` can be
 [built](/dev/build) from the [sources](/dev/checkout).
