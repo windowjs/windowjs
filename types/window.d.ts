@@ -294,8 +294,6 @@ interface Window {
     setClipboardText(text: string): void;
 }
 
-declare var window: Window;
-
 type Cursor = "arrow" | "ibeam" | "crosshair" | "hand" | "hresize" | "vresize" | "hidden" | "locked";
 
 type Event = undefined;
