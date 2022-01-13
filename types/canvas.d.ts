@@ -1,8 +1,3 @@
-
-interface ImageDataSettings {
-    colorSpace?: PredefinedColorSpace;
-}
-
 interface CanvasCompositing {
     /**
      * Specifies the alpha (transparency) value that is applied to shapes and images
@@ -26,23 +21,111 @@ interface CanvasCompositing {
 }
 
 interface CanvasDrawImage {
+    /**
+     * Draws an [ImageBitmap](/doc/imagebitmap) or an
+     * [offscreen canvas](#CanvasRenderingContext2D) onto the main canvas in its original size at a given location.
+     * @param image  The source image or canvas to draw.
+     * @param dx  The horizontal coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param dy  The vertical coordinate in the destination canvas at which to place the top-left corner of the source image.
+     */
     drawImage(image: CanvasImageSource, dx: number, dy: number): void;
+
+    /**
+     * Draws an [ImageBitmap](/doc/imagebitmap) or an
+     * [offscreen canvas](#CanvasRenderingContext2D) onto the main canvas with a specific size and location.
+     * @param image  The source image or canvas to draw.
+     * @param dx  The horizontal coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param dy  The vertical coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param dw  The width to draw the source image in the destination canvas.
+     * @param dh  The height to draw the source image in the destination canvas.
+     */
     drawImage(image: CanvasImageSource, dx: number, dy: number, dw: number, dh: number): void;
+
+    /**
+     * Draws a sub region of an [ImageBitmap](/doc/imagebitmap) or an
+     * [offscreen canvas](#CanvasRenderingContext2D) onto the main canvas with a specific size and location.
+     * @param image  The source image or canvas to draw.
+     * @param sx  The horizontal coordinate of the top-left corner of the sub region of the source image that will be drawn.
+     * @param sy  The vertical coordinate of the top-left corner of the sub region of the source image that will be drawn.
+     * @param sw  The width of the sub region of the source image that will be drawn.
+     * @param sh  The height of the sub region of the source image that will be drawn.
+     * @param dx  The horizontal coordinate in the destination canvas at which to place the top-left corner of the source image sub region.
+     * @param dy  The vertical coordinate in the destination canvas at which to place the top-left corner of the source image sub region.
+     * @param dw  The width to draw the source image sub region in the destination canvas.
+     * @param dh  The height to draw the source image sub region in the destination canvas.
+     */
     drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number): void;
 }
 
 interface CanvasDrawPath {
+    /**
+     * Starts a new path by emptying the list of sub-paths.
+     * 
+     * See also
+     * [beginPath](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/beginPath)
+     * at MDN.
+     */
     beginPath(): void;
+
+    /**
+     * Turns the current path into the current clipping region. The previous clipping
+     * region, if any, is intersected with the current path to create the new clipping
+     * region.
+     * 
+     * See also
+     * [clip](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clip)
+     * at MDN.
+     * @param fillRule  The algorithm to determine if a point is inside or outside of the clipping region. Can be the `"nonzero"` winding rule (default), or the `"evenodd"` winding rule.
+     */
     clip(fillRule?: CanvasFillRule): void;
-    clip(path: Path2D, fillRule?: CanvasFillRule): void;
+
+    /**
+     * Fills the current path with the current [fillStyle](#canvas.fillStyle).
+     * 
+     * See also
+     * [fill](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fill)
+     * at MDN.
+     * @param fillRule  The algorithm to determine if a point is inside or outside of the clipping region. Can be the `"nonzero"` winding rule (default), or the `"evenodd"` winding rule.
+     */
     fill(fillRule?: CanvasFillRule): void;
-    fill(path: Path2D, fillRule?: CanvasFillRule): void;
+
+    /**
+     * Returns whether the specified point is contained in the current path.
+     * 
+     * See also
+     * [isPointInPath](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/isPointInPath)
+     * at MDN.
+     * @param x  The horizontal coordinate of the point to check.
+     * @param y  The vertical coordinate of the point to check.
+     * @param fillRule  The algorithm to determine if a point is inside or outside of the clipping region. Can be the `"nonzero"` winding rule (default), or the `"evenodd"` winding rule.
+     */
     isPointInPath(x: number, y: number, fillRule?: CanvasFillRule): boolean;
-    isPointInPath(path: Path2D, x: number, y: number, fillRule?: CanvasFillRule): boolean;
+
+    /**
+     * Returns whether the specified point is contained in the stroking of the current
+     * path.
+     * 
+     * See also
+     * [isPointInStroke](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/isPointInStroke)
+     * at MDN.
+     * @param x  The horizontal coordinate of the point to check.
+     * @param y  The vertical coordinate of the point to check.
+     */
     isPointInStroke(x: number, y: number): boolean;
-    isPointInStroke(path: Path2D, x: number, y: number): boolean;
+
+    /**
+     * Strokes the outline of the current path, using the current
+     * [strokeStyle](#canvas.strokeStyle).
+     * 
+     * Strokes are aligned to the center of a path: half of the stroke is drawn on the
+     * inner side, and half on the outer side. The stroke is drawn using the non-zero
+     * winding rule.
+     * 
+     * See also
+     * [stroke](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/stroke)
+     * at MDN.
+     */
     stroke(): void;
-    stroke(path: Path2D): void;
 }
 
 interface CanvasFillStrokeStyles {
@@ -89,34 +172,139 @@ interface CanvasFillStrokeStyles {
      * at MDN.
      */
     strokeStyle: string | CanvasGradient;
+
+    /**
+     * Creates a linear [CanvasGradient](/doc/canvasgradient) along the line connecting
+     * the two given coordinates.
+     * 
+     * To be applied to a shape, the gradient must first be assigned to the
+     * [fillStyle](#canvas.fillStyle) or [strokeStyle](#canvas.strokeStyle) properties.
+     * 
+     * See also
+     * [createLinearGradient](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createLinearGradient)
+     * at MDN.
+     * @param x0  The horizontal coordinate of the start point.
+     * @param y0  The vertical coordinate of the start point.
+     * @param x1  The horizontal coordinate of the end point.
+     * @param y1  The vertical coordinate of the end point.
+     */
     createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradient;
+
+    /**
+     * Creates a radial [CanvasGradient](/doc/canvasgradient) using the size and
+     * coordinates of two circles.
+     * 
+     * To be applied to a shape, the gradient must first be assigned to the
+     * [fillStyle](#canvas.fillStyle) or [strokeStyle](#canvas.strokeStyle) properties.
+     * 
+     * See also
+     * [createRadialGradient](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createRadialGradient)
+     * at MDN.
+     * @param x0  The horizontal coordinate of the start circle's center.
+     * @param y0  The vertical coordinate of the start circle's center.
+     * @param r0  The radius of the start circle.
+     * @param x1  The horizontal coordinate of the end circle's center.
+     * @param y1  The vertical coordinate of the end circle's center.
+     * @param r1  The radius of the end circle.
+     */
     createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number): CanvasGradient;
 }
 
-interface CanvasFilters {
-    filter: string;
-}
-
-/** An opaque object describing a gradient. It is returned by the methods CanvasRenderingContext2D.createLinearGradient() or CanvasRenderingContext2D.createRadialGradient(). */
+/**
+ * `CanvasGradient` objects are created via
+ * [canvas.createLinearGradient](/doc/canvas#canvas.createLinearGradient) and
+ * [canvas.createRadialGradient](/doc/canvas#canvas.createRadialGradient), and
+ * can be assigned to the [canvas.fillStyle](/doc/canvas#canvas.fillStyle) and
+ * [canvas.strokeStyle](/doc/canvas#canvas.strokeStyle) properties.
+ * 
+ * They can be used to customize the canvas drawing operations using a gradient.
+ * 
+ * The gradient object can be further customized using
+ * [addColorStop](#gradient.addColorStop).
+ * 
+ * See also the
+ * [CanvasGradient](https://developer.mozilla.org/en-US/docs/Web/API/CanvasGradient)
+ * documentation at MDN.
+ */
 interface CanvasGradient {
     /**
-     * Adds a color stop with the given color to the gradient at the given offset. 0.0 is the offset at one end of the gradient, 1.0 is the offset at the other end.
-     *
-     * Throws an "IndexSizeError" DOMException if the offset is out of range. Throws a "SyntaxError" DOMException if the color cannot be parsed.
+     * Adds a new color stop, defined by an offset and a color.
+     * 
+     * See also
+     * [addColorStop](https://developer.mozilla.org/en-US/docs/Web/API/CanvasGradient/addColorStop)
+     * at MDN.
+     * @param offset  A number between 0 and 1 (inclusive), representing the position of the color stop.
+     * @param color  A CSS color representing the color of the stop.
      */
     addColorStop(offset: number, color: string): void;
 }
 
 declare var CanvasGradient: {
     prototype: CanvasGradient;
-    new(): CanvasGradient;
 };
 
 interface CanvasImageData {
-    createImageData(sw: number, sh: number, settings?: ImageDataSettings): ImageData;
+    /**
+     * Creates a new, blank [ImageData](/doc/imagedata) object with the specified
+     * dimensions. All of the pixels in the new object are transparent black.
+     * 
+     * See also
+     * [createImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createImageData)
+     * at MDN.
+     * @param sw  The width for the new `ImageData` object.
+     * @param sh  The height for the new `ImageData` object.
+     */
+    createImageData(sw: number, sh: number): ImageData;
+
+    /**
+     * @inheritdoc CanvasRenderingContext2D#createImageData()
+     * @param imagedata  An existing `ImageData` object from which to copy the width and height. The image itself is **not** copied.
+     */
     createImageData(imagedata: ImageData): ImageData;
-    getImageData(sx: number, sy: number, sw: number, sh: number, settings?: ImageDataSettings): ImageData;
+
+    /**
+     * Returns an [ImageData](/doc/imagedata) object containing the pixel data for a
+     * specified region of the canvas. [ImageData](/doc/imagedata) can be painted
+     * onto a canvas using the [putImageData](#canvas.putImageData) method.
+     * 
+     * This method is not affected by the canvas's transformation matrix.
+     * 
+     * See also
+     * [getImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData)
+     * at MDN.
+     * @param sx  The horizontal coordinate of the top-left corner of the region to copy. Defaults to 0.
+     * @param sy  The vertical coordinate of the top-left corner of the region to copy. Defaults to 0.
+     * @param sw  The width of the region to copy. Defaults to the canvas's width.
+     * @param sh  The height of the region to copy. Defaults to the canvas's height.
+     */
+    getImageData(sx?: number, sy?: number, sw?: number, sh?: number): ImageData;
+
+    /**
+     * Paints the data in the given [ImageData](/doc/imagedata) object onto the canvas.
+     * 
+     * See also
+     * [putImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/putImageData)
+     * at MDN.
+     * @param imagedata  The pixel data to copy.
+     * @param dx  The horizontal coordinate at which to place the image data in the canvas.
+     * @param dy  The vertical coordinate at which to place the image data in the canvas.
+     */
     putImageData(imagedata: ImageData, dx: number, dy: number): void;
+
+    /**
+     * Paints the data in the given [ImageData](/doc/imagedata) object onto the canvas.
+     * 
+     * See also
+     * [putImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/putImageData)
+     * at MDN.
+     * @param imagedata  The pixel data to copy.
+     * @param dx  The horizontal coordinate at which to place the image data in the canvas.
+     * @param dy  The vertical coordinate at which to place the image data in the canvas.
+     * @param dirtyX  The horizontal coordinate of the top-left corner of the `imageData` to start copying from.
+     * @param dirtyY  The vertical coordinate of the top-left corner of the `imageData` to start copying from.
+     * @param dirtyWidth  The width of the region to copy.
+     * @param dirtyHeight  The height of the region to copy.
+     */
     putImageData(imagedata: ImageData, dx: number, dy: number, dirtyX: number, dirtyY: number, dirtyWidth: number, dirtyHeight: number): void;
 }
 
@@ -153,14 +341,134 @@ interface CanvasImageSmoothing {
 }
 
 interface CanvasPath {
-    arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): void;
+    /**
+     * Adds a circular arc to the current sub-path, centered at `(x, y)` and with the
+     * given `radius`. The path starts at `startAngle` and ends at `endAngle`,
+     * traveling in the clockwise direction.
+     * 
+     * See also
+     * [arc](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc)
+     * at MDN.
+     * @param x  The horizontal coordinate of the arc's center.
+     * @param y  The vertical coordinate of the arc's center.
+     * @param radius  The arc's radius.
+     * @param startAngle  The arc's starting angle, in radians, measured from the x axis.
+     * @param endAngle  The arc's ending angle, in radians, measured from the x axis.
+     */
+    arc(x: number, y: number, radius: number, startAngle: number, endAngle: number): void;
+
+    /**
+     * Adds a circular arc to the current sub-path, using the given control points and
+     * radius. The arc is connected to the path's latest point with a straight line,
+     * if necessary.
+     * 
+     * See also
+     * [arcTo](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arcTo)
+     * at MDN.
+     * @param x1  The horizontal coordinate of the first control point.
+     * @param y1  The vertical coordinate of the first control point.
+     * @param x2  The horizontal coordinate of the second control point.
+     * @param y2  The vertical coordinate of the second control point.
+     * @param radius  The arc's radius.
+     */
     arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): void;
+
+    /**
+     * Adds a cubic BÃ©zier curve to the current sub-path. Requires three points: two
+     * control points, and a final end point. The starting point is the latest point
+     * in the current path (which can be changed using [moveTo](#canvas.moveTo) before
+     * creating the curve).
+     * @param cp1x  The horizontal coordinate of the first control point.
+     * @param cp1y  The vertical coordinate of the first control point.
+     * @param cp2x  The horizontal coordinate of the second control point.
+     * @param cp2y  The vertical coordinate of the second control point.
+     * @param x  The horizontal coordinate of the end point.
+     * @param y  The vertical coordinate of the end point.
+     */
     bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): void;
+
+    /**
+     * Adds a straight line from the current point to the start of the current
+     * sub-path. Does nothing if the shape has already been closed, or has only one
+     * point.
+     * 
+     * This method doesn't draw anything to the canvas directly; the path can be
+     * rendered via the [fill](#canvas.fill) and [stroke](#canvas.stroke) methods.
+     * 
+     * See also
+     * [closePath](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/closePath)
+     * at MDN.
+     */
     closePath(): void;
-    ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean): void;
+
+    /**
+     * Adds an elliptical arc to the current sub-path.
+     * 
+     * See also
+     * [ellipse](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/ellipse)
+     * at MDN.
+     * @param x  The horizontal coordinate of the center of the ellipse.
+     * @param y  The vertical coordinate of the center of the ellipse.
+     * @param radiusX  The radius of the major axis of the ellipse.
+     * @param radiusY  The radius of the minor axis of the ellipse.
+     * @param rotation  The rotation of the ellipse, in radians.
+     * @param startAngle  The angle at which the ellipse starts, in radians, measured clockwise from the positive X axis.
+     * @param endAngle  The angle at which the ellipse ends, in radians, measured clockwise from the positive X axis.
+     */
+    ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number): void;
+
+    /**
+     * Connects the last point of the current sub-path with a straight line to the
+     * given point.
+     * 
+     * See also
+     * [lineTo](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineTo)
+     * at MDN.
+     * @param x  The horizontal coordinate of the end point.
+     * @param y  The vertical coordinate of the end point.
+     */
     lineTo(x: number, y: number): void;
+
+    /**
+     * Begins a new sub-path at the given point.
+     * 
+     * See also
+     * [moveTo](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/moveTo)
+     * at MDN.
+     * @param x  The horizontal coordinate of the starting point.
+     * @param y  The vertical coordinate of the starting point.
+     */
     moveTo(x: number, y: number): void;
+
+    /**
+     * Adds a quadratic Bézier curve to the current sub-path.
+     * 
+     * The curve requires two points. The first is a control point, and the second is
+     * the end point. The starting point is the latest point in the current path,
+     * which can be changed using [moveTo](#canvas.moveTo) before creating the
+     * quadratic Bézier curve.
+     * 
+     * See also
+     * [quadraticCurveTo](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/quadraticCurveTo)
+     * at MDN.
+     * @param cpx  The horizontal coordinate of the control point.
+     * @param cpy  The vertical coordinate of the control point.
+     * @param x  The horizontal coordinate of the end point.
+     * @param y  The vertical coordinate of the end point.
+     */
     quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void;
+
+    /**
+     * Adds a rectangle to the current path.
+     * 
+     * See also
+     * [rect](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rect)
+     * at MDN.
+     * @param x  The horizontal coordinate of the rectangle's starting point.
+     * @param y  The vertical coordinate of the rectangle's starting point.
+     * @param w  The width of the rectangle.
+     * @param h  The height of the rectangle.
+     */
     rect(x: number, y: number, w: number, h: number): void;
 }
 
@@ -209,20 +517,79 @@ interface CanvasPathDrawingStyles {
      * at MDN.
      */
     miterLimit: number;
+
+    /**
+     * Returns the current line dash pattern.
+     * 
+     * See also
+     * [getLineDash](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getLineDash)
+     * at MDN.
+     */
     getLineDash(): number[];
+
+    /**
+     * Sets the line dash pattern used when stroking lines. Uses an array of values
+     * that specify alternating lengths of lines and gaps, which describe the pattern.
+     * 
+     * To return to using solid lines, set the line dash list to an empty array.
+     * 
+     * See also
+     * [setLineDash](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)
+     * at MDN.
+     * @param segments An Array of numbers that specify distances to alternately draw a line and a gap. If the number of elements in the array is odd, the elements of the array get copied and concatenated. For example, [5, 15, 25] will become [5, 15, 25, 5, 15, 25]. If the array is empty, the line dash list is cleared and line strokes return to being solid.
+     */
     setLineDash(segments: number[]): void;
 }
 
 interface CanvasRect {
+    /**
+     * Erases the pixels in a rectangular area by setting them to transparent black.
+     * 
+     * See also
+     * [clearRect](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect)
+     * at MDN.
+     * @param x  The horizontal coordinate of the starting corner.
+     * @param y  The vertical coordinate of the starting corner.
+     * @param w  The width of the rectangle. Positive values are to the right, and negative to the left.
+     * @param h  The height of the rectangle. Positive values are down, and negative are up. 
+     */
     clearRect(x: number, y: number, w: number, h: number): void;
+
+    /**
+     * Draws a rectangle using the current [fillStyle](#canvas.fillStyle).
+     * 
+     * See also
+     * [fillRect](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect)
+     * at MDN.
+     * @param x  The horizontal coordinate of the starting corner.
+     * @param y  The vertical coordinate of the starting corner.
+     * @param w  The width of the rectangle. Positive values are to the right, and negative to the left.
+     * @param h  The height of the rectangle. Positive values are down, and negative are up.
+     */
     fillRect(x: number, y: number, w: number, h: number): void;
+
+    /**
+     * Draws a rectangle that is stroked using the current
+     * [strokeStyle](#canvas.strokeStyle).
+     * 
+     * See also
+     * [strokeRect](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeRect)
+     * at MDN.
+     * @param x  The horizontal coordinate of the starting corner.
+     * @param y  The vertical coordinate of the starting corner.
+     * @param w  The width of the rectangle. Positive values are to the right, and negative to the left.
+     * @param h  The height of the rectangle. Positive values are down, and negative are up.
+     */
     strokeRect(x: number, y: number, w: number, h: number): void;
 }
 
 /** The CanvasRenderingContext2D interface, part of the Canvas API, provides the 2D rendering context for the drawing surface of a <canvas> element. It is used for drawing shapes, text, images, and other objects. */
-interface CanvasRenderingContext2D extends CanvasCompositing, CanvasDrawImage, CanvasDrawPath, CanvasFillStrokeStyles, CanvasFilters, CanvasImageData, CanvasImageSmoothing, CanvasPath, CanvasPathDrawingStyles, CanvasRect, CanvasShadowStyles, CanvasState, CanvasText, CanvasTextDrawingStyles, CanvasTransform {
+interface CanvasRenderingContext2D extends CanvasCompositing, CanvasDrawImage, CanvasDrawPath, CanvasFillStrokeStyles, CanvasImageData, CanvasImageSmoothing, CanvasPath, CanvasPathDrawingStyles, CanvasRect, CanvasShadowStyles, CanvasState, CanvasText, CanvasTextDrawingStyles, CanvasTransform {
 
-    /** Whether shapes drawn in this canvas should be antialiased. Defaults to true. */
+    /**
+     * Whether shapes drawn in this canvas should be antialiased. Defaults to true.
+     * @extension
+     */
     antialias: boolean;
 
     /**
@@ -235,8 +602,35 @@ interface CanvasRenderingContext2D extends CanvasCompositing, CanvasDrawImage, C
      * resize. Window.js will also invoke any pending
      * [requestAnimationFrame](/doc/global#requestAnimationFrame) callbacks when
      * the window is resized.
+     * 
+     * @extension
      */
     height: number;
+
+    /**
+     * The width of the canvas, in pixels.
+     * 
+     * **Note:** the size of the canvas is automatically adjusted when the window is
+     * [resized](/doc/window#event-resize). If the main application supports
+     * [resizing](/doc/window#window.resizable) then it should also listen for
+     * ["resize"](/doc/window#event-resize) events and draw a full frame after each
+     * resize. Window.js will also invoke any pending
+     * [requestAnimationFrame](/doc/global#requestAnimationFrame) callbacks when
+     * the window is resized.
+     * 
+     * @extension
+     */
+    width: number;
+
+
+    /**
+     * Encodes the content of the canvas into a compressed image format and returns
+     * it as bytes in an `ArrayBuffer`.
+     * @extension
+     * @param format  The image format to encode in. Valid values: `"png"` (default), `"jpeg"` and `"webp"`.
+     * @param quality  The encoding quality for the `"jpeg"` codec.
+     */
+    encode(format?: ImageFormat, quality?: number): Promise<ArrayBuffer>;
 }
 
 declare var CanvasRenderingContext2D: {
@@ -313,19 +707,75 @@ interface CanvasShadowStyles {
 }
 
 interface CanvasState {
+    /**
+     * Restores the most recently saved canvas state, from a previous call to
+     * [save](#canvas.save). If there is no saved state then this method does nothing.
+     */
     restore(): void;
+
+    /**
+     * Saves the entire state of the canvas by pushing it into a stack.
+     * 
+     * This state can be restored again later by calling [restore](#canvas.restore).
+     * 
+     * The drawing state that gets saved includes:
+     * 
+     * *  The transformation matrix.
+     * *  The clipping region.
+     * *  The dash list.
+     * *  The properties: strokeStyle, fillStyle, globalAlpha, lineWidth, lineCap,
+     *    lineJoin, miterLimit, lineDashOffset, shadowOffsetX, shadowOffsetY,
+     *    shadowBlur, shadowColor, globalCompositeOperation, font, textAlign,
+     *    textBaseline, imageSmoothingEnabled.
+     * 
+     * See also
+     * [save](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/save)
+     * at MDN.
+     */
     save(): void;
 }
 
 interface CanvasText {
-    fillText(text: string, x: number, y: number, maxWidth?: number): void;
+    /**
+     * Draws a text string at the specified coordinates using the current
+     * [fillStyle](#canvas.fillStyle), [font](#canvas.font),
+     * [textAlign](#canvas.textAlign) and [textBaseline](#canvas.textBaseline)\
+     * properties.
+     * 
+     * See also
+     * [fillText](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText)
+     * at MDN.
+     * @param text  The text string to draw. 
+     * @param x  The horizontal coordinate at which to begin drawing.
+     * @param y  The vertical coordinate at which to begin drawing.
+     */
+    fillText(text: string, x: number, y: number): void;
+
+    /**
+     * Returns an object with the text metrics about the given text string.
+     * 
+     * See also
+     * [measureText](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/measureText)
+     * at MDN.
+     * @param text  The text string to measure.
+     */
     measureText(text: string): TextMetrics;
-    strokeText(text: string, x: number, y: number, maxWidth?: number): void;
+
+    /**
+     * Strokes the outlines the characters of the given text string, at the specified\
+     * coordinates.
+     * 
+     * See also
+     * [strokeText](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeText)
+     * at MDN.
+     * @param text  The text to stroke.
+     * @param x  The horizontal coordinate of the point at which to draw the text.
+     * @param y  The vertical coordinate of the point at which to draw the text.
+     */
+    strokeText(text: string, x: number, y: number): void;
 }
 
 interface CanvasTextDrawingStyles {
-    direction: CanvasDirection;
-
     /**
      * The font to use in text operations ([fillText](#canvas.fillText),
      * [strokeText](#canvas.strokeText) and [measureText](#canvas.measureText)).
@@ -348,49 +798,239 @@ interface CanvasTextDrawingStyles {
      * at MDN.
      */
     font: string;
+
+    /**
+     * The text alignment used when drawing text. The default is `"left"`.
+     * 
+     * * `"left"`: aligns text to the left.
+     * * `"right"`: aligns text to the right.
+     * * `"center"`: text is centered.
+     * * `"start"`: aligns text to the left.
+     * * `"end"`: aligns text to the right.
+     * 
+     * See also
+     * [textAlign](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign)
+     * at MDN.
+     */
     textAlign: CanvasTextAlign;
+    
+    /**
+     * The text baseline used when drawing text. The default is `"alphabetic"`.
+     * 
+     * * `"top"`: The text baseline is the top of the em square.
+     * * `"hanging"`: The text baseline is the hanging baseline.
+     * * `"middle"`: The text baseline is the middle of the em square.
+     * * `"alphabetic"`: The text baseline is the alphabetic baseline.
+     * * `"ideographic"`: The text baseline is the ideographic baseline. This is the bottom of the body of the characters, if the main body of characters protrudes beneath the alphabetic baseline. (Used by Chinese, Japanese, and Korean scripts).
+     * * `"bottom"`: The text baseline is the bottom of the bounding box. This differs from the ideographic baseline in that the ideographic baseline doesn't consider descenders.
+     * 
+     * See also
+     * [textBaseline](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline)
+     * at MDN.
+     */
     textBaseline: CanvasTextBaseline;
 }
 
 interface CanvasTransform {
-    getTransform(): DOMMatrix;
+    /**
+     * Returns the transformation matrix, as an array with 6 elements.
+     * 
+     * See also
+     * [getTransform](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getTransform)
+     * at MDN.
+     */
+    getTransform(): Matrix2D;
+
+    /**
+     * Resets the current transform to the identity matrix.
+     * 
+     * See also
+     * [resetTransform](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/resetTransform)
+     * at MDN.
+     */
     resetTransform(): void;
+
+    /**
+     * Adds a rotation to the transformation matrix.
+     * 
+     * See also
+     * [rotate](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate)
+     * at MDN.
+     * @param angle  The angle to rotate, clockwise, in radians.
+     */
     rotate(angle: number): void;
+
+    /**
+     * Adds a scaling transformation to the canvas.
+     * 
+     * See also
+     * [scale](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale)
+     * at MDN.
+     * @param x  Horizontal scaling factor. 
+     * @param y  Vertical scaling factor.
+     */
     scale(x: number, y: number): void;
+
+    /**
+     * Sets the current transformation matrix.
+     * 
+     * See also
+     * [setTransform](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform)
+     * at MDN.
+     * @param a 
+     * @param b 
+     * @param c 
+     * @param d 
+     * @param e 
+     * @param f 
+     */
     setTransform(a: number, b: number, c: number, d: number, e: number, f: number): void;
-    setTransform(transform?: DOMMatrix2DInit): void;
+
+    /**
+     * Sets the current transformation matrix.
+     * 
+     * See also
+     * [setTransform](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform)
+     * at MDN.
+     * @param transform  An array of 6 elements representing the transform matrix.
+     */
+    setTransform(transform: Matrix2D): void;
+
+    /**
+     * Multiples the current transformation matrix by the matrix described by the
+     * parameters.
+     * 
+     * See also
+     * [transform](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/transform)
+     * at MDN.
+     * @param a 
+     * @param b 
+     * @param c 
+     * @param d 
+     * @param e 
+     * @param f 
+     */
     transform(a: number, b: number, c: number, d: number, e: number, f: number): void;
+
+    /**
+     * Adds a translation transformation to the current matrix.
+     * 
+     * See also
+     * [translate](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/translate)
+     * at MDN.
+     * @param x  The distance to move in the horizontal direction.
+     * @param y  The distance to move in the vertical direction.
+     */
     translate(x: number, y: number): void;
 }
 
-type DOMMatrix = [number, number, number, number, number, number];
+/**
+ * | `a` | `c` | `e` |
+ * |-----|-----|-----|
+ * | `b` | `d` | `f` |
+ * | `0` | `0` | `1` |
+ */
+type Matrix2D = [number, number, number, number, number, number];
 
-type DOMMatrix2DInit = DOMMatrix;
-
+/**
+ * An `ImageBitmap` represents an image texture in GPU memory, that can be drawn
+ * efficiently to the [canvas](/doc/canvas) via
+ * [canvas.drawImage](/doc/canvas#canvas.drawImage).
+ * 
+ * An `ImageBitmap` can be created in several ways:
+ * 
+ * *  By copying an existing `ImageBitmap` or from the pixels in an
+ *    [ImageData](/doc/imagedata) object via the
+ *    [ImageBitmap constructor](#ImageBitmap).
+ * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in an array
+ *    of bytes via [ImageBitmap.decode](#ImageBitmap.decode).
+ * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in a file
+ *    via [File.readImageBitmap](/doc/file#File.readImageBitmap).
+ * 
+ * An `ImageBitmap` is appropriate to hold images loaded from files for fast
+ * drawing. See [ImageData](/doc/imagedata) for a similar class that gives access
+ * to the underlying pixels.
+ * 
+ * See also the
+ * [ImageBitmap](https://developer.mozilla.org/en-US/docs/Web/API/ImageBitmap)
+ * documentation on MDN.
+ */
 interface ImageBitmap {
     /**
-     * Returns the intrinsic height of the image, in CSS pixels.
+     * Returns the intrinsic height of the image, in pixels.
      */
     readonly height: number;
     /**
-     * Returns the intrinsic width of the image, in CSS pixels.
+     * Returns the intrinsic width of the image, in pixels.
      */
     readonly width: number;
+
     /**
-     * Releases imageBitmap's underlying bitmap data.
+     * Encodes this `ImageBitmap` in a given image format and returns the bytes
+     * representing that encoding.
+     * @param codec  The image codec to use for the encoding. Valid values are `"jpeg"`, `"png"` and `"webp"`.
+     * @param quality  For the `"jpeg"` codec, the `quality` parameter is a number from 0 to 100 indicating the quality of the output image. 0 is smaller but lower quality, 100 is the highest quality but also a larger encoding.
+     * @extension
      */
-    close(): void;
+    encode(codec?: ImageFormat, quality?: number): Promise<ArrayBuffer>;
 }
 
 declare var ImageBitmap: {
     prototype: ImageBitmap;
-    new(): ImageBitmap;
+
+    /**
+     * Creates a new `ImageBitmap` with a copy of the pixels in another `ImageBitmap`
+     * or in an [ImageData](/doc/imagedata).
+     * @param source  The source image pixels to copy.
+     * @param x  The horizontal coordinate of the source rectangle to copy. Defaults to 0.
+     * @param y  The vertical coordinate of the source rectangle to copy. Defaults to 0.
+     * @param w  The width of the source rectangle to copy. Defaults to the width of the `source`.
+     * @param h  The height of the source rectangle to copy. Defaults to the height of the `source`.
+     * @extension
+     */
+    new(source: ImageBitmap | ImageData, x?: number, y?: number, w?: number, h?: number): ImageBitmap;
+
+    /**
+     * Returns a new `ImageBitmap`, decoded from the given image bytes.
+     * 
+     * The valid input formats are `JPEG`, `PNG` and `WEBP`.
+     * @param data 
+     * @extension
+     */
+     decode(data: Uint8Array | Uint8ClampedArray | ArrayBuffer): Promise<ImageBitmap>;
 };
 
-/** The underlying pixel data of an area of a <canvas> element. It is created using the ImageData() constructor or creator methods on the CanvasRenderingContext2D object associated with a canvas: createImageData() and getImageData(). It can also be used to set a part of the canvas by using putImageData(). */
+/**
+ * An `ImageData` represents raw image pixels as a two-dimensional array in RAM.
+ * 
+ * An `ImageData` can be created in several ways:
+ * 
+ * *  By creating a `new ImageData` with a given size and blank pixels, another
+ *    `ImageData`, or with a given array of pixel data.
+ * *  By creating a `new ImageData` by calling
+ *    [canvas.createPixelData](/doc/canvas#canvas.createPixelData).
+ * *  By copying the pixels in the [canvas](/doc/canvas) via
+ *    [canvas.getImageData](/doc/canvas#canvas.getImageData)
+ * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in an array
+ *    of bytes via [ImageData.decode](#ImageData.decode).
+ * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in a file
+ *    via [File.readImageData](/doc/file#File.readImageData).
+ * 
+ * An `ImageData` allows reading and writing the underlying pixels. See
+ * [ImageBitmap](/doc/imagebitmap) for a similar class that is more efficient for
+ * storing image content that is only going to be drawn.
+ * 
+ * See also the
+ * [ImageData](https://developer.mozilla.org/en-US/docs/Web/API/ImageData)
+ * documentation on MDN.
+ */
 interface ImageData {
     /**
      * Returns the one-dimensional array containing the data in RGBA order, as integers in the range 0 to 255.
+     * 
+     * The alpha channel represents the transparency of the pixel: 0 is fully transparent, and 255 is fully opaque.
+     * 
+     * Pixels are stored in left-to-right, top-to-bottom order.
      */
     readonly data: Uint8ClampedArray;
     /**
@@ -401,63 +1041,88 @@ interface ImageData {
      * Returns the actual dimensions of the data in the ImageData object, in pixels.
      */
     readonly width: number;
+
+    /**
+     * Encodes this `ImageData` in a given image format and returns the bytes
+     * representing that encoding.
+     * @param codec  The image codec to use for the encoding. Valid values are `"jpeg"`, `"png"` and `"webp"`.
+     * @param quality  For the `"jpeg"` codec, the `quality` parameter is a number from 0 to 100 indicating the quality of the output image. 0 is smaller but lower quality, 100 is the highest quality but also a larger encoding.
+     * @extension
+     */
+    encode(codec?: ImageFormat, quality?: number): Promise<ArrayBuffer>;
 }
 
 declare var ImageData: {
     prototype: ImageData;
-    new(sw: number, sh: number, settings?: ImageDataSettings): ImageData;
-    new(data: Uint8ClampedArray, sw: number, sh?: number, settings?: ImageDataSettings): ImageData;
-};
 
-/** This Canvas 2D API interface is used to declare a path that can then be used on a CanvasRenderingContext2D object. The path methods of the CanvasRenderingContext2D interface are also present on this interface, which gives you the convenience of being able to retain and replay your path whenever desired. */
-interface Path2D extends CanvasPath {
     /**
-     * Adds to the path the path given by the argument.
+     * Creates a blank `ImageData`
+     * @param sw  The width of the `ImageData`. 
+     * @param sh  The height of the `ImageData`. 
      */
-    addPath(path: Path2D, transform?: DOMMatrix2DInit): void;
-}
+    new(sw: number, sh: number): ImageData;
 
-declare var Path2D: {
-    prototype: Path2D;
-    new(path?: Path2D | string): Path2D;
+    /**
+     * Creates an `ImageData` with the same size as another `ImageData`.
+     * Note that the `source` pixel data is *not* copied.
+     * @param source  The `ImageData` whose *dimensions* are copied. The pixels of the new `ImageData` object are all blank.
+     * @extension
+     */
+    new(source: ImageData): ImageData;
+
+    /**
+     * Creates an `ImageData` with a copy of a subregion of another `ImageData`.
+     * @param source  The `ImageData` to copy pixels from.
+     * @param x  The horizontal coordinate to start copying from.
+     * @param y  The vertical coordinate to start copying from.
+     * @param width  The number of pixels to copy per row.
+     * @param height  The number of rows to copy.
+     * @extension
+     */
+    new(source: ImageData, x: number, y: number, width: number, height: number);
+
+    /**
+     * Creates an `ImageData` initialized with pixel data from an array.
+     * 
+     * @param data  The pixel data to copy. Each pixel must have 4 entries in the array, representing the Red, Green, Blue and Alpha channels. The array size *must* be a multiple of `4 * width`.
+     * @param sw  The width of the 2D pixel array.
+     * @param sh  Optionally, the height of the 2D pixel array. Defaults to `array.byteLength / (4 * width)` if not set.
+     */
+    new(data: Uint8ClampedArray | Uint8Array | Uint16Array | Float32Array, sw: number, sh?: number): ImageData;
+
+    /**
+     * Returns a new `ImageData`, decoded from the given image bytes.
+     * 
+     * The valid input formats are `JPEG`, `PNG` and `WEBP`.
+     * @param data 
+     * @extension
+     */
+    decode(data: Uint8Array | Uint8ClampedArray | ArrayBuffer): Promise<ImageData>;
 };
 
 /** The dimensions of a piece of text in the canvas, as created by the CanvasRenderingContext2D.measureText() method. */
 interface TextMetrics {
     /**
-     * Returns the measurement described below.
+     * The distance from the text baseline to the top of the highest bounding rectangle of the given text.
      */
     readonly actualBoundingBoxAscent: number;
     /**
-     * Returns the measurement described below.
+     * The distance from the text baseline to the bottom of the lowest bounding rectangle of the given text.
      */
     readonly actualBoundingBoxDescent: number;
     /**
-     * Returns the measurement described below.
+     * The distance from the text alignment to the left of the given text.
      */
     readonly actualBoundingBoxLeft: number;
     /**
-     * Returns the measurement described below.
+     * The distance from the text alignment to the right of the given text.
      */
     readonly actualBoundingBoxRight: number;
     /**
-     * Returns the measurement described below.
-     */
-    readonly fontBoundingBoxAscent: number;
-    /**
-     * Returns the measurement described below.
-     */
-    readonly fontBoundingBoxDescent: number;
-    /**
-     * Returns the measurement described below.
+     * The calculated width of the given text string, using the current font and styling properties.
      */
     readonly width: number;
 }
-
-declare var TextMetrics: {
-    prototype: TextMetrics;
-    new(): TextMetrics;
-};
 
 type CanvasImageSource = ImageBitmap | CanvasRenderingContext2D;
 type CanvasDirection = "inherit" | "ltr" | "rtl";
@@ -470,5 +1135,5 @@ type CanvasLineJoin = "bevel" | "miter" | "round";
 type CanvasTextAlign = "center" | "end" | "left" | "right" | "start";
 type CanvasTextBaseline = "alphabetic" | "bottom" | "hanging" | "ideographic" | "middle" | "top";
 type CanvasTextRendering = "auto" | "geometricPrecision" | "optimizeLegibility" | "optimizeSpeed";
+type ImageFormat = "jpeg" | "png" | "webp";
 type ImageSmoothingQuality = "high" | "low" | "medium";
-type PredefinedColorSpace = "display-p3" | "srgb";

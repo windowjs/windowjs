@@ -1,5 +1,3 @@
-/// <reference include="canvas.d.ts">
-
 interface Window {
 
     /**
