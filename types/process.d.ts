@@ -1,4 +1,22 @@
-
+/**
+ * The `Process` API creates new processes that have their own window and
+ * Javascript VM. Processes created this way can communicate with each other.
+ * All processes terminate when the main process exits.
+ * 
+ * Every process can create a subprocess via [Process.spawn](#Process.spawn),
+ * indicating the main Javascript module that the subprocess loads on startup.
+ * [Process.spawn](#Process.spawn) returns a `Process` instance used for
+ * communications with the subprocess.
+ * 
+ * Subprocesses have a similar handle to their parent process in
+ * [Process.parent](#Process.parent).
+ * 
+ * Because each process runs in its own Javascript VM, inter-process communications
+ * can only send and receive JSON objects and TypedArrays.
+ * 
+ * Messages are sent via [process.postMessage](#process.postMessage),
+ * and received as ["message"](#event-message) events on the process handle.
+ */
 interface Process {
 
     /**
@@ -13,10 +31,11 @@ interface Process {
      * [exception](#event-exception) and [log](#event-log) events from their child
      * processes.
      * 
-     * @param event 
-     * @param callback 
+     * @param type 
+     * @param listener 
      */
-    addEventListener(event: string, callback: (...args: any[]) => void): void;
+     addEventListener<K extends keyof ProcessEventHandlersMap>(type: K, listener: (event: ProcessEventHandlersMap[K]) => void): void;
+     addEventListener(type: string, listener: () => void): void;
 
     /**
      * Closes the handle to a child process and terminates it.
@@ -35,19 +54,26 @@ interface Process {
      * 
      * @param value  The message to send.
      */
-    postMessage(value: any): void;
+    postMessage(value: Json | TypedArray): void;
 
     /**
      * Removes an event listener that has previously been registered via
      * [process.addEventListener](#Process.addEventListener).
      * 
-     * @param event 
-     * @param callback 
+     * @param type 
+     * @param listener
      */
-    removeEventListener(event: string, callback: (...args: any[]) => void): void;
+    removeEventListener(type: string, listener: Function): void;
 }
 
 declare var Process: {
+
+    /**
+     * The list of arguments passed to the process, via the command line or
+     * [Process.spawn](#Process.spawn). Does not include the executable name nor
+     * arguments processed by Window.js internally, like `--log`.
+     */
+    readonly args: string[];
 
     /**
      * A handle to the parent process. This is only present in child processes, as the
@@ -66,7 +92,7 @@ declare var Process: {
      * If the current process is a child process then its parent process will receive
      * an ["exit"](#event-exit) event in its handle for this process.
      * 
-     * `process.exit()` is an abrupt termination that is appropriate for unrecoverable\
+     * `process.exit()` is an abrupt termination that is appropriate for unrecoverable
      * errors. Normal process termination should call
      * [window.close](/doc/window#window.close) instead.
      * 
@@ -83,3 +109,42 @@ declare var Process: {
      */
      spawn(module: string, args?: string[], options?: Object): Process;
 };
+
+interface ExceptionEvent {
+    /** A string describing the exception. */
+    readonly message: string;
+    /** The stack trace where the exception occurred. */
+    readonly stacktrace: string[];
+}
+
+interface ExitEvent {
+    /** A string describing the termination cause, in case of errors. */
+    readonly error?: string;
+    /** The exit code of the child process. */
+    readonly status: number;
+}
+
+interface LogEvent {
+    readonly message: string;
+    /** The log level corresponding to the `console` method used */
+    readonly level: "debug" | "log" | "info" | "warn" | "error";
+}
+
+type Json = string | number | boolean | null | Json[] | {[key: string]: Json} | {toJSON(key: string): Json};
+
+interface ProcessEventHandlersMap {
+    /** Sent to parent processes when a child process throws an uncaught exception. */
+    "exception": ExceptionEvent;
+
+    /** Sent to parent processes when a child process terminates. */
+    "exit": ExitEvent;
+
+    /** Sent to parent processes when a child process logs to the `console`. */
+    "log": LogEvent;
+
+    /**
+     * Sent to a process handle when the corresponding process posts a message to the
+     * current process via [process.postMessage](#process.postMessage).
+     */
+    "message": Json | TypedArray;
+}

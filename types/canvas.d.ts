@@ -1,29 +1,27 @@
 
-interface CanvasExtension {
-    /** Whether shapes drawn in this canvas should be antialiased. Defaults to true. */
-    antialias: boolean;
-
-    /**
-     * The height of the canvas, in pixels.
-     * 
-     * **Note:** the size of the canvas is automatically adjusted when the window is
-     * [resized](/doc/window#event-resize). If the main application supports
-     * [resizing](/doc/window#window.resizable) then it should also listen for
-     * ["resize"](/doc/window#event-resize) events and draw a full frame after each
-     * resize. Window.js will also invoke any pending
-     * [requestAnimationFrame](/doc/global#requestAnimationFrame) callbacks when
-     * the window is resized.
-     */
-    height: number;
-    
-}
-
 interface ImageDataSettings {
     colorSpace?: PredefinedColorSpace;
 }
 
 interface CanvasCompositing {
+    /**
+     * Specifies the alpha (transparency) value that is applied to shapes and images
+     * before they are drawn onto the canvas. The defaut value is `1.0`.
+     * 
+     * See also
+     * [globalAlpha](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalAlpha)
+     * at MDN.
+     */
     globalAlpha: number;
+
+    /**
+     * Sets the type of compositing operation to apply when drawing new shapes.
+     * See the
+     * [Compositing and clipping](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing)
+     * section of the
+     * [Canvas tutorial](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial)
+     * at MDN for a list of valid operations and their effect.
+     */
     globalCompositeOperation: string;
 }
 
@@ -48,10 +46,50 @@ interface CanvasDrawPath {
 }
 
 interface CanvasFillStrokeStyles {
-    fillStyle: string | CanvasGradient | CanvasPattern;
-    strokeStyle: string | CanvasGradient | CanvasPattern;
+    /**
+     * The style to apply in the fill operations ([fill](#canvas.fill),
+     * [fillRect](#canvas.fillRect) and [fillText](#canvas.fillText)).
+     * 
+     * Valid values are [CanvasGradient](/doc/canvasgradient) instances, or strings
+     * representing a CSS color in one of these formats:
+     * -  `#rgb`
+     * -  `#rgba`
+     * -  `#rrggbb`
+     * -  `#rrggbbaa`
+     * -  `rgb(r, g, b)`
+     * -  `rgba(r, g, b, a)`
+     * -  A
+     * [CSS color name](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords)
+     * like `red` or `dodgerblue`.
+     * 
+     * See also
+     * [fillStyle](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle)
+     * at MDN.
+     */
+    fillStyle: string | CanvasGradient;
+
+    /**
+     * The style to apply in the stroke operations ([stroke](#canvas.stroke),
+     * [strokeRect](#canvas.strokeRect) and [strokeText](#canvas.strokeText)).
+     * 
+     * Valid values are [CanvasGradient](/doc/canvasgradient) instances, or strings
+     * representing a CSS color in one of these formats:
+     * -  `#rgb`
+     * -  `#rgba`
+     * -  `#rrggbb`
+     * -  `#rrggbbaa`
+     * -  `rgb(r, g, b)`
+     * -  `rgba(r, g, b, a)`
+     * -  A
+     * [CSS color name](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords)
+     * like `red` or `dodgerblue`.
+     * 
+     * See also
+     * [strokeStyle](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle)
+     * at MDN.
+     */
+    strokeStyle: string | CanvasGradient;
     createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradient;
-    createPattern(image: CanvasImageSource, repetition: string | null): CanvasPattern | null;
     createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number): CanvasGradient;
 }
 
@@ -162,23 +200,18 @@ interface CanvasPathDrawingStyles {
      * at MDN.
      */
     lineWidth: number;
+
+    /**
+     * The miter limit ratio. The default value is 10.0.
+     * 
+     * See also
+     * [miterLimit](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit)
+     * at MDN.
+     */
     miterLimit: number;
     getLineDash(): number[];
     setLineDash(segments: number[]): void;
 }
-
-/** An opaque object describing a pattern, based on an image, a canvas, or a video, created by the CanvasRenderingContext2D.createPattern() method. */
-interface CanvasPattern {
-    /**
-     * Sets the transformation matrix that will be used when rendering the pattern during a fill or stroke painting operation.
-     */
-    setTransform(transform?: DOMMatrix2DInit): void;
-}
-
-declare var CanvasPattern: {
-    prototype: CanvasPattern;
-    new(): CanvasPattern;
-};
 
 interface CanvasRect {
     clearRect(x: number, y: number, w: number, h: number): void;
@@ -188,17 +221,94 @@ interface CanvasRect {
 
 /** The CanvasRenderingContext2D interface, part of the Canvas API, provides the 2D rendering context for the drawing surface of a <canvas> element. It is used for drawing shapes, text, images, and other objects. */
 interface CanvasRenderingContext2D extends CanvasCompositing, CanvasDrawImage, CanvasDrawPath, CanvasFillStrokeStyles, CanvasFilters, CanvasImageData, CanvasImageSmoothing, CanvasPath, CanvasPathDrawingStyles, CanvasRect, CanvasShadowStyles, CanvasState, CanvasText, CanvasTextDrawingStyles, CanvasTransform {
+
+    /** Whether shapes drawn in this canvas should be antialiased. Defaults to true. */
+    antialias: boolean;
+
+    /**
+     * The height of the canvas, in pixels.
+     * 
+     * **Note:** the size of the canvas is automatically adjusted when the window is
+     * [resized](/doc/window#event-resize). If the main application supports
+     * [resizing](/doc/window#window.resizable) then it should also listen for
+     * ["resize"](/doc/window#event-resize) events and draw a full frame after each
+     * resize. Window.js will also invoke any pending
+     * [requestAnimationFrame](/doc/global#requestAnimationFrame) callbacks when
+     * the window is resized.
+     */
+    height: number;
 }
 
 declare var CanvasRenderingContext2D: {
     prototype: CanvasRenderingContext2D;
-    new(): CanvasRenderingContext2D;
+
+    /**
+     * Creates a new off-screen canvas. Its contents can be drawn to the main canvas
+     * in [window.canvas](/doc/window#window.canvas) via
+     * [drawImage](#canvas.drawImage).
+     * 
+     * @param width  The width of the offscreen canvas.
+     * @param height  The height of the offscreen canvas.
+     */
+    new(width: number, height: number): CanvasRenderingContext2D;
 };
 
 interface CanvasShadowStyles {
+    /**
+     * The amount of blur applied to shadows. The default is 0 (i.e. no blur).
+     * 
+     * See also
+     * [shadowBlur](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowBlur)
+     * at MDN.
+     */
     shadowBlur: number;
+
+    /**
+     * The color of shadows, as a CSS color.
+     * 
+     * The shadow's rendered opacity is affected by the opacity of the
+     * [fillStyle](#canvas.fillStyle) color when filling, and of the
+     * [strokeStyle](#canvas.strokeStyle) color when stroking.
+     * 
+     * **Note:** Shadows are only drawn if the `shadowColor` property is set to a
+     * non-transparent value. One of the [shadowBlur](#canvas.shadowBlur),
+     * [shadowOffsetX](#canvas.shadowOffsetX) or [shadowOffsetY](#canvas.shadowOffsetY)
+     * properties must be non-zero as well.
+     * 
+     * The CSS color must be in one of these formats:
+     * 
+     * *  `#rgb`
+     * *  `#rgba`
+     * *  `#rrggbb`
+     * *  `#rrggbbaa`
+     * *  `rgb(r, g, b)`
+     * *  `rgba(r, g, b, a)`
+     * *  A
+     * [CSS color name](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords)
+     * like `red` or `dodgerblue`.
+     * 
+     * See also
+     * [shadowColor](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowColor)
+     * at MDN.
+     */
     shadowColor: string;
+
+    /**
+     * The distance that shadows will be offset horizontally.
+     * 
+     * See also
+     * [shadowOffsetX](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetX)
+     * at MDN.
+     */
     shadowOffsetX: number;
+
+    /**
+     * The distance that shadows will be offset vertically.
+     * 
+     * See also
+     * [shadowOffsetY](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetY)
+     * at MDN.
+     */
     shadowOffsetY: number;
 }
 
@@ -215,6 +325,28 @@ interface CanvasText {
 
 interface CanvasTextDrawingStyles {
     direction: CanvasDirection;
+
+    /**
+     * The font to use in text operations ([fillText](#canvas.fillText),
+     * [strokeText](#canvas.strokeText) and [measureText](#canvas.measureText)).
+     * 
+     * The list of fonts available in the current platform are listed in
+     * [window.fonts](/doc/window#window.fonts).
+     * 
+     * Custom fonts can be loaded with [window.loadFont](/doc/window#window.loadFont).
+     * 
+     * Font names with spaces like "Segoe UI" must be wrapped in double quotes.
+     * 
+     * The font name can be optionally preceeded by `italic`, `bold` and the font
+     * size as `Npx`. These are all valid font settings:
+     * 
+     * -  `monospace`
+     * -  `bold 16px "Segoe UI"`
+     * 
+     * See also
+     * [font](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font)
+     * at MDN.
+     */
     font: string;
     textAlign: CanvasTextAlign;
     textBaseline: CanvasTextBaseline;

@@ -1,6 +1,6 @@
 /// <reference include="canvas.d.ts">
 
-declare var window: {
+interface Window {
 
     /**
      * Whether to keep the window always on top of other windows.
@@ -230,7 +230,7 @@ declare var window: {
      * @param listener 
      */
     addEventListener(type: 'close', listener: () => boolean): void;
-    addEventListener<K extends keyof EventHandlersMap>(type: K, listener: (event: EventHandlersMap[K]) => void): void;
+    addEventListener<K extends keyof WindowEventHandlersMap>(type: K, listener: (event: WindowEventHandlersMap[K]) => void): void;
     addEventListener(type: string, listener: () => void): void;
 
     /**
@@ -294,7 +294,9 @@ declare var window: {
      * @param text 
      */
     setClipboardText(text: string): void;
-};
+}
+
+declare var window: Window;
 
 type Cursor = "arrow" | "ibeam" | "crosshair" | "hand" | "hresize" | "vresize" | "hidden" | "locked";
 
@@ -362,7 +364,7 @@ interface WheelEvent {
     readonly deltaY: number;
 }
 
-interface EventHandlersMap {
+interface WindowEventHandlersMap {
     /** This event is sent by the main window when it loses the input focus. */
     "blur": Event,
 
