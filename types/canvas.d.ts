@@ -23,7 +23,7 @@ interface CanvasCompositing {
 interface CanvasDrawImage {
     /**
      * Draws an [ImageBitmap](/doc/imagebitmap) or an
-     * [offscreen canvas](#CanvasRenderingContext2D) onto the main canvas in its original size at a given location.
+     * {@link CanvasRenderingContext2D offscreen canvas} onto the main canvas in its original size at a given location.
      * @param image  The source image or canvas to draw.
      * @param dx  The horizontal coordinate in the destination canvas at which to place the top-left corner of the source image.
      * @param dy  The vertical coordinate in the destination canvas at which to place the top-left corner of the source image.
@@ -32,7 +32,7 @@ interface CanvasDrawImage {
 
     /**
      * Draws an [ImageBitmap](/doc/imagebitmap) or an
-     * [offscreen canvas](#CanvasRenderingContext2D) onto the main canvas with a specific size and location.
+     * {@link CanvasRenderingContext2D offscreen canvas} onto the main canvas with a specific size and location.
      * @param image  The source image or canvas to draw.
      * @param dx  The horizontal coordinate in the destination canvas at which to place the top-left corner of the source image.
      * @param dy  The vertical coordinate in the destination canvas at which to place the top-left corner of the source image.
@@ -43,7 +43,7 @@ interface CanvasDrawImage {
 
     /**
      * Draws a sub region of an [ImageBitmap](/doc/imagebitmap) or an
-     * [offscreen canvas](#CanvasRenderingContext2D) onto the main canvas with a specific size and location.
+     * {@link CanvasRenderingContext2D offscreen canvas} onto the main canvas with a specific size and location.
      * @param image  The source image or canvas to draw.
      * @param sx  The horizontal coordinate of the top-left corner of the sub region of the source image that will be drawn.
      * @param sy  The vertical coordinate of the top-left corner of the sub region of the source image that will be drawn.
@@ -80,7 +80,7 @@ interface CanvasDrawPath {
     clip(fillRule?: CanvasFillRule): void;
 
     /**
-     * Fills the current path with the current [fillStyle](#canvas.fillStyle).
+     * Fills the current path with the current {@link CanvasFillStrokeStyles.fillStyle fillStyle}.
      * 
      * See also
      * [fill](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fill)
@@ -115,7 +115,7 @@ interface CanvasDrawPath {
 
     /**
      * Strokes the outline of the current path, using the current
-     * [strokeStyle](#canvas.strokeStyle).
+     * {@link CanvasFillStrokeStyles.strokeStyle strokeStyle}.
      * 
      * Strokes are aligned to the center of a path: half of the stroke is drawn on the
      * inner side, and half on the outer side. The stroke is drawn using the non-zero
@@ -130,8 +130,8 @@ interface CanvasDrawPath {
 
 interface CanvasFillStrokeStyles {
     /**
-     * The style to apply in the fill operations ([fill](#canvas.fill),
-     * [fillRect](#canvas.fillRect) and [fillText](#canvas.fillText)).
+     * The style to apply in the fill operations ({@link CanvasDrawPath.fill fill},
+     * {@link CanvasRect.fillRect fillRect} and {@link CanvasText.fillText fillText})).
      * 
      * Valid values are [CanvasGradient](/doc/canvasgradient) instances, or strings
      * representing a CSS color in one of these formats:
@@ -152,8 +152,8 @@ interface CanvasFillStrokeStyles {
     fillStyle: string | CanvasGradient;
 
     /**
-     * The style to apply in the stroke operations ([stroke](#canvas.stroke),
-     * [strokeRect](#canvas.strokeRect) and [strokeText](#canvas.strokeText)).
+     * The style to apply in the stroke operations ({@link CanvasDrawPath.stroke stroke},
+     * {@link CanvasRect.strokeRect strokeRect} and {@link CanvasText.strokeText strokeText})).
      * 
      * Valid values are [CanvasGradient](/doc/canvasgradient) instances, or strings
      * representing a CSS color in one of these formats:
@@ -178,7 +178,7 @@ interface CanvasFillStrokeStyles {
      * the two given coordinates.
      * 
      * To be applied to a shape, the gradient must first be assigned to the
-     * [fillStyle](#canvas.fillStyle) or [strokeStyle](#canvas.strokeStyle) properties.
+     * {@link CanvasFillStrokeStyles.fillStyle fillStyle} or {@link CanvasFillStrokeStyles.strokeStyle strokeStyle} properties.
      * 
      * See also
      * [createLinearGradient](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createLinearGradient)
@@ -195,7 +195,7 @@ interface CanvasFillStrokeStyles {
      * coordinates of two circles.
      * 
      * To be applied to a shape, the gradient must first be assigned to the
-     * [fillStyle](#canvas.fillStyle) or [strokeStyle](#canvas.strokeStyle) properties.
+     * {@link CanvasFillStrokeStyles.fillStyle fillStyle} or {@link CanvasFillStrokeStyles.strokeStyle strokeStyle} properties.
      * 
      * See also
      * [createRadialGradient](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createRadialGradient)
@@ -220,7 +220,7 @@ interface CanvasFillStrokeStyles {
  * They can be used to customize the canvas drawing operations using a gradient.
  * 
  * The gradient object can be further customized using
- * [addColorStop](#gradient.addColorStop).
+ * {@link CanvasGradient.addColorStop addColorStop}.
  * 
  * See also the
  * [CanvasGradient](https://developer.mozilla.org/en-US/docs/Web/API/CanvasGradient)
@@ -265,7 +265,7 @@ interface CanvasImageData {
     /**
      * Returns an [ImageData](/doc/imagedata) object containing the pixel data for a
      * specified region of the canvas. [ImageData](/doc/imagedata) can be painted
-     * onto a canvas using the [putImageData](#canvas.putImageData) method.
+     * onto a canvas using the {@link CanvasImageData.putImageData putImageData} method.
      * 
      * This method is not affected by the canvas's transformation matrix.
      * 
@@ -312,7 +312,7 @@ interface CanvasImageSmoothing {
     /**
      * Determines whether scaled images are smoothed or not. The default is true.
      * 
-     * Images can be drawn via the [drawImage](#canvas.drawImage) API, and the
+     * Images can be drawn via the {@link CanvasDrawImage} API, and the
      * destination size in the canvas may be different from the source size in the
      * [ImageBitmap](/doc/imagebitmap). In those cases, the image gets scaled up or
      * down. This setting controls whether the rescaled image should look smoother
@@ -329,7 +329,7 @@ interface CanvasImageSmoothing {
 
     /**
      * Controls the quality of the smoothing applied to scaled images when
-     * [imageSmoothingEnabled](#canvas.imageSmoothingEnabled) is enabled.
+     * {@link CanvasImageSmoothing.imageSmoothingEnabled imageSmoothingEnabled} is enabled.
      * 
      * Valid values are `"low"`, `"medium"` and `"high"`.
      * 
@@ -376,7 +376,7 @@ interface CanvasPath {
     /**
      * Adds a cubic BÃ©zier curve to the current sub-path. Requires three points: two
      * control points, and a final end point. The starting point is the latest point
-     * in the current path (which can be changed using [moveTo](#canvas.moveTo) before
+     * in the current path (which can be changed using {@link CanvasPath.moveTo moveTo} before
      * creating the curve).
      * @param cp1x  The horizontal coordinate of the first control point.
      * @param cp1y  The vertical coordinate of the first control point.
@@ -393,7 +393,7 @@ interface CanvasPath {
      * point.
      * 
      * This method doesn't draw anything to the canvas directly; the path can be
-     * rendered via the [fill](#canvas.fill) and [stroke](#canvas.stroke) methods.
+     * rendered via the {@link CanvasDrawPath.fill fill} and {@link CanvasDrawPath.stroke stroke} methods.
      * 
      * See also
      * [closePath](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/closePath)
@@ -445,7 +445,7 @@ interface CanvasPath {
      * 
      * The curve requires two points. The first is a control point, and the second is
      * the end point. The starting point is the latest point in the current path,
-     * which can be changed using [moveTo](#canvas.moveTo) before creating the
+     * which can be changed using {@link CanvasPath.moveTo moveTo} before creating the
      * quadratic Bézier curve.
      * 
      * See also
@@ -556,7 +556,7 @@ interface CanvasRect {
     clearRect(x: number, y: number, w: number, h: number): void;
 
     /**
-     * Draws a rectangle using the current [fillStyle](#canvas.fillStyle).
+     * Draws a rectangle using the current {@link CanvasFillStrokeStyles.fillStyle fillStyle}.
      * 
      * See also
      * [fillRect](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect)
@@ -570,7 +570,7 @@ interface CanvasRect {
 
     /**
      * Draws a rectangle that is stroked using the current
-     * [strokeStyle](#canvas.strokeStyle).
+     * {@link CanvasFillStrokeStyles.strokeStyle strokeStyle}.
      * 
      * See also
      * [strokeRect](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeRect)
@@ -639,7 +639,7 @@ declare var CanvasRenderingContext2D: {
     /**
      * Creates a new off-screen canvas. Its contents can be drawn to the main canvas
      * in [window.canvas](/doc/window#window.canvas) via
-     * [drawImage](#canvas.drawImage).
+     * {@link CanvasDrawImage.drawImage drawImage}.
      * 
      * @param width  The width of the offscreen canvas.
      * @param height  The height of the offscreen canvas.
@@ -661,12 +661,12 @@ interface CanvasShadowStyles {
      * The color of shadows, as a CSS color.
      * 
      * The shadow's rendered opacity is affected by the opacity of the
-     * [fillStyle](#canvas.fillStyle) color when filling, and of the
-     * [strokeStyle](#canvas.strokeStyle) color when stroking.
+     * {@link CanvasFillStrokeStyles.fillStyle fillStyle} color when filling, and of the
+     * {@link CanvasFillStrokeStyles.strokeStyle strokeStyle} color when stroking.
      * 
      * **Note:** Shadows are only drawn if the `shadowColor` property is set to a
-     * non-transparent value. One of the [shadowBlur](#canvas.shadowBlur),
-     * [shadowOffsetX](#canvas.shadowOffsetX) or [shadowOffsetY](#canvas.shadowOffsetY)
+     * non-transparent value. One of the {@link CanvasShadowStyles.shadowBlur},
+     * {@link CanvasShadowStyles.shadowOffsetX} or {@link CanvasShadowStyles.shadowOffsetY}
      * properties must be non-zero as well.
      * 
      * The CSS color must be in one of these formats:
@@ -709,14 +709,14 @@ interface CanvasShadowStyles {
 interface CanvasState {
     /**
      * Restores the most recently saved canvas state, from a previous call to
-     * [save](#canvas.save). If there is no saved state then this method does nothing.
+     * {@link save}. If there is no saved state then this method does nothing.
      */
     restore(): void;
 
     /**
      * Saves the entire state of the canvas by pushing it into a stack.
      * 
-     * This state can be restored again later by calling [restore](#canvas.restore).
+     * This state can be restored again later by calling {@link restore}.
      * 
      * The drawing state that gets saved includes:
      * 
@@ -738,8 +738,8 @@ interface CanvasState {
 interface CanvasText {
     /**
      * Draws a text string at the specified coordinates using the current
-     * [fillStyle](#canvas.fillStyle), [font](#canvas.font),
-     * [textAlign](#canvas.textAlign) and [textBaseline](#canvas.textBaseline)\
+     * {@link CanvasFillStrokeStyles.fillStyle fillStyle}, {@link CanvasTextDrawingStyles.font font},
+     * {@link CanvasTextDrawingStyles.textAlign textAlign} and {@link CanvasTextDrawingStyles.textBaseline textBaseline}
      * properties.
      * 
      * See also
@@ -777,8 +777,8 @@ interface CanvasText {
 
 interface CanvasTextDrawingStyles {
     /**
-     * The font to use in text operations ([fillText](#canvas.fillText),
-     * [strokeText](#canvas.strokeText) and [measureText](#canvas.measureText)).
+     * The font to use in text operations ({@link CanvasText.fillText fillText},
+     * {@link CanvasText.strokeText strokeText} and {@link CanvasText.measureText measureText}).
      * 
      * The list of fonts available in the current platform are listed in
      * [window.fonts](/doc/window#window.fonts).
@@ -941,14 +941,14 @@ type Matrix2D = [number, number, number, number, number, number];
  * 
  * *  By copying an existing `ImageBitmap` or from the pixels in an
  *    [ImageData](/doc/imagedata) object via the
- *    [ImageBitmap constructor](#ImageBitmap).
+ *    {@link ImageBitmap ImageBitmap constructor}.
  * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in an array
- *    of bytes via [ImageBitmap.decode](#ImageBitmap.decode).
+ *    of bytes via {@link ImageBitmap.decode}.
  * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in a file
- *    via [File.readImageBitmap](/doc/file#File.readImageBitmap).
+ *    via {@link File.readImageBitmap}.
  * 
  * An `ImageBitmap` is appropriate to hold images loaded from files for fast
- * drawing. See [ImageData](/doc/imagedata) for a similar class that gives access
+ * drawing. See {@link ImageData} for a similar class that gives access
  * to the underlying pixels.
  * 
  * See also the
@@ -1012,7 +1012,7 @@ declare var ImageBitmap: {
  * *  By copying the pixels in the [canvas](/doc/canvas) via
  *    [canvas.getImageData](/doc/canvas#canvas.getImageData)
  * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in an array
- *    of bytes via [ImageData.decode](#ImageData.decode).
+ *    of bytes via {@link ImageData.decode}.
  * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in a file
  *    via [File.readImageData](/doc/file#File.readImageData).
  * 

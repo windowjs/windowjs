@@ -68,7 +68,7 @@ declare function clearTimeout(callback: number): void;
 
 /**
  * Requests a callback to draw a frame, before the next frame is swapped to the
- * main window framebuffer.=
+ * main window framebuffer.
  * 
  * All callbacks registered via `requestAnimationFrame` will be executed before
  * the next frame is swapped. To draw continuously, request a new frame from
