@@ -34,8 +34,8 @@ interface Process {
      * @param type 
      * @param listener 
      */
-     addEventListener<K extends keyof ProcessEventHandlersMap>(type: K, listener: (event: ProcessEventHandlersMap[K]) => void): void;
-     addEventListener(type: string, listener: () => void): void;
+    addEventListener<K extends keyof ProcessEventHandlersMap>(type: K, listener: (event: ProcessEventHandlersMap[K]) => void): void;
+    addEventListener(type: string, listener: () => void): void;
 
     /**
      * Closes the handle to a child process and terminates it.
@@ -84,7 +84,7 @@ declare var Process: {
      * [messages](#event-message) from the parent process, or to call
      * [postMessage](#process.postMessage) to send messages.
      */
-     readonly parent?: Process;
+    readonly parent?: Process;
 
     /**
      * Terminates the current process immediately, with the given status code value.
@@ -99,7 +99,7 @@ declare var Process: {
      * @param code  The exit code for the process.
      */
     exit(code?: number): void;
-    
+
     /**
      * `spawn` creates a new subprocess and returns a handle to the parent.
      * 
@@ -107,7 +107,7 @@ declare var Process: {
      * @param args  Optional list of string arguments to pass to the child process. They will be available in [Process.args](#Process.args) in the child process.
      * @param options  Currently unused.
      */
-     spawn(module: string, args?: string[], options?: Object): Process;
+    spawn(module: string, args?: string[], options?: Object): Process;
 };
 
 interface ExceptionEvent {
@@ -129,8 +129,6 @@ interface LogEvent {
     /** The log level corresponding to the `console` method used */
     readonly level: "debug" | "log" | "info" | "warn" | "error";
 }
-
-type Json = string | number | boolean | null | Json[] | {[key: string]: Json} | {toJSON(key: string): Json};
 
 interface ProcessEventHandlersMap {
     /** Sent to parent processes when a child process throws an uncaught exception. */

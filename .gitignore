@@ -12,3 +12,4 @@ libraries/skia
 libraries/v8
 tags
 out*
+node_modules

@@ -227,7 +227,7 @@ interface Window {
      * @param type 
      * @param listener 
      */
-    addEventListener(type: 'close', listener: () => boolean): void;
+    addEventListener(type: "close", listener: () => boolean): void;
     addEventListener<K extends keyof WindowEventHandlersMap>(type: K, listener: (event: WindowEventHandlersMap[K]) => void): void;
     addEventListener(type: string, listener: () => void): void;
 

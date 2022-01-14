@@ -108,3 +108,7 @@ declare function requestAnimationFrame(callback: Function): number;
  * [clearTimeout](#clearTimeout) to cancels that registration.
  */
 declare function setTimeout(callback: Function, delay: number): number;
+
+type Json = string | number | boolean | null | Json[] | { [key: string]: Json } | { toJSON(key: string): Json };
+
+type TypedArray = Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | BigInt64Array | BigUint64Array;
