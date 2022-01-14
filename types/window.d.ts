@@ -8,7 +8,7 @@ interface Window {
     alwaysOnTop: boolean;
 
     /**
-     * The 2D graphics drawing API, documented in the [canvas API](/doc/canvas).
+     * The 2D graphics drawing API, documented in the {@link CanvasRenderingContext2D canvas API}.
      * 
      * There is one `canvas` object per `window`, and this object is available on
      * startup.
@@ -195,7 +195,7 @@ interface Window {
         /**
          * The total height available for non-fullscreen windows, in pixels.
          * 
-         * This can be as much as the [monitor height](#window.screen.height).
+         * This can be as much as the {@link Window.screen.height monitor height}.
          * Less than the total height may be available if the native platform has a
          * native menubar at the top or at the bottom of the screen, for example.
          */
@@ -204,7 +204,7 @@ interface Window {
         /**
          * The total width available for non-fullscreen windows, in pixels.
          * 
-         * This can be as much as the [monitor width](#window.screen.width).
+         * This can be as much as the {@link Window.screen.width monitor width}.
          * Less than the total width may be available if the native platform has a
          * native menubar on the side, for example.
          */
@@ -270,7 +270,7 @@ interface Window {
 
     /**
      * Removes an event listener that has previously been registered via
-     * [window.addEventListener](#window.addEventListener).
+     * {@link Window.addEventListener}.
      * 
      * @param type  The event type.
      * @param listener  The previously added listener.

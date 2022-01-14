@@ -3,18 +3,18 @@
  * Javascript VM. Processes created this way can communicate with each other.
  * All processes terminate when the main process exits.
  * 
- * Every process can create a subprocess via [Process.spawn](#Process.spawn),
+ * Every process can create a subprocess via {@link Process.spawn},
  * indicating the main Javascript module that the subprocess loads on startup.
- * [Process.spawn](#Process.spawn) returns a `Process` instance used for
+ * {@link Process.spawn} returns a `Process` instance used for
  * communications with the subprocess.
  * 
  * Subprocesses have a similar handle to their parent process in
- * [Process.parent](#Process.parent).
+ * {@link Process.parent}.
  * 
  * Because each process runs in its own Javascript VM, inter-process communications
  * can only send and receive JSON objects and TypedArrays.
  * 
- * Messages are sent via [process.postMessage](#process.postMessage),
+ * Messages are sent via {@link Process.postMessage},
  * and received as ["message"](#event-message) events on the process handle.
  */
 interface Process {
@@ -22,8 +22,8 @@ interface Process {
     /**
      * `addEventListener` registers a listener callback to receive events in a given
      * process handle. Subprocess have a process handle to their parent processes
-     * in [Process.parent](#Process.parent), and parent processes get handles to their
-     * subprocesses returned from [Process.spawn](#Process.spawn).
+     * in {@link Process.parent}, and parent processes get handles to their
+     * subprocesses returned from {@link Process.spawn}.
      * 
      * Child processes receive only the {@link ProcessEventHandlersMap.message message} event.
      * 
@@ -58,7 +58,7 @@ interface Process {
 
     /**
      * Removes an event listener that has previously been registered via
-     * [process.addEventListener](#Process.addEventListener).
+     * {@link Process.addEventListener}.
      * 
      * @param type 
      * @param listener
@@ -70,7 +70,7 @@ declare var Process: {
 
     /**
      * The list of arguments passed to the process, via the command line or
-     * [Process.spawn](#Process.spawn). Does not include the executable name nor
+     * {@link Process.spawn}. Does not include the executable name nor
      * arguments processed by Window.js internally, like `--log`.
      */
     readonly args: string[];
@@ -104,7 +104,7 @@ declare var Process: {
      * `spawn` creates a new subprocess and returns a handle to the parent.
      * 
      * @param module  The initial Javascript module to load in the child process.
-     * @param args  Optional list of string arguments to pass to the child process. They will be available in [Process.args](#Process.args) in the child process.
+     * @param args  Optional list of string arguments to pass to the child process. They will be available in {@link Process.args} in the child process.
      * @param options  Currently unused.
      */
     spawn(module: string, args?: string[], options?: Object): Process;
@@ -142,7 +142,7 @@ interface ProcessEventHandlersMap {
 
     /**
      * Sent to a process handle when the corresponding process posts a message to the
-     * current process via [process.postMessage](#process.postMessage).
+     * current process via {@link Process.postMessage}.
      */
     "message": Json | TypedArray;
 }
