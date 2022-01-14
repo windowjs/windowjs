@@ -6,6 +6,9 @@ if(MSVC)
   # Warnings are errors.
   add_compile_options(-WX)
 
+  # Disable RTTI.
+  add_compile_options(/GR-)
+
   if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # Disable numeric conversion warnings.
     add_compile_options(-wd4267)
@@ -32,6 +35,8 @@ if(MSVC)
 else()
   add_compile_options(-Wall)
   add_compile_options(-Werror)
+  add_compile_options(-fno-exceptions)
+  add_compile_options(-fno-rtti)
 
   if(CMAKE_BUILD_TYPE STREQUAL Release)
     add_compile_options(-O3)
