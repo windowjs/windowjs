@@ -113,7 +113,7 @@ interface Window {
      * 
      * Window.js automatically converts all units to pixels, so that
      * {@link width window.width}, {@link CanvasRenderingContext2D.width canvas.width} and
-     * mouse [click events](#event-click) are all in pixel units and no further
+     * mouse {@link WindowEventHandlersMap.click click events} are all in pixel units and no further
      * conversions are needed.
      * 
      * Applications should still scale their content by

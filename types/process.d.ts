@@ -25,10 +25,10 @@ interface Process {
      * in [Process.parent](#Process.parent), and parent processes get handles to their
      * subprocesses returned from [Process.spawn](#Process.spawn).
      * 
-     * Child processes receive only the [message](#event-message) event.
+     * Child processes receive only the {@link ProcessEventHandlersMap.message message} event.
      * 
-     * Parent processes receive [message](#event-message), [exit](#event-exit),
-     * [exception](#event-exception) and [log](#event-log) events from their child
+     * Parent processes receive {@link ProcessEventHandlersMap.message message}, {@link ProcessEventHandlersMap.exit exit},
+     * {@link ProcessEventHandlersMap.exception exception} and {@link ProcessEventHandlersMap.log log} events from their child
      * processes.
      * 
      * @param type 
@@ -49,7 +49,7 @@ interface Process {
      * Sends a message to the process represented by this handle.
      * 
      * The message can be a `JSON` object or a `TypedArray`, and is received as the
-     * single argument to the [message](#event-message) event listener in the other
+     * single argument to the {@link ProcessEventHandlersMap.message message} event listener in the other
      * process.
      * 
      * @param value  The message to send.
@@ -81,7 +81,7 @@ declare var Process: {
      * 
      * `Process.parent` can be used to call
      * {@link Process.addEventListener} to receive
-     * [messages](#event-message) from the parent process, or to call
+     * {@link ProcessEventHandlersMap.message messages} from the parent process, or to call
      * {@link Process.postMessage} to send messages.
      */
     readonly parent?: Process;
