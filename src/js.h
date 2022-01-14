@@ -70,6 +70,8 @@ class Js final {
                          std::string_view or_string);
 
   void ThrowError(std::string_view error);
+  void ThrowTypeError(std::string_view error);
+  void ThrowIllegalConstructor();
   void ThrowInvalidArgument();
   void ReportException(v8::Local<v8::Message> message);
   void HandleUncaughtExceptionsInPromises();

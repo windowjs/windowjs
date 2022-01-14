@@ -418,7 +418,6 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_SPECIAL(destinationOut, "destination-out");
   SET_SPECIAL(destinationOver, "destination-over");
   SET_SPECIAL(hardLight, "hard-light");
-  SET_SPECIAL(Invalid_argument, "Invalid argument.");
   SET_SPECIAL(softLight, "soft-light");
   SET_SPECIAL(sourceAtop, "source-atop");
   SET_SPECIAL(sourceIn, "source-in");

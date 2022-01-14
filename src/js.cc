@@ -180,9 +180,16 @@ void Js::ThrowError(std::string_view error) {
   isolate_->ThrowError(MakeString(error));
 }
 
+void Js::ThrowTypeError(std::string_view error) {
+  isolate_->ThrowException(v8::Exception::TypeError(MakeString(error)));
+}
+
+void Js::ThrowIllegalConstructor() {
+  ThrowTypeError("Illegal constructor");
+}
+
 void Js::ThrowInvalidArgument() {
-  isolate_->ThrowError(
-      strings_->GetConstantString(StringId::Invalid_argument, isolate_));
+  ThrowError("Invalid argument");
 }
 
 void Js::ReportException(v8::Local<v8::Message> message) {

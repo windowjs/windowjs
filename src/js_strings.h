@@ -413,7 +413,6 @@ enum class StringId {
   destinationOut,
   destinationOver,
   hardLight,
-  Invalid_argument,
   softLight,
   sourceAtop,
   sourceIn,

@@ -1958,7 +1958,7 @@ CanvasGradientApi::CanvasGradientApi(
   } else if (info.Length() == 6) {
     type_ = SkShader::kRadial_GradientType;
   } else {
-    ASSERT(false);
+    api->js()->ThrowIllegalConstructor();
   }
   params_.resize(info.Length());
   for (int i = 0; i < params_.size(); i++) {
