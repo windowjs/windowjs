@@ -5,8 +5,8 @@
  *    their main class.
  * *  APIs like [window](/doc/window) and [window.canvas](/doc/canvas) are accessed
  *    via the prebuilt objects.
- * *  APIs like [setTimeout](#setTimeout) and
- *    [requestAnimationFrame](#requestAnimationFrame) are accessed as global
+ * *  APIs like {@link setTimeout} and
+ *    {@link requestAnimationFrame} are accessed as global
  *    functions, via the global object.
  * 
  * @packageDocumentation
@@ -48,7 +48,7 @@ declare const __filename: string;
 
 /**
  * Cancels an animation frame callback that has been previously scheduled by
- * [requestAnimationFrame](#requestAnimationFrame).
+ * {@link requestAnimationFrame}.
  * 
  * Invalid numbers and numbers assigned to animation callbacks that have already
  * executed are ignored.
@@ -58,7 +58,7 @@ declare function cancelAnimationFrame(callback: number): void;
 
 /**
  * Cancels a timeout callbacks that has been previously scheduled by
- * [setTimeout](#setTimeout).
+ * {@link setTimeout}.
  * 
  * Invalid numbers and numbers assigned to callbacks that have already executed
  * are ignored.
@@ -93,11 +93,11 @@ declare function clearTimeout(callback: number): void;
  * ```
  * 
  * The callback is passed the current time, as returned by
- * [performance.now](/doc/performance#performance.now), as its single argument.
+ * {@link Performance.now}, as its single argument.
  * 
  * Continuous drawing tries to draw at every
  * [vsync](https://en.wikipedia.org/wiki/vsync). Set
- * [window.vsync](/doc/window#window.vsync) to `false` to draw as fast as possible,
+ * {@link Window.vsync} to `false` to draw as fast as possible,
  * without waiting for vsync.
  */
 declare function requestAnimationFrame(callback: Function): number;
@@ -105,7 +105,7 @@ declare function requestAnimationFrame(callback: Function): number;
 /**
  * Registers a callback function to be executed after the given number of
  * milliseconds. Returns a handle that can be passed to
- * [clearTimeout](#clearTimeout) to cancels that registration.
+ * {@link clearTimeout} to cancels that registration.
  */
 declare function setTimeout(callback: Function, delay: number): number;
 

@@ -80,9 +80,9 @@ declare var Process: {
      * main process doesn't have a `parent`.
      * 
      * `Process.parent` can be used to call
-     * [addEventListener](#process.addEventListener) to receive
+     * {@link Process.addEventListener} to receive
      * [messages](#event-message) from the parent process, or to call
-     * [postMessage](#process.postMessage) to send messages.
+     * {@link Process.postMessage} to send messages.
      */
     readonly parent?: Process;
 
@@ -94,7 +94,7 @@ declare var Process: {
      * 
      * `process.exit()` is an abrupt termination that is appropriate for unrecoverable
      * errors. Normal process termination should call
-     * [window.close](/doc/window#window.close) instead.
+     * {@link Window.close} instead.
      * 
      * @param code  The exit code for the process.
      */

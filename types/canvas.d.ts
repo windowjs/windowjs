@@ -212,10 +212,10 @@ interface CanvasFillStrokeStyles {
 
 /**
  * `CanvasGradient` objects are created via
- * [canvas.createLinearGradient](/doc/canvas#canvas.createLinearGradient) and
- * [canvas.createRadialGradient](/doc/canvas#canvas.createRadialGradient), and
- * can be assigned to the [canvas.fillStyle](/doc/canvas#canvas.fillStyle) and
- * [canvas.strokeStyle](/doc/canvas#canvas.strokeStyle) properties.
+ * {@link CanvasFillStrokeStyles.createLinearGradient createLinearGradient} and
+ * {@link CanvasFillStrokeStyles.createRadialGradient createRadialGradient}, and
+ * can be assigned to the {@link CanvasFillStrokeStyles.fillStyle fillStyle} and
+ * {@link CanvasFillStrokeStyles.strokeStyle strokeStyle} properties.
  * 
  * They can be used to customize the canvas drawing operations using a gradient.
  * 
@@ -596,11 +596,11 @@ interface CanvasRenderingContext2D extends CanvasCompositing, CanvasDrawImage, C
      * The height of the canvas, in pixels.
      * 
      * **Note:** the size of the canvas is automatically adjusted when the window is
-     * [resized](/doc/window#event-resize). If the main application supports
-     * [resizing](/doc/window#window.resizable) then it should also listen for
-     * ["resize"](/doc/window#event-resize) events and draw a full frame after each
+     * {@link WindowEventHandlersMap.resize resized}. If the main application supports
+     * {@link Window.resizable resizing} then it should also listen for
+     * {@link WindowEventHandlersMap.resize "resize"} events and draw a full frame after each
      * resize. Window.js will also invoke any pending
-     * [requestAnimationFrame](/doc/global#requestAnimationFrame) callbacks when
+     * {@link requestAnimationFrame} callbacks when
      * the window is resized.
      * 
      * @extension
@@ -611,11 +611,11 @@ interface CanvasRenderingContext2D extends CanvasCompositing, CanvasDrawImage, C
      * The width of the canvas, in pixels.
      * 
      * **Note:** the size of the canvas is automatically adjusted when the window is
-     * [resized](/doc/window#event-resize). If the main application supports
-     * [resizing](/doc/window#window.resizable) then it should also listen for
-     * ["resize"](/doc/window#event-resize) events and draw a full frame after each
+     * {@link WindowEventHandlersMap.resize resized}. If the main application supports
+     * {@link Window.resizable resizing} then it should also listen for
+     * {@link WindowEventHandlersMap.resize "resize"}events and draw a full frame after each
      * resize. Window.js will also invoke any pending
-     * [requestAnimationFrame](/doc/global#requestAnimationFrame) callbacks when
+     * {@link requestAnimationFrame} callbacks when
      * the window is resized.
      * 
      * @extension
@@ -638,7 +638,7 @@ declare var CanvasRenderingContext2D: {
 
     /**
      * Creates a new off-screen canvas. Its contents can be drawn to the main canvas
-     * in [window.canvas](/doc/window#window.canvas) via
+     * in {@link Window.canvas} via
      * {@link CanvasDrawImage.drawImage drawImage}.
      * 
      * @param width  The width of the offscreen canvas.
@@ -781,9 +781,9 @@ interface CanvasTextDrawingStyles {
      * {@link CanvasText.strokeText strokeText} and {@link CanvasText.measureText measureText}).
      * 
      * The list of fonts available in the current platform are listed in
-     * [window.fonts](/doc/window#window.fonts).
+     * {@link Window.fonts}.
      * 
-     * Custom fonts can be loaded with [window.loadFont](/doc/window#window.loadFont).
+     * Custom fonts can be loaded with {@link Window.loadFont}.
      * 
      * Font names with spaces like "Segoe UI" must be wrapped in double quotes.
      * 
@@ -935,7 +935,7 @@ type Matrix2D = [number, number, number, number, number, number];
 /**
  * An `ImageBitmap` represents an image texture in GPU memory, that can be drawn
  * efficiently to the [canvas](/doc/canvas) via
- * [canvas.drawImage](/doc/canvas#canvas.drawImage).
+ * {@link CanvasDrawImage.drawImage drawImage}.
  * 
  * An `ImageBitmap` can be created in several ways:
  * 
@@ -1008,13 +1008,13 @@ declare var ImageBitmap: {
  * *  By creating a `new ImageData` with a given size and blank pixels, another
  *    `ImageData`, or with a given array of pixel data.
  * *  By creating a `new ImageData` by calling
- *    [canvas.createPixelData](/doc/canvas#canvas.createPixelData).
+ *    {@link CanvasImageData.createImageData createImageData}.
  * *  By copying the pixels in the [canvas](/doc/canvas) via
- *    [canvas.getImageData](/doc/canvas#canvas.getImageData)
+ *    {@link CanvasImageData.getImageData getImageData}
  * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in an array
  *    of bytes via {@link ImageData.decode}.
  * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in a file
- *    via [File.readImageData](/doc/file#File.readImageData).
+ *    via {@link File.readImageData}.
  * 
  * An `ImageData` allows reading and writing the underlying pixels. See
  * [ImageBitmap](/doc/imagebitmap) for a similar class that is more efficient for

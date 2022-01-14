@@ -26,13 +26,13 @@ interface Window {
 
     /**
      * The horizontal offset of the hotspot of custom cursors. This is only used for
-     * custom cursors, when [cursor](#window.cursor) is set to an `ImageData` instance.
+     * custom cursors, when {@link cursor} is set to an `ImageData` instance.
      */
     cursorOffsetX: number;
 
     /**
      * The vertical offset of the hotspot of custom cursors. This is only used for
-     * custom cursors, when [cursor](#window.cursor) is set to an `ImageData` instance.
+     * custom cursors, when {@link cursor} is set to an `ImageData` instance.
      */
     cursorOffsetY: number;
 
@@ -49,9 +49,9 @@ interface Window {
 
     /**
      * The list of fonts available in the platform. These font names can be used
-     * with [window.canvas.font](/doc/canvas#canvas.font).
+     * with {@link CanvasTextDrawingStyles.font window.canvas.font}.
      * 
-     * Use [loadFont](#window.loadFont) to load custom fonts.
+     * Use {@link loadFont} to load custom fonts.
      */
     readonly fonts: string[];
 
@@ -86,9 +86,9 @@ interface Window {
     height: number;
 
     /**
-     * Whether the aspect ratio of the current [width](#window.width) and
-     * [height](#window.height) should be kept during resizes (if the window is
-     * [resizable](#window.resizable)).
+     * Whether the aspect ratio of the current {@link width} and
+     * {@link height} should be kept during resizes (if the window is
+     * {@link resizable}).
      */
     keepAspectRatio: boolean;
 
@@ -112,12 +112,12 @@ interface Window {
      * units by a scaling factor, which is the value in `retinaScale`.
      * 
      * Window.js automatically converts all units to pixels, so that
-     * [window.width](#window.width), [canvas.width](/doc/canvas#canvas.width) and
+     * {@link width window.width}, {@link CanvasRenderingContext2D.width canvas.width} and
      * mouse [click events](#event-click) are all in pixel units and no further
      * conversions are needed.
      * 
      * Applications should still scale their content by
-     * [devicePixelRatio](/doc/global#devicePixelRatio), to match the UI and text
+     * {@link devicePixelRatio}, to match the UI and text
      * sizes expected by the user.
      */
     readonly retinaScale: number;
@@ -148,7 +148,7 @@ interface Window {
      * Defaults to true.
      * 
      * This is only relevant for applications that\
-     * [render continuously](/doc/global#requestAnimationFrame). By default, the number
+     * {@link requestAnimationFrame render continuously}. By default, the number
      * of frames rendered per second matches the monitor refresh rate (for example,
      * Window.js draws at 60 FPS on 60 Hz monitors).
      * 
@@ -239,7 +239,7 @@ interface Window {
     /**
      * Requests focus for the main window.
      * 
-     * See [requestAttention](#window.requestAttention) for a less disruptive way of
+     * See {@link requestAttention} for a less disruptive way of
      * notifying the user that an important event has occurred.
      */
     focus(): void;
@@ -251,7 +251,7 @@ interface Window {
 
     /**
      * Loads a font from a local file, and gives it a name that can be used with
-     * the [window.canvas.font](/doc/canvas#canvas.font) property.
+     * the {@link CanvasTextDrawingStyles.font window.canvas.font} property.
      * 
      * @param path  The path to the local font file to load.
      * @param name  The name of the font.
@@ -375,7 +375,7 @@ interface WindowEventHandlersMap {
      * 
      * The main application may return `true` from the "close" event listener to
      * prevent the termination. In that case, it's up to the application code to
-     * eventually close by calling [window.close](/doc/window#window.close).
+     * eventually close by calling {@link Window.close}.
      */
     "close": Event;
 
@@ -429,10 +429,10 @@ interface WindowEventHandlersMap {
      * platform.
      * 
      * **Note:** the size of the canvas is automatically adjusted when the window is
-     * resized. If the main application supports [resizing](#window.resizable) then it
+     * resized. If the main application supports {@link Window.resizable resizing} then it
      * should also listen for "resize" events and draw a full frame after each resize.
      * Window.js will also invoke any pending
-     * [requestAnimationFrame](/doc/global#requestAnimationFrame) callbacks when the
+     * {@link requestAnimationFrame} callbacks when the
      * window is resized.
      */
     "resize": Event;

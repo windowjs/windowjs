@@ -16,7 +16,7 @@ interface File {
 
     /**
      * Copies a file from the path in the first parameter to the path in the second
-     * parameter. See [copyTree](#File.copyTree) for a similar method that can copy
+     * parameter. See {@link copyTree} for a similar method that can copy
      * entire directories, recursively.
      */
     copy(src: string, dst: string): Promise<void>;
@@ -47,7 +47,7 @@ interface File {
 
     /**
      * Returns a list of all the files in the given directory. See
-     * [listTree](#File.listTree) for a similar method that also returns the contents
+     * {@link listTree} for a similar method that also returns the contents
      * of subdirectories.
      */
     list(path: string): Promise<string[]>;
@@ -88,7 +88,7 @@ interface File {
     readText(path: string): Promise<string>;
 
     /**
-     * Removes the given file. See [removeTree](#File.removeTree) for a similar method
+     * Removes the given file. See {@link removeTree} for a similar method
      * that can remove a directory and all of its contents, recursively.
      */
     remove(path: string): Promise<void>;
