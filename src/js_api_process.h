@@ -33,10 +33,6 @@ class ProcessApi final : public JsApiWrapper {
 
   bool SendMessage(MessageType type, std::string message);
 
-  static ProcessApi* Get(const v8::Local<v8::Value> thiz) {
-    return JsApiWrapper::Get<ProcessApi>(thiz);
-  }
-
   static v8::Local<v8::Function> GetConstructor(JsApi* api,
                                                 const JsScope& scope);
 

@@ -194,6 +194,10 @@ void Js::ThrowIllegalConstructor() {
   ThrowTypeError("Illegal constructor");
 }
 
+void Js::ThrowIllegalInvocation() {
+  ThrowTypeError("Illegal invocation");
+}
+
 void Js::ThrowInvalidArgument() {
   ThrowError("Invalid argument");
 }

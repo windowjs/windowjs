@@ -15,6 +15,8 @@
 #include "window.h"
 
 class CanvasApi;
+class CanvasGradientApi;
+class ImageBitmapApi;
 class ImageDataApi;
 class ProcessApi;
 class SkTypeface;
@@ -91,33 +93,66 @@ class JsApi final : public v8::PersistentHandleVisitor {
     return static_cast<JsApi*>(isolate->GetData(1));
   }
 
-  v8::Local<v8::Function> GetCanvasRenderingContext2DConstructor() {
-    return canvas_rendering_context_2d_constructor_.Get(js_->isolate());
-  }
-
-  v8::Local<v8::Function> GetCanvasGradientConstructor() {
-    return canvas_gradient_constructor_.Get(js_->isolate());
-  }
-
-  v8::Local<v8::Function> GetImageDataConstructor() {
-    return image_data_constructor_.Get(js_->isolate());
-  }
-
-  v8::Local<v8::Function> GetImageBitmapConstructor() {
-    return image_bitmap_constructor_.Get(js_->isolate());
-  }
-
-  v8::Local<v8::Function> GetProcessConstructor() {
-    return process_constructor_.Get(js_->isolate());
-  }
-
   bool IsInstanceOf(v8::Local<v8::Value> object,
                     v8::Local<v8::Function> constructor) {
     return object->InstanceOf(isolate()->GetCurrentContext(), constructor)
         .FromMaybe(false);
   }
 
+  v8::Local<v8::Function> GetCanvasRenderingContext2DConstructor() {
+    return canvas_rendering_context_2d_constructor_.Get(js_->isolate());
+  }
+
+  CanvasApi* GetCanvasApi(v8::Local<v8::Value> thiz) {
+    return GetWrappedInstanceOrThrow<CanvasApi>(
+        thiz, GetCanvasRenderingContext2DConstructor());
+  }
+
+  v8::Local<v8::Function> GetCanvasGradientConstructor() {
+    return canvas_gradient_constructor_.Get(js_->isolate());
+  }
+
+  CanvasGradientApi* GetCanvasGradientApi(v8::Local<v8::Value> thiz) {
+    return GetWrappedInstanceOrThrow<CanvasGradientApi>(
+        thiz, GetCanvasGradientConstructor());
+  }
+
+  v8::Local<v8::Function> GetImageDataConstructor() {
+    return image_data_constructor_.Get(js_->isolate());
+  }
+
+  ImageDataApi* GetImageDataApi(v8::Local<v8::Value> thiz) {
+    return GetWrappedInstanceOrThrow<ImageDataApi>(thiz,
+                                                   GetImageDataConstructor());
+  }
+
+  v8::Local<v8::Function> GetImageBitmapConstructor() {
+    return image_bitmap_constructor_.Get(js_->isolate());
+  }
+
+  ImageBitmapApi* GetImageBitmapApi(v8::Local<v8::Value> thiz) {
+    return GetWrappedInstanceOrThrow<ImageBitmapApi>(
+        thiz, GetImageBitmapConstructor());
+  }
+
+  v8::Local<v8::Function> GetProcessConstructor() {
+    return process_constructor_.Get(js_->isolate());
+  }
+
+  ProcessApi* GetProcessApi(v8::Local<v8::Value> thiz) {
+    return GetWrappedInstanceOrThrow<ProcessApi>(thiz, GetProcessConstructor());
+  }
+
  private:
+  template <typename T>
+  T* GetWrappedInstanceOrThrow(v8::Local<v8::Value> thiz,
+                               v8::Local<v8::Function> constructor) {
+    return static_cast<T*>(GetWrappedInstanceOrThrow(thiz, constructor));
+  }
+
+  void* GetWrappedInstanceOrThrow(v8::Local<v8::Value> thiz,
+                                  v8::Local<v8::Function> constructor);
+
   void VisitPersistentHandle(v8::Persistent<v8::Value>* value,
                              uint16_t class_id) override;
 
@@ -212,12 +247,6 @@ class JsApiWrapper {
 
   v8::Local<v8::String> GetConstantString(StringId id) const {
     return api_->js()->GetConstantString(id);
-  }
-
-  template <typename T>
-  static T* Get(const v8::Local<v8::Value> thiz) {
-    return static_cast<T*>(
-        thiz.As<v8::Object>()->GetAlignedPointerFromInternalField(0));
   }
 
  private:

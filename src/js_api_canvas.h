@@ -27,10 +27,6 @@ class CanvasApi final : public JsApiWrapper, public JsApiTracker<CanvasApi> {
 
   void OnGradientUpdated(CanvasGradientApi* gradient);
 
-  static CanvasApi* Get(const v8::Local<v8::Value> thiz) {
-    return JsApiWrapper::Get<CanvasApi>(thiz);
-  }
-
   static v8::Local<v8::Function> GetConstructor(JsApi* api,
                                                 const JsScope& scope);
 
@@ -239,10 +235,6 @@ class CanvasGradientApi final : public JsApiWrapper {
 
   sk_sp<SkShader> GetShader();
 
-  static CanvasGradientApi* Get(const v8::Local<v8::Value> thiz) {
-    return JsApiWrapper::Get<CanvasGradientApi>(thiz);
-  }
-
   static v8::Local<v8::Function> GetConstructor(JsApi* api,
                                                 const JsScope& scope);
 
@@ -286,10 +278,6 @@ class ImageDataApi final : public JsApiWrapper {
     };
   }
 
-  static ImageDataApi* Get(const v8::Local<v8::Value> thiz) {
-    return JsApiWrapper::Get<ImageDataApi>(thiz);
-  }
-
   static v8::Local<v8::Function> GetConstructor(JsApi* api,
                                                 const JsScope& scope);
 
@@ -318,10 +306,6 @@ class ImageBitmapApi final : public JsApiWrapper {
   sk_sp<SkImage> texture() const { return texture_; }
   int width() const { return texture_->width(); }
   int height() const { return texture_->height(); }
-
-  static ImageBitmapApi* Get(const v8::Local<v8::Value> thiz) {
-    return JsApiWrapper::Get<ImageBitmapApi>(thiz);
-  }
 
   static v8::Local<v8::Function> GetConstructor(JsApi* api,
                                                 const JsScope& scope);

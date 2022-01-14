@@ -118,7 +118,7 @@ void ReadImageData(const v8::FunctionCallbackInfo<v8::Value>& args) {
               api->GetImageDataConstructor()
                   ->NewInstance(scope.context, 2, args)
                   .ToLocalChecked();
-          ImageDataApi* image_data = ImageDataApi::Get(object);
+          ImageDataApi* image_data = api->GetImageDataApi(object);
           SkImageInfo image_info =
               SkImageInfo::Make(image->width(), image->height(),
                                 kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);

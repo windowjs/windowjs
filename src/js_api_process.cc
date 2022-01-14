@@ -91,7 +91,8 @@ ProcessApi* ProcessApi::MaybeAttachToParent(
   v8::Local<v8::Object> object =
       constructor->NewInstance(api->isolate()->GetCurrentContext())
           .ToLocalChecked();
-  ProcessApi* process = ProcessApi::Get(object);
+  ProcessApi* process = api->GetProcessApi(object);
+  ASSERT(process);
 
   process->pipe_ = Pipe::AttachToParent(
       [api, process](uint32_t type, std::string message) {
@@ -176,7 +177,8 @@ void ProcessApi::Spawn(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   v8::Local<v8::Object> object =
       api->GetProcessConstructor()->NewInstance(context).ToLocalChecked();
-  ProcessApi* process = ProcessApi::Get(object);
+  ProcessApi* process = api->GetProcessApi(object);
+  ASSERT(process);
 
   process->pipe_ = Pipe::Spawn(
       std::move(exe), std::move(args),
@@ -201,7 +203,9 @@ void ProcessApi::Spawn(const v8::FunctionCallbackInfo<v8::Value>& info) {
 // static
 void ProcessApi::PostMessage(const v8::FunctionCallbackInfo<v8::Value>& info) {
   ASSERT(IsMainThread());
-  if (info.Length() < 1) {
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  ProcessApi* process = api->GetProcessApi(info.This());
+  if (!process || info.Length() < 1) {
     return;
   }
   v8::MaybeLocal<v8::String> json =
@@ -210,8 +214,6 @@ void ProcessApi::PostMessage(const v8::FunctionCallbackInfo<v8::Value>& info) {
     // Throws on failures.
     return;
   }
-  JsApi* api = JsApi::Get(info.GetIsolate());
-  ProcessApi* process = ProcessApi::Get(info.This());
   if (!process->pipe_) {
     api->js()->ThrowError("Connection closed.");
     return;
@@ -237,13 +239,13 @@ void ProcessApi::Exit(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void ProcessApi::Close(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  ProcessApi* process = ProcessApi::Get(info.This());
-  if (!process->pipe_) {
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  ProcessApi* process = api->GetProcessApi(info.This());
+  if (!process || !process->pipe_) {
     // Already closed.
     return;
   }
   if (process->pipe_->is_child_process()) {
-    JsApi* api = JsApi::Get(info.GetIsolate());
     api->js()->ThrowError(
         "Child processes can't close their parent processes.");
     return;
@@ -265,8 +267,10 @@ void ProcessApi::AddEventListener(
   std::string type = api->js()->ToString(info[0]);
   v8::Local<v8::Function> f = info[1].As<v8::Function>();
 
-  ProcessApi* process = ProcessApi::Get(info.This());
-  process->events_.AddEventListener(type, f, info.GetIsolate());
+  ProcessApi* process = api->GetProcessApi(info.This());
+  if (process) {
+    process->events_.AddEventListener(type, f, info.GetIsolate());
+  }
 }
 
 // static
@@ -283,8 +287,10 @@ void ProcessApi::RemoveEventListener(
   std::string type = api->js()->ToString(info[0]);
   v8::Local<v8::Function> f = info[1].As<v8::Function>();
 
-  ProcessApi* process = ProcessApi::Get(info.This());
-  process->events_.RemoveEventListener(type, f);
+  ProcessApi* process = api->GetProcessApi(info.This());
+  if (process) {
+    process->events_.RemoveEventListener(type, f);
+  }
 }
 
 void ProcessApi::HandleMessageFromChildProcess(uint32_t type,

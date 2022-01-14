@@ -648,9 +648,9 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   scope.SetValue(window, StringId::screen, screen);
 
   v8::Local<v8::Function> process = ProcessApi::GetConstructor(this, scope);
-  parent_process_ = ProcessApi::MaybeAttachToParent(this, scope, process);
   process_constructor_.Reset(scope.isolate, process);
   scope.Set(global, StringId::Process, process);
+  parent_process_ = ProcessApi::MaybeAttachToParent(this, scope, process);
 
   v8::Local<v8::Function> image_data =
       ImageDataApi::GetConstructor(this, scope);
@@ -680,7 +680,8 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   v8::Local<v8::Object> canvas =
       canvas_context->NewInstance(scope.context, 2, args).ToLocalChecked();
   scope.Set(window, StringId::canvas, canvas);
-  window_canvas_ = CanvasApi::Get(canvas);
+  window_canvas_ = GetCanvasApi(canvas);
+  ASSERT(window_canvas_);
   window_->SetWindowCanvas(window_canvas_->canvas());
 
   scope.Set(global, StringId::File, MakeFileApi(this, scope));
@@ -709,7 +710,8 @@ void JsApi::VisitPersistentHandle(v8::Persistent<v8::Value>* value,
   v8::Local<v8::Value> v = value->Get(isolate());
   ASSERT(v->IsObject());
   v8::Local<v8::Object> o = v.As<v8::Object>();
-  JsApiWrapper* w = JsApiWrapper::Get<JsApiWrapper>(o);
+  JsApiWrapper* w =
+      static_cast<JsApiWrapper*>(o->GetAlignedPointerFromInternalField(0));
   if (w == window_canvas_) {
     // The main CanvasApi wraps the main Skia context too, which is where other
     // resources like textures, etc. are allocated. All of those resources must
@@ -718,6 +720,17 @@ void JsApi::VisitPersistentHandle(v8::Persistent<v8::Value>* value,
     return;
   }
   delete w;
+}
+
+void* JsApi::GetWrappedInstanceOrThrow(v8::Local<v8::Value> thiz,
+                                       v8::Local<v8::Function> constructor) {
+  if (IsInstanceOf(thiz, constructor)) {
+    // The internal pointer is set in JsApiWrapper::JsApiWrapper.
+    return thiz.As<v8::Object>()->GetAlignedPointerFromInternalField(0);
+  } else {
+    js_->ThrowIllegalInvocation();
+    return nullptr;
+  }
 }
 
 // static
@@ -977,7 +990,7 @@ void JsApi::SetIcon(v8::Local<v8::Name> property, v8::Local<v8::Value> value,
       api->js()->ThrowInvalidArgument();
       return;
     }
-    icons[i] = ImageDataApi::Get(icon)->ToGLFWImage();
+    icons[i] = api->GetImageDataApi(icon)->ToGLFWImage();
   }
   api->window_icon_.Reset(api->js()->isolate(), array);
   api->window_->SetIcons(std::move(icons));
@@ -1027,7 +1040,7 @@ void JsApi::SetCursor(v8::Local<v8::Name> property, v8::Local<v8::Value> value,
     api->cursor_image_ = nullptr;
   } else if (api->IsInstanceOf(value, api->GetImageDataConstructor())) {
     api->cursor_shape_ = 0;
-    api->cursor_image_ = ImageDataApi::Get(value);
+    api->cursor_image_ = api->GetImageDataApi(value);
   } else {
     api->js()->ThrowInvalidArgument();
     return;

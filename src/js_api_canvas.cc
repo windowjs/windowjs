@@ -22,13 +22,13 @@ void CanvasRenderingContext2D(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
   JsApi* api = JsApi::Get(info.GetIsolate());
-  v8::Local<v8::Object> thiz = info.This();
   if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsNumber()) {
     api->js()->ThrowInvalidArgument();
     return;
   }
   int width = info[0].As<v8::Number>()->Value();
   int height = info[1].As<v8::Number>()->Value();
+  v8::Local<v8::Object> thiz = info.This();
   new CanvasApi(api, thiz, width, height);
 }
 
@@ -59,7 +59,7 @@ void ImageData(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   if (info.Length() >= 1 &&
       api->IsInstanceOf(info[0], api->GetImageDataConstructor())) {
-    ImageDataApi* image_data = ImageDataApi::Get(info[0]);
+    ImageDataApi* image_data = api->GetImageDataApi(info[0]);
     if (info.Length() >= 5 && info[1]->IsUint32() && info[2]->IsUint32() &&
         info[3]->IsUint32() && info[4]->IsUint32()) {
       int x = info[1].As<v8::Uint32>()->Value();
@@ -132,7 +132,6 @@ void ImageBitmap(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   JsApi* api = JsApi::Get(info.GetIsolate());
-  v8::Local<v8::Object> thiz = info.This();
 
   if (info.Length() < 1) {
     api->js()->ThrowInvalidArgument();
@@ -142,9 +141,9 @@ void ImageBitmap(const v8::FunctionCallbackInfo<v8::Value>& info) {
   sk_sp<SkImage> texture;
 
   if (api->IsInstanceOf(info[0], api->GetImageBitmapConstructor())) {
-    texture = ImageBitmapApi::Get(info[0])->texture();
+    texture = api->GetImageBitmapApi(info[0])->texture();
   } else if (api->IsInstanceOf(info[0], api->GetImageDataConstructor())) {
-    ImageDataApi* image_data = ImageDataApi::Get(info[0]);
+    ImageDataApi* image_data = api->GetImageDataApi(info[0]);
     SkImageInfo image_info =
         SkImageInfo::Make(image_data->width(), image_data->height(),
                           kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
@@ -190,6 +189,7 @@ void ImageBitmap(const v8::FunctionCallbackInfo<v8::Value>& info) {
     ASSERT(texture->isTextureBacked());
   }
 
+  v8::Local<v8::Object> thiz = info.This();
   new ImageBitmapApi(api, thiz, texture);
 }
 
@@ -386,8 +386,10 @@ v8::Local<v8::Function> CanvasApi::GetConstructor(JsApi* api,
 // static
 void CanvasApi::GetWidth(v8::Local<v8::String> property,
                          const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->canvas()->width());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->canvas()->width());
+  }
 }
 
 // static
@@ -402,7 +404,10 @@ void CanvasApi::SetWidth(v8::Local<v8::String> property,
     }
   }
   JsApi* api = JsApi::Get(info.GetIsolate());
-  CanvasApi* canvas_api = CanvasApi::Get(info.This());
+  CanvasApi* canvas_api = api->GetCanvasApi(info.This());
+  if (!canvas_api) {
+    return;
+  }
   if (canvas_api->canvas() == api->window_canvas()) {
     api->js()->ThrowError("Use window.width to resize the main canvas");
     return;
@@ -413,8 +418,10 @@ void CanvasApi::SetWidth(v8::Local<v8::String> property,
 // static
 void CanvasApi::GetHeight(v8::Local<v8::String> property,
                           const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->canvas()->height());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->canvas()->height());
+  }
 }
 
 // static
@@ -429,7 +436,10 @@ void CanvasApi::SetHeight(v8::Local<v8::String> property,
     }
   }
   JsApi* api = JsApi::Get(info.GetIsolate());
-  CanvasApi* canvas_api = CanvasApi::Get(info.This());
+  CanvasApi* canvas_api = api->GetCanvasApi(info.This());
+  if (!canvas_api) {
+    return;
+  }
   if (canvas_api->canvas() == api->window_canvas()) {
     api->js()->ThrowError("Use window.height to resize the main canvas");
     return;
@@ -440,16 +450,22 @@ void CanvasApi::SetHeight(v8::Local<v8::String> property,
 // static
 void CanvasApi::GetFillStyle(v8::Local<v8::String> property,
                              const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  std::string color = SkColorToCSSColor(api->state_.fill_color);
-  info.GetReturnValue().Set(api->js()->MakeString(color));
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    std::string color = SkColorToCSSColor(api->state_.fill_color);
+    info.GetReturnValue().Set(api->js()->MakeString(color));
+  }
 }
 
 // static
 void CanvasApi::SetFillStyle(v8::Local<v8::String> property,
                              v8::Local<v8::Value> value,
                              const v8::PropertyCallbackInfo<void>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
+
   if (value->IsString()) {
     std::string s = api->js()->ToString(value);
     SkColor color;
@@ -464,7 +480,7 @@ void CanvasApi::SetFillStyle(v8::Local<v8::String> property,
     }
   } else if (api->api()->IsInstanceOf(
                  value, api->api()->GetCanvasGradientConstructor())) {
-    CanvasGradientApi* gradient = JsApiWrapper::Get<CanvasGradientApi>(value);
+    CanvasGradientApi* gradient = api->api()->GetCanvasGradientApi(value);
     gradient->Ref();
     State& state = api->state_;
     if (state.fill_gradient) {
@@ -479,7 +495,10 @@ void CanvasApi::SetFillStyle(v8::Local<v8::String> property,
 void CanvasApi::GetStrokeStyle(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
   std::string color = SkColorToCSSColor(api->state_.stroke_color);
   info.GetReturnValue().Set(api->js()->MakeString(color));
 }
@@ -488,7 +507,10 @@ void CanvasApi::GetStrokeStyle(
 void CanvasApi::SetStrokeStyle(v8::Local<v8::String> property,
                                v8::Local<v8::Value> value,
                                const v8::PropertyCallbackInfo<void>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
   if (value->IsString()) {
     std::string s = api->js()->ToString(value);
     SkColor color;
@@ -503,7 +525,7 @@ void CanvasApi::SetStrokeStyle(v8::Local<v8::String> property,
     }
   } else if (api->api()->IsInstanceOf(
                  value, api->api()->GetCanvasGradientConstructor())) {
-    CanvasGradientApi* gradient = JsApiWrapper::Get<CanvasGradientApi>(value);
+    CanvasGradientApi* gradient = api->api()->GetCanvasGradientApi(value);
     gradient->Ref();
     State& state = api->state_;
     if (state.stroke_gradient) {
@@ -516,8 +538,8 @@ void CanvasApi::SetStrokeStyle(v8::Local<v8::String> property,
 
 static void DrawRect(const v8::FunctionCallbackInfo<v8::Value>& info,
                      const SkPaint& paint, CanvasApi* api) {
-  if (info.Length() < 4 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
-      !info[2]->IsNumber() || !info[3]->IsNumber()) {
+  if (!api || info.Length() < 4 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber()) {
     return;
   }
   SkRect rect = SkRect::MakeXYWH(
@@ -532,28 +554,30 @@ void CanvasApi::ClearRect(const v8::FunctionCallbackInfo<v8::Value>& info) {
   SkPaint paint;
   paint.setColor(SK_ColorTRANSPARENT);
   paint.setBlendMode(SkBlendMode::kSrc);
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
   DrawRect(info, paint, api);
 }
 
 // static
 void CanvasApi::FillRect(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
   DrawRect(info, api->state_.fill_paint, api);
 }
 
 // static
 void CanvasApi::StrokeRect(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
   DrawRect(info, api->state_.stroke_paint, api);
 }
 
 // static
 void CanvasApi::GetFont(v8::Local<v8::String> property,
                         const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  std::string font = SkFontToCSSFont(api->state_.font);
-  info.GetReturnValue().Set(api->js()->MakeString(font));
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    std::string font = SkFontToCSSFont(api->state_.font);
+    info.GetReturnValue().Set(api->js()->MakeString(font));
+  }
 }
 
 // static
@@ -563,34 +587,41 @@ void CanvasApi::SetFont(v8::Local<v8::String> property,
   if (!value->IsString()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
-  std::string font = api->js()->ToString(value);
-  CSSFontToSkFont(font, &api->state_.font, api->api()->fonts(),
-                  api->api()->fonts_cache());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    std::string font = api->js()->ToString(value);
+    CSSFontToSkFont(font, &api->state_.font, api->api()->fonts(),
+                    api->api()->fonts_cache());
+  }
 }
 
 // static
 void CanvasApi::GetLineWidth(v8::Local<v8::String> property,
                              const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->state_.stroke_paint.getStrokeWidth());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->state_.stroke_paint.getStrokeWidth());
+  }
 }
 
 // static
 void CanvasApi::SetLineWidth(v8::Local<v8::String> property,
                              v8::Local<v8::Value> value,
                              const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsNumber()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->state_.stroke_paint.setStrokeWidth(value.As<v8::Number>()->Value());
 }
 
 // static
 void CanvasApi::GetLineCap(v8::Local<v8::String> property,
                            const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
   switch (api->state_.stroke_paint.getStrokeCap()) {
     case SkPaint::kSquare_Cap:
       info.GetReturnValue().Set(api->GetConstantString(StringId::square));
@@ -612,7 +643,10 @@ void CanvasApi::SetLineCap(v8::Local<v8::String> property,
   if (!value->IsString()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
   std::string cap = api->js()->ToString(value);
   if (cap == "butt") {
     api->state_.stroke_paint.setStrokeCap(SkPaint::kButt_Cap);
@@ -626,7 +660,10 @@ void CanvasApi::SetLineCap(v8::Local<v8::String> property,
 // static
 void CanvasApi::GetLineJoin(v8::Local<v8::String> property,
                             const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
   switch (api->state_.stroke_paint.getStrokeJoin()) {
     case SkPaint::kRound_Join:
       info.GetReturnValue().Set(api->GetConstantString(StringId::round));
@@ -645,10 +682,10 @@ void CanvasApi::GetLineJoin(v8::Local<v8::String> property,
 void CanvasApi::SetLineJoin(v8::Local<v8::String> property,
                             v8::Local<v8::Value> value,
                             const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsString()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsString()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   std::string join = api->js()->ToString(value);
   if (join == "miter") {
     api->state_.stroke_paint.setStrokeJoin(SkPaint::kMiter_Join);
@@ -662,24 +699,29 @@ void CanvasApi::SetLineJoin(v8::Local<v8::String> property,
 // static
 void CanvasApi::GetMiterLimit(v8::Local<v8::String> property,
                               const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->state_.stroke_paint.getStrokeMiter());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->state_.stroke_paint.getStrokeMiter());
+  }
 }
 
 // static
 void CanvasApi::SetMiterLimit(v8::Local<v8::String> property,
                               v8::Local<v8::Value> value,
                               const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsNumber()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->state_.stroke_paint.setStrokeMiter(value.As<v8::Number>()->Value());
 }
 
 // static
 void CanvasApi::GetLineDash(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
   v8::Isolate* isolate = info.GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Array> array =
@@ -693,7 +735,8 @@ void CanvasApi::GetLineDash(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void CanvasApi::SetLineDash(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 1 || !info[0]->IsArray()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 1 || !info[0]->IsArray()) {
     return;
   }
   v8::Local<v8::Array> array = info[0].As<v8::Array>();
@@ -702,7 +745,6 @@ void CanvasApi::SetLineDash(const v8::FunctionCallbackInfo<v8::Value>& info) {
   std::vector<float> line_dash;
   line_dash.resize(length);
 
-  CanvasApi* api = CanvasApi::Get(info.This());
   v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
 
   for (int i = 0; i < length; i++) {
@@ -739,18 +781,20 @@ void CanvasApi::UpdateLineDash() {
 void CanvasApi::GetLineDashOffset(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->state_.line_dash_offset);
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->state_.line_dash_offset);
+  }
 }
 
 // static
 void CanvasApi::SetLineDashOffset(v8::Local<v8::String> property,
                                   v8::Local<v8::Value> value,
                                   const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsNumber()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->state_.line_dash_offset = value.As<v8::Number>()->Value();
   api->UpdateLineDash();
 }
@@ -758,18 +802,20 @@ void CanvasApi::SetLineDashOffset(v8::Local<v8::String> property,
 // static
 void CanvasApi::GetTextAlign(v8::Local<v8::String> property,
                              const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->GetConstantString(api->state_.text_align));
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->GetConstantString(api->state_.text_align));
+  }
 }
 
 // static
 void CanvasApi::SetTextAlign(v8::Local<v8::String> property,
                              v8::Local<v8::Value> value,
                              const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsString()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsString()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   std::string align = api->js()->ToString(value);
   if (align == "left") {
     api->state_.text_align = StringId::left;
@@ -788,18 +834,21 @@ void CanvasApi::SetTextAlign(v8::Local<v8::String> property,
 void CanvasApi::GetTextBaseline(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->GetConstantString(api->state_.text_baseline));
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(
+        api->GetConstantString(api->state_.text_baseline));
+  }
 }
 
 // static
 void CanvasApi::SetTextBaseline(v8::Local<v8::String> property,
                                 v8::Local<v8::Value> value,
                                 const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsString()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsString()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   std::string baseline = api->js()->ToString(value);
   if (baseline == "top") {
     api->state_.text_baseline = StringId::top;
@@ -820,19 +869,21 @@ void CanvasApi::SetTextBaseline(v8::Local<v8::String> property,
 void CanvasApi::GetGlobalAlpha(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->state_.global_alpha);
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->state_.global_alpha);
+  }
 }
 
 // static
 void CanvasApi::SetGlobalAlpha(v8::Local<v8::String> property,
                                v8::Local<v8::Value> value,
                                const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsNumber()) {
     return;
   }
   float alpha = value.As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   State& state = api->state_;
   if (alpha != state.global_alpha) {
     state.global_alpha = alpha;
@@ -847,7 +898,10 @@ void CanvasApi::SetGlobalAlpha(v8::Local<v8::String> property,
 void CanvasApi::GetGlobalCompositeOperation(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
   StringId op = StringId::sourceOver;
   switch (api->state_.global_composite_op) {
     case SkBlendMode::kClear:
@@ -896,10 +950,10 @@ void CanvasApi::GetGlobalCompositeOperation(
 void CanvasApi::SetGlobalCompositeOperation(
     v8::Local<v8::String> property, v8::Local<v8::Value> value,
     const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsString()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsString()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   std::string s = api->js()->ToString(value);
   static const std::unordered_map<std::string, SkBlendMode> ops{
       {"source-over", SkBlendMode::kSrcOver},
@@ -943,22 +997,24 @@ void CanvasApi::SetGlobalCompositeOperation(
 // static
 void CanvasApi::GetShadowBlur(v8::Local<v8::String> property,
                               const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->state_.shadow_blur);
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->state_.shadow_blur);
+  }
 }
 
 // static
 void CanvasApi::SetShadowBlur(v8::Local<v8::String> property,
                               v8::Local<v8::Value> value,
                               const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsNumber()) {
     return;
   }
   float blur = value.As<v8::Number>()->Value();
   if (blur < 0) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   State& state = api->state_;
   if (blur != state.shadow_blur) {
     state.shadow_blur = blur;
@@ -970,19 +1026,21 @@ void CanvasApi::SetShadowBlur(v8::Local<v8::String> property,
 void CanvasApi::GetShadowColor(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  std::string color = SkColorToCSSColor(api->state_.shadow_color);
-  info.GetReturnValue().Set(api->js()->MakeString(color));
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    std::string color = SkColorToCSSColor(api->state_.shadow_color);
+    info.GetReturnValue().Set(api->js()->MakeString(color));
+  }
 }
 
 // static
 void CanvasApi::SetShadowColor(v8::Local<v8::String> property,
                                v8::Local<v8::Value> value,
                                const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsString()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsString()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   std::string css = api->js()->ToString(value);
   SkColor color;
   if (!CSSColorToSkColor(css, &color)) {
@@ -999,19 +1057,21 @@ void CanvasApi::SetShadowColor(v8::Local<v8::String> property,
 void CanvasApi::GetShadowOffsetX(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->state_.shadow_offsetx);
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->state_.shadow_offsetx);
+  }
 }
 
 // static
 void CanvasApi::SetShadowOffsetX(v8::Local<v8::String> property,
                                  v8::Local<v8::Value> value,
                                  const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsNumber()) {
     return;
   }
   float offset = value.As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   State& state = api->state_;
   if (offset != state.shadow_offsetx) {
     state.shadow_offsetx = offset;
@@ -1023,19 +1083,21 @@ void CanvasApi::SetShadowOffsetX(v8::Local<v8::String> property,
 void CanvasApi::GetShadowOffsetY(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->state_.shadow_offsety);
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->state_.shadow_offsety);
+  }
 }
 
 // static
 void CanvasApi::SetShadowOffsetY(v8::Local<v8::String> property,
                                  v8::Local<v8::Value> value,
                                  const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsNumber()) {
     return;
   }
   float offset = value.As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   State& state = api->state_;
   if (offset != state.shadow_offsety) {
     state.shadow_offsety = offset;
@@ -1046,18 +1108,20 @@ void CanvasApi::SetShadowOffsetY(v8::Local<v8::String> property,
 // static
 void CanvasApi::GetAntiAlias(v8::Local<v8::String> property,
                              const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->state_.antialias);
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->state_.antialias);
+  }
 }
 
 // static
 void CanvasApi::SetAntiAlias(v8::Local<v8::String> property,
                              v8::Local<v8::Value> value,
                              const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsBoolean()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsBoolean()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->state_.antialias = value.As<v8::Boolean>()->Value();
   api->state_.fill_paint.setAntiAlias(api->state_.antialias);
   api->state_.stroke_paint.setAntiAlias(api->state_.antialias);
@@ -1067,18 +1131,20 @@ void CanvasApi::SetAntiAlias(v8::Local<v8::String> property,
 void CanvasApi::GetImageSmoothingEnabled(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  info.GetReturnValue().Set(api->state_.image_smoothing);
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    info.GetReturnValue().Set(api->state_.image_smoothing);
+  }
 }
 
 // static
 void CanvasApi::SetImageSmoothingEnabled(
     v8::Local<v8::String> property, v8::Local<v8::Value> value,
     const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsBoolean()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsBoolean()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->state_.image_smoothing = value.As<v8::Boolean>()->Value();
   api->UpdateImageSmoothing();
 }
@@ -1087,7 +1153,10 @@ void CanvasApi::SetImageSmoothingEnabled(
 void CanvasApi::GetImageSmoothingQuality(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
   v8::Local<v8::String> quality;
   if (api->state_.image_smoothing_quality == 0) {
     quality = api->js()->MakeString("low");
@@ -1103,10 +1172,10 @@ void CanvasApi::GetImageSmoothingQuality(
 void CanvasApi::SetImageSmoothingQuality(
     v8::Local<v8::String> property, v8::Local<v8::Value> value,
     const v8::PropertyCallbackInfo<void>& info) {
-  if (!value->IsString()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || !value->IsString()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   std::string quality = api->js()->ToString(value);
   if (quality == "low") {
     api->state_.image_smoothing_quality = 0;
@@ -1154,8 +1223,8 @@ void CanvasApi::UpdateShadow() {
 // static
 void CanvasApi::DrawText(const v8::FunctionCallbackInfo<v8::Value>& info,
                          const SkPaint& paint, CanvasApi* api) {
-  if (info.Length() < 3 || !info[0]->IsString() || !info[1]->IsNumber() ||
-      !info[2]->IsNumber()) {
+  if (!api || info.Length() < 3 || !info[0]->IsString() ||
+      !info[1]->IsNumber() || !info[2]->IsNumber()) {
     return;
   }
 
@@ -1199,23 +1268,23 @@ void CanvasApi::DrawText(const v8::FunctionCallbackInfo<v8::Value>& info,
 
 // static
 void CanvasApi::FillText(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
   DrawText(info, api->state_.fill_paint, api);
 }
 
 // static
 void CanvasApi::StrokeText(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
   DrawText(info, api->state_.stroke_paint, api);
 }
 
 // static
 void CanvasApi::MeasureText(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 1 || !info[0]->IsString()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 1 || !info[0]->IsString()) {
     return;
   }
 
-  CanvasApi* api = CanvasApi::Get(info.This());
   std::string text = api->js()->ToString(info[0]);
 
   SkRect bounds = SkRect::MakeEmpty();
@@ -1237,35 +1306,41 @@ void CanvasApi::MeasureText(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void CanvasApi::BeginPath(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  api->path_.rewind();
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    api->path_.rewind();
+  }
 }
 
 // static
 void CanvasApi::ClosePath(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  api->path_.close();
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    api->path_.close();
+  }
 }
 
 // static
 void CanvasApi::MoveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 2 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber()) {
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
   float y = info[1].As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->path_.moveTo(x, y);
 }
 
 // static
 void CanvasApi::LineTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 2 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber()) {
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
   float y = info[1].As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   if (api->path_.isEmpty() || api->path_.isLastContourClosed()) {
     api->path_.moveTo(x, y);
   } else {
@@ -1275,9 +1350,10 @@ void CanvasApi::LineTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void CanvasApi::BezierCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 6 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
-      !info[2]->IsNumber() || !info[3]->IsNumber() || !info[4]->IsNumber() ||
-      !info[5]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 6 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber() ||
+      !info[4]->IsNumber() || !info[5]->IsNumber()) {
     return;
   }
   float c1x = info[0].As<v8::Number>()->Value();
@@ -1286,22 +1362,21 @@ void CanvasApi::BezierCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
   float c2y = info[3].As<v8::Number>()->Value();
   float ex = info[4].As<v8::Number>()->Value();
   float ey = info[5].As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->path_.cubicTo(c1x, c1y, c2x, c2y, ex, ey);
 }
 
 // static
 void CanvasApi::QuadraticCurveTo(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 4 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
-      !info[2]->IsNumber() || !info[3]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 4 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber()) {
     return;
   }
   float cx = info[0].As<v8::Number>()->Value();
   float cy = info[1].As<v8::Number>()->Value();
   float ex = info[2].As<v8::Number>()->Value();
   float ey = info[3].As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->path_.quadTo(cx, cy, ex, ey);
 }
 
@@ -1327,8 +1402,10 @@ static float AdjustEndAngle(float start, float end, bool ccw) {
 
 // static
 void CanvasApi::Arc(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 5 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
-      !info[2]->IsNumber() || !info[3]->IsNumber() || !info[4]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 5 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber() ||
+      !info[4]->IsNumber()) {
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
@@ -1341,14 +1418,15 @@ void CanvasApi::Arc(const v8::FunctionCallbackInfo<v8::Value>& info) {
   end = AdjustEndAngle(start, end, ccw);
   float sweep = end - start;
   SkRect oval = SkRect::MakeLTRB(x - r, y - r, x + r, y + r);
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->path_.addArc(oval, RadiansToDegrees(start), RadiansToDegrees(sweep));
 }
 
 // static
 void CanvasApi::ArcTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 5 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
-      !info[2]->IsNumber() || !info[3]->IsNumber() || !info[4]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 5 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber() ||
+      !info[4]->IsNumber()) {
     return;
   }
   float x1 = info[0].As<v8::Number>()->Value();
@@ -1356,15 +1434,15 @@ void CanvasApi::ArcTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
   float x2 = info[2].As<v8::Number>()->Value();
   float y2 = info[3].As<v8::Number>()->Value();
   float r = info[4].As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->path_.arcTo(x1, y1, x2, y2, r);
 }
 
 // static
 void CanvasApi::Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 7 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
-      !info[2]->IsNumber() || !info[3]->IsNumber() || !info[4]->IsNumber() ||
-      !info[5]->IsNumber() || !info[6]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 7 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber() ||
+      !info[4]->IsNumber() || !info[5]->IsNumber() || !info[6]->IsNumber()) {
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
@@ -1377,8 +1455,6 @@ void CanvasApi::Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info) {
   bool ccw = info.Length() >= 8 && info[7]->IsBoolean() &&
              info[7].As<v8::Boolean>()->Value();
   end = AdjustEndAngle(start, end, ccw);
-
-  CanvasApi* api = CanvasApi::Get(info.This());
 
   SkMatrix transform;
   transform.postRotate(RadiansToDegrees(rotation));
@@ -1396,21 +1472,24 @@ void CanvasApi::Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void CanvasApi::Rect(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 4 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
-      !info[2]->IsNumber() || !info[3]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 4 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber()) {
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
   float y = info[1].As<v8::Number>()->Value();
   float w = info[2].As<v8::Number>()->Value();
   float h = info[3].As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->path_.addRect(SkRect::MakeXYWH(x, y, w, h), SkPathDirection::kCW, 0);
 }
 
 // static
 void CanvasApi::Fill(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
   if (info.Length() >= 1 && info[0]->IsString()) {
     std::string fill_type = api->js()->ToString(info[0]);
     if (fill_type == "evenodd") {
@@ -1427,14 +1506,19 @@ void CanvasApi::Fill(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void CanvasApi::Stroke(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  api->canvas()->SetCurrentContext();
-  api->skia_canvas()->drawPath(api->path_, api->state_.stroke_paint);
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    api->canvas()->SetCurrentContext();
+    api->skia_canvas()->drawPath(api->path_, api->state_.stroke_paint);
+  }
 }
 
 // static
 void CanvasApi::Clip(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
 
   SkPathFillType fill_type = SkPathFillType::kWinding;
   if (info.Length() >= 1 && info[0]->IsString()) {
@@ -1454,7 +1538,9 @@ void CanvasApi::Clip(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void CanvasApi::IsPointInPath(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 2 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber()) {
     return;
   }
 
@@ -1462,7 +1548,6 @@ void CanvasApi::IsPointInPath(const v8::FunctionCallbackInfo<v8::Value>& info) {
   float y = info[1].As<v8::Number>()->Value();
   SkPathFillType fill_type = SkPathFillType::kWinding;
 
-  CanvasApi* api = CanvasApi::Get(info.This());
   if (info.Length() >= 3 && info[2]->IsString()) {
     std::string rule = api->js()->ToString(info[2]);
     if (rule == "evenodd") {
@@ -1481,14 +1566,15 @@ void CanvasApi::IsPointInPath(const v8::FunctionCallbackInfo<v8::Value>& info) {
 // static
 void CanvasApi::IsPointInStroke(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 2 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber()) {
     return;
   }
 
   float x = info[0].As<v8::Number>()->Value();
   float y = info[1].As<v8::Number>()->Value();
 
-  CanvasApi* api = CanvasApi::Get(info.This());
   SkPath stroke;
   api->state_.stroke_paint.getFillPath(api->path_, &stroke);
   bool result = stroke.contains(x, y);
@@ -1498,10 +1584,10 @@ void CanvasApi::IsPointInStroke(
 
 // static
 void CanvasApi::Rotate(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 1 || !info[0]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 1 || !info[0]->IsNumber()) {
     return;
   }
-  CanvasApi* api = CanvasApi::Get(info.This());
   float radians = info[0].As<v8::Number>()->Value();
   float degrees = RadiansToDegrees(radians);
   api->skia_canvas()->rotate(degrees);
@@ -1509,31 +1595,34 @@ void CanvasApi::Rotate(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void CanvasApi::Scale(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 2 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber()) {
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
   float y = info[1].As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->skia_canvas()->scale(x, y);
 }
 
 // static
 void CanvasApi::Translate(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 2 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber()) {
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
   float y = info[1].As<v8::Number>()->Value();
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->skia_canvas()->translate(x, y);
 }
 
 // static
 void CanvasApi::Transform(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 6 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
-      !info[2]->IsNumber() || !info[3]->IsNumber() || !info[4]->IsNumber() ||
-      !info[5]->IsNumber()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api || info.Length() < 6 || !info[0]->IsNumber() ||
+      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber() ||
+      !info[4]->IsNumber() || !info[5]->IsNumber()) {
     return;
   }
   float a = info[0].As<v8::Number>()->Value();
@@ -1543,13 +1632,16 @@ void CanvasApi::Transform(const v8::FunctionCallbackInfo<v8::Value>& info) {
   float e = info[4].As<v8::Number>()->Value();
   float f = info[5].As<v8::Number>()->Value();
   SkMatrix m = SkMatrix::MakeAll(a, c, e, b, d, f, 0, 0, 1);
-  CanvasApi* api = CanvasApi::Get(info.This());
   api->skia_canvas()->concat(m);
 }
 
 // static
 void CanvasApi::GetTransform(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
+
   SkMatrix m = api->skia_canvas()->getLocalToDeviceAs3x3();
 
   v8::Isolate* isolate = info.GetIsolate();
@@ -1573,7 +1665,10 @@ void CanvasApi::GetTransform(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void CanvasApi::SetTransform(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
 
   float v[6];
 
@@ -1607,8 +1702,10 @@ void CanvasApi::SetTransform(const v8::FunctionCallbackInfo<v8::Value>& info) {
 // static
 void CanvasApi::ResetTransform(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  api->skia_canvas()->resetMatrix();
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    api->skia_canvas()->resetMatrix();
+  }
 }
 
 // static
@@ -1617,15 +1714,17 @@ void CanvasApi::Save(const v8::FunctionCallbackInfo<v8::Value>& info) {
   // 1. transformation matrix (saved in SkCanvas)
   // 2. clipping region (saved in SkCanvas)
   // 3. all styles, dash, font, etc. (saved in saved_state_)
-  CanvasApi* api = CanvasApi::Get(info.This());
-  api->skia_canvas()->save();
-  api->saved_state_.emplace_back(api->state_);
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    api->skia_canvas()->save();
+    api->saved_state_.emplace_back(api->state_);
+  }
 }
 
 // static
 void CanvasApi::Restore(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = CanvasApi::Get(info.This());
-  if (!api->saved_state_.empty()) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api && !api->saved_state_.empty()) {
     api->skia_canvas()->restore();
     api->state_ = api->saved_state_.back();
     api->saved_state_.pop_back();
@@ -1635,7 +1734,11 @@ void CanvasApi::Restore(const v8::FunctionCallbackInfo<v8::Value>& info) {
 // static
 void CanvasApi::CreateGradient(const v8::FunctionCallbackInfo<v8::Value>& info,
                                int size, const char* name) {
-  CanvasApi* api = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
+
   std::vector<v8::Local<v8::Value>> args;
   args.resize(size);
   for (int i = 0; i < size; i++) {
@@ -1702,8 +1805,11 @@ void CanvasApi::CreateImageData(
 
 // static
 void CanvasApi::GetImageData(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* canvas = CanvasApi::Get(info.This());
   JsApi* api = JsApi::Get(info.GetIsolate());
+  CanvasApi* canvas = api->GetCanvasApi(info.This());
+  if (!canvas) {
+    return;
+  }
 
   int x = 0;
   int y = 0;
@@ -1788,7 +1894,9 @@ void CanvasApi::GetImageData(const v8::FunctionCallbackInfo<v8::Value>& info) {
           ->NewInstance(info.GetIsolate()->GetCurrentContext(), 2, args)
           .ToLocalChecked();
 
-  ImageDataApi* image_data = ImageDataApi::Get(object);
+  ImageDataApi* image_data = api->GetImageDataApi(object);
+  ASSERT(image_data);
+
   canvas->canvas()->ReadPixels(x, y, w, h, image_data->backing_store()->Data());
 
   info.GetReturnValue().Set(object);
@@ -1796,8 +1904,11 @@ void CanvasApi::GetImageData(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void CanvasApi::PutImageData(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* canvas = CanvasApi::Get(info.This());
-  JsApi* api = canvas->api();
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  CanvasApi* canvas = api->GetCanvasApi(info.This());
+  if (!canvas) {
+    return;
+  }
 
   if (info.Length() < 3 ||
       !api->IsInstanceOf(info[0], api->GetImageDataConstructor()) ||
@@ -1806,7 +1917,9 @@ void CanvasApi::PutImageData(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
 
-  ImageDataApi* image_data = ImageDataApi::Get(info[0]);
+  ImageDataApi* image_data = api->GetImageDataApi(info[0]);
+  ASSERT(image_data);
+
   int dx = info[1].As<v8::Uint32>()->Value();
   int dy = info[2].As<v8::Uint32>()->Value();
   int sx = 0;
@@ -1846,20 +1959,28 @@ void CanvasApi::PutImageData(const v8::FunctionCallbackInfo<v8::Value>& info) {
 }
 
 void CanvasApi::Encode(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* canvas = CanvasApi::Get(info.This());
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
 
-  sk_sp<SkImage> image = canvas->canvas()->MakeImageSnapshot();
+  sk_sp<SkImage> image = api->canvas()->MakeImageSnapshot();
   ASSERT(image);
   image = image->makeNonTextureImage();
   ASSERT(image);
 
-  info.GetReturnValue().Set(EncodeInBackground(image, info, canvas->api()));
+  info.GetReturnValue().Set(EncodeInBackground(image, info, api->api()));
 }
 
 // static
 void CanvasApi::DrawImage(const v8::FunctionCallbackInfo<v8::Value>& info) {
   ASSERT(IsMainThread());
   JsApi* api = JsApi::Get(info.GetIsolate());
+  CanvasApi* canvas = api->GetCanvasApi(info.This());
+  if (!canvas) {
+    return;
+  }
+
   // Length must be 3, 4 or 5 (image, dx, dy, [dw, dh]),
   // or 7, 8 or 9 (image sx, sy, sw, sh, dx, dy, [dw, dh]).
   if (info.Length() < 3 || info.Length() == 6 ||
@@ -1875,12 +1996,13 @@ void CanvasApi::DrawImage(const v8::FunctionCallbackInfo<v8::Value>& info) {
   float source_height = 0;
 
   if (api->IsInstanceOf(info[0], api->GetImageBitmapConstructor())) {
-    ImageBitmapApi* source_bitmap = ImageBitmapApi::Get(info[0]);
+    ImageBitmapApi* source_bitmap = api->GetImageBitmapApi(info[0]);
     source_width = source_bitmap->width();
     source_height = source_bitmap->height();
     source_image = source_bitmap->texture();
   } else {
-    CanvasApi* source_canvas = CanvasApi::Get(info[0]);
+    CanvasApi* source_canvas = api->GetCanvasApi(info[0]);
+    ASSERT(source_canvas);
     source_width = source_canvas->canvas()->width();
     source_height = source_canvas->canvas()->height();
     source_image = source_canvas->canvas()->MakeImageSnapshot();
@@ -1930,7 +2052,6 @@ void CanvasApi::DrawImage(const v8::FunctionCallbackInfo<v8::Value>& info) {
     }
   }
 
-  CanvasApi* canvas = CanvasApi::Get(info.This());
   canvas->canvas()->SetCurrentContext();
 
   if (sx == 0 && sy == 0 && sw == source_width && sh == source_height &&
@@ -2038,7 +2159,11 @@ void CanvasApi::OnGradientUpdated(CanvasGradientApi* gradient) {
 // static
 void CanvasGradientApi::AddColorStop(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasGradientApi* gradient = CanvasGradientApi::Get(info.This());
+  CanvasGradientApi* gradient =
+      JsApi::Get(info.GetIsolate())->GetCanvasGradientApi(info.This());
+  if (!gradient) {
+    return;
+  }
 
   if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsString()) {
     gradient->js()->ThrowError(
@@ -2173,27 +2298,40 @@ v8::Local<v8::Function> ImageDataApi::GetConstructor(JsApi* api,
 // static
 void ImageDataApi::GetData(v8::Local<v8::String> property,
                            const v8::PropertyCallbackInfo<v8::Value>& info) {
-  ImageDataApi* image_data = ImageDataApi::Get(info.This());
-  info.GetReturnValue().Set(image_data->data_.Get(info.GetIsolate()));
+  ImageDataApi* image_data =
+      JsApi::Get(info.GetIsolate())->GetImageDataApi(info.This());
+  if (image_data) {
+    info.GetReturnValue().Set(image_data->data_.Get(info.GetIsolate()));
+  }
 }
 
 // static
 void ImageDataApi::GetWidth(v8::Local<v8::String> property,
                             const v8::PropertyCallbackInfo<v8::Value>& info) {
-  ImageDataApi* image_data = ImageDataApi::Get(info.This());
-  info.GetReturnValue().Set(image_data->width_);
+  ImageDataApi* image_data =
+      JsApi::Get(info.GetIsolate())->GetImageDataApi(info.This());
+  if (image_data) {
+    info.GetReturnValue().Set(image_data->width_);
+  }
 }
 
 // static
 void ImageDataApi::GetHeight(v8::Local<v8::String> property,
                              const v8::PropertyCallbackInfo<v8::Value>& info) {
-  ImageDataApi* image_data = ImageDataApi::Get(info.This());
-  info.GetReturnValue().Set(image_data->height_);
+  ImageDataApi* image_data =
+      JsApi::Get(info.GetIsolate())->GetImageDataApi(info.This());
+  if (image_data) {
+    info.GetReturnValue().Set(image_data->height_);
+  }
 }
 
 // static
 void ImageDataApi::Encode(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  ImageDataApi* image_data = ImageDataApi::Get(info.This());
+  ImageDataApi* image_data =
+      JsApi::Get(info.GetIsolate())->GetImageDataApi(info.This());
+  if (!image_data) {
+    return;
+  }
 
   SkImageInfo image_info =
       SkImageInfo::Make(image_data->width(), image_data->height(),
@@ -2234,7 +2372,7 @@ void ImageDataApi::Decode(const v8::FunctionCallbackInfo<v8::Value>& info) {
               api->GetImageDataConstructor()
                   ->NewInstance(scope.context, 2, args)
                   .ToLocalChecked();
-          ImageDataApi* image_data = ImageDataApi::Get(object);
+          ImageDataApi* image_data = api->GetImageDataApi(object);
           SkImageInfo image_info =
               SkImageInfo::Make(image->width(), image->height(),
                                 kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
@@ -2279,21 +2417,31 @@ v8::Local<v8::Function> ImageBitmapApi::GetConstructor(JsApi* api,
 // static
 void ImageBitmapApi::GetWidth(v8::Local<v8::String> property,
                               const v8::PropertyCallbackInfo<v8::Value>& info) {
-  ImageBitmapApi* image_bitmap = ImageBitmapApi::Get(info.This());
-  info.GetReturnValue().Set(image_bitmap->width());
+  ImageBitmapApi* image_bitmap =
+      JsApi::Get(info.GetIsolate())->GetImageBitmapApi(info.This());
+  if (image_bitmap) {
+    info.GetReturnValue().Set(image_bitmap->width());
+  }
 }
 
 // static
 void ImageBitmapApi::GetHeight(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  ImageBitmapApi* image_bitmap = ImageBitmapApi::Get(info.This());
-  info.GetReturnValue().Set(image_bitmap->height());
+  ImageBitmapApi* image_bitmap =
+      JsApi::Get(info.GetIsolate())->GetImageBitmapApi(info.This());
+  if (image_bitmap) {
+    info.GetReturnValue().Set(image_bitmap->height());
+  }
 }
 
 // static
 void ImageBitmapApi::Encode(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  ImageBitmapApi* image_bitmap = ImageBitmapApi::Get(info.This());
+  ImageBitmapApi* image_bitmap =
+      JsApi::Get(info.GetIsolate())->GetImageBitmapApi(info.This());
+  if (!image_bitmap) {
+    return;
+  }
   sk_sp<SkImage> image = image_bitmap->texture()->makeNonTextureImage();
   ASSERT(image);
   info.GetReturnValue().Set(

@@ -72,6 +72,7 @@ class Js final {
   void ThrowError(std::string_view error);
   void ThrowTypeError(std::string_view error);
   void ThrowIllegalConstructor();
+  void ThrowIllegalInvocation();
   void ThrowInvalidArgument();
   void ReportException(v8::Local<v8::Message> message);
   void HandleUncaughtExceptionsInPromises();
