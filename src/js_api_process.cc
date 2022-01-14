@@ -13,7 +13,7 @@ void GetArgs(v8::Local<v8::String> property,
   JsApi* api = JsApi::Get(info.GetIsolate());
   std::vector<v8::Local<v8::Value>> args;
   args.resize(Args().args.size());
-  for (int i = 0; i < Args().args.size(); i++) {
+  for (unsigned i = 0; i < Args().args.size(); i++) {
     args[i] = api->js()->MakeString(Args().args[i]);
   }
   v8::Local<v8::Array> array =

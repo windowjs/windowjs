@@ -492,7 +492,7 @@ v8::Local<v8::Object> MakeDropEvent(std::vector<std::string> paths,
   scope.Set(event, StringId::type, StringId::drop);
   v8::Local<v8::Array> files = v8::Array::New(scope.isolate, paths.size());
   for (uint32_t i = 0; i < paths.size(); i++) {
-    (void) files->Set(scope.context, i, scope.MakeString(paths[i]));
+    IGNORE_RESULT(files->Set(scope.context, i, scope.MakeString(paths[i])));
   }
   scope.Set(event, StringId::files, files.As<v8::Value>());
   event->SetIntegrityLevel(scope.context, v8::IntegrityLevel::kFrozen);

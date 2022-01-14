@@ -5,10 +5,16 @@
 #include <GLFW/glfw3.h>
 #include <v8/include/libplatform/libplatform.h>
 
+#if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #include <v8/src/debug/debug-interface.h>
+
+#if defined(__clang__)
 #pragma clang diagnostic pop
+#endif
 
 #include "args.h"
 #include "file.h"
@@ -313,14 +319,14 @@ v8::Local<v8::Module> Js::LoadModuleByPath(std::filesystem::path path,
     return {};
   } else if (promise->State() == v8::Promise::kPending) {
     if (is_main_module) {
-      (void) promise->Then(
+      IGNORE_RESULT(promise->Then(
           context,
           v8::Function::New(context, OnMainModuleResolve).ToLocalChecked(),
-          v8::Function::New(context, OnMainModuleFailure).ToLocalChecked());
+          v8::Function::New(context, OnMainModuleFailure).ToLocalChecked()));
     } else {
-      (void) promise->Catch(
+      IGNORE_RESULT(promise->Catch(
           context,
-          v8::Function::New(context, OnModuleFailure).ToLocalChecked());
+          v8::Function::New(context, OnModuleFailure).ToLocalChecked()));
     }
   } else if (is_main_module) {
     delegate_->OnMainModuleLoaded();

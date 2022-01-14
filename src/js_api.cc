@@ -517,7 +517,7 @@ void Open(const v8::FunctionCallbackInfo<v8::Value>& args) {
     system(command.c_str());
 #else
     std::string command = "xdg-open \"" + what + "\"";
-    system(command.c_str());
+    IGNORE_RESULT(system(command.c_str()));
 #endif
   }
 }
@@ -776,7 +776,7 @@ void JsApi::CallTimeout(uint32_t id) {
   v8::Local<v8::Function> callback = it->second.Get(scope.isolate);
   timeouts_.erase(it);
 
-  (void) callback->Call(scope.context, js_->global(), 0, {});
+  IGNORE_RESULT(callback->Call(scope.context, js_->global(), 0, {}));
 
   if (try_catch.HasCaught()) {
     js_->ReportException(try_catch.Message());
@@ -838,7 +838,7 @@ void JsApi::CallAnimationFrameCallbacks(const JsScope& scope) {
 
     v8::Local<v8::Function> f =
         v8::Local<v8::Function>::New(scope.isolate, callback);
-    (void) f->Call(scope.context, scope.context->Global(), 1, args);
+    IGNORE_RESULT(f->Call(scope.context, scope.context->Global(), 1, args));
 
     if (try_catch.HasCaught()) {
       js_->ReportException(try_catch.Message());
@@ -871,7 +871,8 @@ v8::Local<v8::Promise> JsApi::PostToBackgroundAndResolve(
       r(this, scope, *resolver);
       if (try_catch.HasCaught()) {
         if (resolver->GetPromise()->State() == v8::Promise::kPending) {
-          (void) resolver->Reject(scope.context, try_catch.Message()->Get());
+          IGNORE_RESULT(
+              resolver->Reject(scope.context, try_catch.Message()->Get()));
         }
       }
       ASSERT(resolver->GetPromise()->State() != v8::Promise::kPending);
@@ -885,14 +886,16 @@ v8::Local<v8::Promise> JsApi::PostToBackgroundAndResolve(
 JsApi::ResolveFunction JsApi::Reject(std::string reason) {
   return [s = std::move(reason)](JsApi* api, const JsScope& scope,
                                  v8::Promise::Resolver* resolver) {
-    (void) resolver->Reject(scope.context, api->js()->MakeString(std::move(s)));
+    IGNORE_RESULT(
+        resolver->Reject(scope.context, api->js()->MakeString(std::move(s))));
   };
 }
 
 // static
 JsApi::ResolveFunction JsApi::Resolve() {
   return [](JsApi* api, const JsScope& scope, v8::Promise::Resolver* resolver) {
-    (void) resolver->Resolve(scope.context, v8::Undefined(scope.isolate));
+    IGNORE_RESULT(
+        resolver->Resolve(scope.context, v8::Undefined(scope.isolate)));
   };
 }
 
@@ -900,8 +903,9 @@ JsApi::ResolveFunction JsApi::Resolve() {
 JsApi::ResolveFunction JsApi::Resolve(bool value) {
   return [value](JsApi* api, const JsScope& scope,
                  v8::Promise::Resolver* resolver) {
-    (void) resolver->Resolve(scope.context, value ? v8::True(scope.isolate)
-                                                  : v8::False(scope.isolate));
+    IGNORE_RESULT(
+        resolver->Resolve(scope.context, value ? v8::True(scope.isolate)
+                                               : v8::False(scope.isolate)));
   };
 }
 
@@ -909,8 +913,8 @@ JsApi::ResolveFunction JsApi::Resolve(bool value) {
 JsApi::ResolveFunction JsApi::Resolve(double value) {
   return [value](JsApi* api, const JsScope& scope,
                  v8::Promise::Resolver* resolver) {
-    (void) resolver->Resolve(scope.context,
-                             v8::Number::New(scope.isolate, value));
+    IGNORE_RESULT(resolver->Resolve(scope.context,
+                                    v8::Number::New(scope.isolate, value)));
   };
 }
 
@@ -918,8 +922,8 @@ JsApi::ResolveFunction JsApi::Resolve(double value) {
 JsApi::ResolveFunction JsApi::Resolve(std::string value) {
   return [s = std::move(value)](JsApi* api, const JsScope& scope,
                                 v8::Promise::Resolver* resolver) {
-    (void) resolver->Resolve(scope.context,
-                             api->js()->MakeString(std::move(s)));
+    IGNORE_RESULT(
+        resolver->Resolve(scope.context, api->js()->MakeString(std::move(s))));
   };
 }
 
@@ -1154,12 +1158,13 @@ void JsApi::LoadFont(const v8::FunctionCallbackInfo<v8::Value>& args) {
               SkData::MakeWithCopy(content.data(), content.size());
           sk_sp<SkTypeface> font = SkTypeface::MakeFromData(data);
           if (!font) {
-            (void) resolver->Reject(
+            IGNORE_RESULT(resolver->Reject(
                 scope.context, scope.MakeString("Failed to load font at " +
-                                                path + ": failed to decode"));
+                                                path + ": failed to decode")));
           }
           api->fonts_[name] = font;
-          (void) resolver->Resolve(scope.context, v8::Undefined(scope.isolate));
+          IGNORE_RESULT(
+              resolver->Resolve(scope.context, v8::Undefined(scope.isolate)));
         };
       }));
 }

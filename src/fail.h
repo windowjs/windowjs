@@ -14,7 +14,8 @@
   Fail("UV library call failed at %s:%d: %s\n", __FILE__, __LINE__, \
        uv_strerror(_r))
 
-#define UNUSED(x) ((void) (x))
+template <typename T>
+inline void IGNORE_RESULT(const T&) {}
 
 void Fail(const char* reason, ...);
 

@@ -21,7 +21,7 @@ std::unique_ptr<Pipe> Pipe::Spawn(std::string exe_path,
                                args = std::move(args), pipe = pipe.get()] {
     std::vector<char*> argv;
     argv.resize(args.size() + 1);
-    for (int i = 0; i < args.size(); i++) {
+    for (unsigned i = 0; i < args.size(); i++) {
       argv[i] = (char*) args[i].c_str();
     }
     argv[args.size()] = nullptr;
@@ -149,7 +149,7 @@ void Pipe::OnAsyncSend(uv_async_t* handle) {
     pipe->send_messages_.swap(messages);
   }
 
-  for (int i = 0; i < messages.size(); i++) {
+  for (unsigned i = 0; i < messages.size(); i++) {
     WriteMessage* write =
         pipe->AllocateWriteMessage(types[i], std::move(messages[i]));
     uv_buf_t buf[3];
@@ -168,7 +168,7 @@ Pipe::WriteMessage* Pipe::AllocateWriteMessage(uint32_t type,
                                                std::string message) {
   ASSERT(!IsMainThread());
   int index = -1;
-  for (int i = 0; i < writes_.size(); i++) {
+  for (unsigned i = 0; i < writes_.size(); i++) {
     if (writes_[i]->size == 0) {
       index = i;
       break;
@@ -224,7 +224,7 @@ void Pipe::OnRead(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
     uv_read_stop(stream);
     uv_close((uv_handle_t*) stream, nullptr);
   } else if (nread > 0) {
-    ASSERT(nread <= buf->len);
+    ASSERT(nread <= (ssize_t) buf->len);
     char* base = buf->base;
     uint32_t size = nread;
     while (size > 0) {

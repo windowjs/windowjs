@@ -225,7 +225,7 @@ v8::Local<v8::Promise> EncodeInBackground(
                   (void*) data->data(), data->size(), UnrefData, data.get());
           v8::Local<v8::ArrayBuffer> buffer =
               v8::ArrayBuffer::New(api->isolate(), std::move(store));
-          (void) resolver->Resolve(scope.context, buffer);
+          IGNORE_RESULT(resolver->Resolve(scope.context, buffer));
         };
   });
 }
@@ -684,7 +684,7 @@ void CanvasApi::GetLineDash(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Array> array =
       v8::Array::New(isolate, api->state_.line_dash.size());
-  for (int i = 0; i < api->state_.line_dash.size(); i++) {
+  for (unsigned i = 0; i < api->state_.line_dash.size(); i++) {
     v8::Local<v8::Value> x = v8::Number::New(isolate, api->state_.line_dash[i]);
     ASSERT(array->Set(context, i, x).FromJust());
   }
@@ -1957,7 +1957,7 @@ CanvasGradientApi::CanvasGradientApi(
     api->js()->ThrowIllegalConstructor();
   }
   params_.resize(info.Length());
-  for (int i = 0; i < params_.size(); i++) {
+  for (unsigned i = 0; i < params_.size(); i++) {
     params_[i] = info[i].As<v8::Number>()->Value();
   }
 }
@@ -2241,7 +2241,7 @@ void ImageDataApi::Decode(const v8::FunctionCallbackInfo<v8::Value>& info) {
           image->readPixels(nullptr, image_info,
                             image_data->backing_store()->Data(),
                             image->width() * 4, 0, 0);
-          (void) resolver->Resolve(scope.context, object);
+          IGNORE_RESULT(resolver->Resolve(scope.context, object));
         };
       }));
 }
@@ -2330,7 +2330,7 @@ void ImageBitmapApi::Decode(const v8::FunctionCallbackInfo<v8::Value>& info) {
               api->GetImageBitmapConstructor()
                   ->NewInstance(scope.context, 1, args)
                   .ToLocalChecked();
-          (void) resolver->Resolve(scope.context, object);
+          IGNORE_RESULT(resolver->Resolve(scope.context, object));
         };
       }));
 }

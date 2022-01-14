@@ -3,10 +3,16 @@
 #include <iostream>
 #include <thread>
 
+#if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #include <v8/src/debug/debug-interface.h>
+
+#if defined(__clang__)
 #pragma clang diagnostic pop
+#endif
 
 #include <skia/include/core/SkCanvas.h>
 #include <skia/include/core/SkFont.h>

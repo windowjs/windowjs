@@ -20,7 +20,7 @@ int ToHex(int x) {
 }
 
 bool ValidHex(const std::string& color) {
-  for (int i = 1; i < color.size(); i++) {
+  for (unsigned i = 1; i < color.size(); i++) {
     if (!isxdigit(color[i])) {
       return false;
     }

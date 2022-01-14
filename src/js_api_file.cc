@@ -53,7 +53,8 @@ void ReadJson(const v8::FunctionCallbackInfo<v8::Value>& args) {
           // propagated to the promise by PostToBackgroundAndResolve.
           v8::MaybeLocal<v8::Value> value = v8::JSON::Parse(scope.context, s);
           if (!value.IsEmpty()) {
-            (void) resolver->Resolve(scope.context, value.ToLocalChecked());
+            IGNORE_RESULT(
+                resolver->Resolve(scope.context, value.ToLocalChecked()));
           };
         };
       }));
@@ -81,7 +82,7 @@ void ReadArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args) {
           v8::Local<v8::ArrayBuffer> buffer =
               v8::ArrayBuffer::New(scope.isolate, c.size());
           std::memcpy(buffer->GetBackingStore()->Data(), c.data(), c.size());
-          (void) resolver->Resolve(scope.context, buffer);
+          IGNORE_RESULT(resolver->Resolve(scope.context, buffer));
         };
       }));
 }
@@ -124,7 +125,7 @@ void ReadImageData(const v8::FunctionCallbackInfo<v8::Value>& args) {
           image->readPixels(nullptr, image_info,
                             image_data->backing_store()->Data(),
                             image->width() * 4, 0, 0);
-          (void) resolver->Resolve(scope.context, object);
+          IGNORE_RESULT(resolver->Resolve(scope.context, object));
         };
       }));
 }
@@ -165,7 +166,7 @@ void ReadImageBitmap(const v8::FunctionCallbackInfo<v8::Value>& args) {
               api->GetImageBitmapConstructor()
                   ->NewInstance(scope.context, 1, args)
                   .ToLocalChecked();
-          (void) resolver->Resolve(scope.context, object);
+          IGNORE_RESULT(resolver->Resolve(scope.context, object));
         };
       }));
 }
@@ -306,12 +307,12 @@ void ListFunction(const v8::FunctionCallbackInfo<v8::Value>& args,
                                         v8::Promise::Resolver* resolver) {
           std::vector<v8::Local<v8::Value>> elements;
           elements.resize(list.size());
-          for (int i = 0; i < list.size(); i++) {
+          for (unsigned i = 0; i < list.size(); i++) {
             elements[i] = api->js()->MakeString(list[i].u8string());
           }
           v8::Local<v8::Array> array =
               v8::Array::New(scope.isolate, &elements[0], elements.size());
-          (void) resolver->Resolve(scope.context, array);
+          IGNORE_RESULT(resolver->Resolve(scope.context, array));
         };
       }));
 }
