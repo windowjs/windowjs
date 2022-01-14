@@ -22,7 +22,7 @@ interface CanvasCompositing {
 
 interface CanvasDrawImage {
     /**
-     * Draws an [ImageBitmap](/doc/imagebitmap) or an
+     * Draws an {@link ImageBitmap} or an
      * {@link CanvasRenderingContext2D offscreen canvas} onto the main canvas in its original size at a given location.
      * @param image  The source image or canvas to draw.
      * @param dx  The horizontal coordinate in the destination canvas at which to place the top-left corner of the source image.
@@ -31,7 +31,7 @@ interface CanvasDrawImage {
     drawImage(image: CanvasImageSource, dx: number, dy: number): void;
 
     /**
-     * Draws an [ImageBitmap](/doc/imagebitmap) or an
+     * Draws an {@link ImageBitmap} or an
      * {@link CanvasRenderingContext2D offscreen canvas} onto the main canvas with a specific size and location.
      * @param image  The source image or canvas to draw.
      * @param dx  The horizontal coordinate in the destination canvas at which to place the top-left corner of the source image.
@@ -42,7 +42,7 @@ interface CanvasDrawImage {
     drawImage(image: CanvasImageSource, dx: number, dy: number, dw: number, dh: number): void;
 
     /**
-     * Draws a sub region of an [ImageBitmap](/doc/imagebitmap) or an
+     * Draws a sub region of an {@link ImageBitmap} or an
      * {@link CanvasRenderingContext2D offscreen canvas} onto the main canvas with a specific size and location.
      * @param image  The source image or canvas to draw.
      * @param sx  The horizontal coordinate of the top-left corner of the sub region of the source image that will be drawn.
@@ -133,7 +133,7 @@ interface CanvasFillStrokeStyles {
      * The style to apply in the fill operations ({@link CanvasDrawPath.fill fill},
      * {@link CanvasRect.fillRect fillRect} and {@link CanvasText.fillText fillText})).
      * 
-     * Valid values are [CanvasGradient](/doc/canvasgradient) instances, or strings
+     * Valid values are {@link CanvasGradient} instances, or strings
      * representing a CSS color in one of these formats:
      * -  `#rgb`
      * -  `#rgba`
@@ -155,7 +155,7 @@ interface CanvasFillStrokeStyles {
      * The style to apply in the stroke operations ({@link CanvasDrawPath.stroke stroke},
      * {@link CanvasRect.strokeRect strokeRect} and {@link CanvasText.strokeText strokeText})).
      * 
-     * Valid values are [CanvasGradient](/doc/canvasgradient) instances, or strings
+     * Valid values are {@link CanvasGradient} instances, or strings
      * representing a CSS color in one of these formats:
      * -  `#rgb`
      * -  `#rgba`
@@ -174,7 +174,7 @@ interface CanvasFillStrokeStyles {
     strokeStyle: string | CanvasGradient;
 
     /**
-     * Creates a linear [CanvasGradient](/doc/canvasgradient) along the line connecting
+     * Creates a linear {@link CanvasGradient} along the line connecting
      * the two given coordinates.
      * 
      * To be applied to a shape, the gradient must first be assigned to the
@@ -191,7 +191,7 @@ interface CanvasFillStrokeStyles {
     createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradient;
 
     /**
-     * Creates a radial [CanvasGradient](/doc/canvasgradient) using the size and
+     * Creates a radial {@link CanvasGradient} using the size and
      * coordinates of two circles.
      * 
      * To be applied to a shape, the gradient must first be assigned to the
@@ -245,7 +245,7 @@ declare var CanvasGradient: {
 
 interface CanvasImageData {
     /**
-     * Creates a new, blank [ImageData](/doc/imagedata) object with the specified
+     * Creates a new, blank {@link ImageData} object with the specified
      * dimensions. All of the pixels in the new object are transparent black.
      * 
      * See also
@@ -263,8 +263,8 @@ interface CanvasImageData {
     createImageData(imagedata: ImageData): ImageData;
 
     /**
-     * Returns an [ImageData](/doc/imagedata) object containing the pixel data for a
-     * specified region of the canvas. [ImageData](/doc/imagedata) can be painted
+     * Returns an {@link ImageData} object containing the pixel data for a
+     * specified region of the canvas. {@link ImageData} can be painted
      * onto a canvas using the {@link CanvasImageData.putImageData putImageData} method.
      * 
      * This method is not affected by the canvas's transformation matrix.
@@ -280,7 +280,7 @@ interface CanvasImageData {
     getImageData(sx?: number, sy?: number, sw?: number, sh?: number): ImageData;
 
     /**
-     * Paints the data in the given [ImageData](/doc/imagedata) object onto the canvas.
+     * Paints the data in the given {@link ImageData} object onto the canvas.
      * 
      * See also
      * [putImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/putImageData)
@@ -292,7 +292,7 @@ interface CanvasImageData {
     putImageData(imagedata: ImageData, dx: number, dy: number): void;
 
     /**
-     * Paints the data in the given [ImageData](/doc/imagedata) object onto the canvas.
+     * Paints the data in the given {@link ImageData} object onto the canvas.
      * 
      * See also
      * [putImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/putImageData)
@@ -314,7 +314,7 @@ interface CanvasImageSmoothing {
      * 
      * Images can be drawn via the {@link CanvasDrawImage} API, and the
      * destination size in the canvas may be different from the source size in the
-     * [ImageBitmap](/doc/imagebitmap). In those cases, the image gets scaled up or
+     * {@link ImageBitmap}. In those cases, the image gets scaled up or
      * down. This setting controls whether the rescaled image should look smoother
      * (when it's turned on), or sharper (when it's turned off).
      * 
@@ -934,13 +934,13 @@ type Matrix2D = [number, number, number, number, number, number];
 
 /**
  * An `ImageBitmap` represents an image texture in GPU memory, that can be drawn
- * efficiently to the [canvas](/doc/canvas) via
+ * efficiently to the {@link canvas} via
  * {@link CanvasDrawImage.drawImage drawImage}.
  * 
  * An `ImageBitmap` can be created in several ways:
  * 
  * *  By copying an existing `ImageBitmap` or from the pixels in an
- *    [ImageData](/doc/imagedata) object via the
+ *    {@link ImageData} object via the
  *    {@link ImageBitmap ImageBitmap constructor}.
  * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in an array
  *    of bytes via {@link ImageBitmap.decode}.
@@ -980,7 +980,7 @@ declare var ImageBitmap: {
 
     /**
      * Creates a new `ImageBitmap` with a copy of the pixels in another `ImageBitmap`
-     * or in an [ImageData](/doc/imagedata).
+     * or in an {@link ImageData}.
      * @param source  The source image pixels to copy.
      * @param x  The horizontal coordinate of the source rectangle to copy. Defaults to 0.
      * @param y  The vertical coordinate of the source rectangle to copy. Defaults to 0.
@@ -1009,7 +1009,7 @@ declare var ImageBitmap: {
  *    `ImageData`, or with a given array of pixel data.
  * *  By creating a `new ImageData` by calling
  *    {@link CanvasImageData.createImageData createImageData}.
- * *  By copying the pixels in the [canvas](/doc/canvas) via
+ * *  By copying the pixels in the {@link canvas} via
  *    {@link CanvasImageData.getImageData getImageData}
  * *  By decoding an image encoded as a `JPEG`, `PNG` or `WEBP` image in an array
  *    of bytes via {@link ImageData.decode}.
@@ -1017,7 +1017,7 @@ declare var ImageBitmap: {
  *    via {@link File.readImageData}.
  * 
  * An `ImageData` allows reading and writing the underlying pixels. See
- * [ImageBitmap](/doc/imagebitmap) for a similar class that is more efficient for
+ * {@link ImageBitmap} for a similar class that is more efficient for
  * storing image content that is only going to be drawn.
  * 
  * See also the

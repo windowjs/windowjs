@@ -68,12 +68,12 @@ interface File {
     readArrayBuffer(path: string): Promise<ArrayBuffer>;
 
     /**
-     * Returns the contents of the given file as an [ImageBitmap](/doc/imagebitmap).
+     * Returns the contents of the given file as an {@link ImageBitmap}.
      */
     readImageBitmap(path: string): Promise<ImageBitmap>;
 
     /**
-     * Returns the contents of the given file as an [ImageData](/doc/imagedata).
+     * Returns the contents of the given file as an {@link ImageData}.
      */
     readImageData(path: string): Promise<ImageData>;
 

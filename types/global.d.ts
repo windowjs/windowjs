@@ -1,9 +1,9 @@
 /**
  * Window.js exposes its APIs via the global object, `globalThis`.
  * 
- * *  APIs like [File](/doc/file) and [Process](/doc/process) are accessed via
+ * *  APIs like {@link File} are accessed via
  *    their main class.
- * *  APIs like [window](/doc/window) and [window.canvas](/doc/canvas) are accessed
+ * *  APIs like {@link window} are accessed
  *    via the prebuilt objects.
  * *  APIs like {@link setTimeout} and
  *    {@link requestAnimationFrame} are accessed as global
@@ -27,12 +27,12 @@ declare const devicePixelRatio: number;
 
 /**
  * Utilities to measure elapsed times and the Javascript VM memory usage. See the
- * [performance](/doc/performance) API.
+ * {@link performance} API.
  */
 declare var performance: Performance;
 
 /**
- * The main [window](/doc/window).
+ * The main {@link window}.
  */
 declare var window: Window;
 
