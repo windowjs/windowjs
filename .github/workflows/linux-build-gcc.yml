@@ -1,0 +1,100 @@
+name: Linux GCC build
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'examples/**'
+      - 'types/**'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'examples/**'
+      - 'types/**'
+  release:
+    types: [released]
+
+  # Allows running this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install packages
+        run: sudo apt-get install cmake gcc g++ libfontconfig-dev libjpeg-turbo8-dev libwebp-dev libgl-dev libglx-dev libxrandr-dev xorg-dev upx
+
+      - name: Cache
+        id: cache-libraries
+        uses: actions/cache@v2
+        with:
+          path: |
+            libraries/depot_tools
+            libraries/gn
+            libraries/glad
+            libraries/glfw
+            libraries/skia
+            !libraries/skia/out
+            libraries/skia/out/Release/skia.lib
+            libraries/v8
+            !libraries/v8/out
+            libraries/v8/out/Release/obj/v8_monolith.lib
+            libraries/libuv
+          key: ${{ runner.os }}-gcc-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-linux.gn', 'libraries/build_v8.sh', 'libraries/v8-args-linux.gn') }}
+
+      - name: Sync
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          source libraries/setup_build_env.sh
+          export CC=gcc
+          export CXX=g++
+          libraries/sync.sh
+
+      - name: Build Skia
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          source libraries/setup_build_env.sh
+          export CC=gcc
+          export CXX=g++
+          libraries/build_skia.sh
+
+      - name: Build v8
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          source libraries/setup_build_env.sh
+          export CC=gcc
+          export CXX=g++
+          libraries/build_v8.sh
+
+      - name: Build
+        run: |
+          source libraries/setup_build_env.sh
+          export CC=gcc
+          export CXX=g++
+          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake --build out
+
+      - name: Binary size
+        run: |
+          echo "Size after build:"
+          du -b out/src/windowjs
+          strip out/src/windowjs
+          echo "Size after strip:"
+          du -b out/src/windowjs
+          upx -9 out/src/windowjs
+          echo "Size after upx:"
+          du -b out/src/windowjs
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: windowjs
+          path: out/src/windowjs
