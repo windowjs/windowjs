@@ -14,10 +14,6 @@
 #include "js_strings.h"
 #include "thread.h"
 
-// CanvasRenderingContext2D.createPattern()                TODO
-//   See SkImage::makeShader for this.
-// Path2D class and parameters to some of those            TODO
-
 namespace {
 
 void CanvasRenderingContext2D(const v8::FunctionCallbackInfo<v8::Value>& info) {

@@ -15,7 +15,6 @@ struct CommandLineArgs {
   bool disable_dev_keys = false;
   bool enable_crash_keys = false;
   bool version = false;
-  // TODO: support running without a Window.
   bool headless = false;
   std::vector<std::string> args;
 };

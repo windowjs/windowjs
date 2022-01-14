@@ -1,6 +1,3 @@
-// TODO: support top-level await in the console:
-// const m = await import('./some/module.js');
-
 const FONT_HEIGHT = 12;
 const LINE_HEIGHT = 20;
 

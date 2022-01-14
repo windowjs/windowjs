@@ -6,10 +6,6 @@
 #include "subprocess.h"
 #include "thread.h"
 
-// TODO: support more options in Process.spawn: File access, etc.
-
-// TODO: support TypedArrays in postMessage.
-
 namespace {
 
 void GetArgs(v8::Local<v8::String> property,
