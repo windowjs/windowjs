@@ -552,6 +552,21 @@ Erases the pixels in a rectangular area by setting them to transparent black.
 | width  | number | The width of the rectangle. Positive values are to the right, and negative to the left.                                                        |
 | height | number | The height of the rectangle. Positive values are down, and negative are up.                                                                    |
 
+The main window supports transparency but is initially set to opaque black.
+It must be cleared and filled with a transparent overlay to enable transparency:
+
+```javascript
+const canvas = window.canvas;
+canvas.clearRect(0, 0, canvas.width, canvas.height);
+canvas.fillStyle = '#000000b0';
+canvas.fillRect(0, 0, canvas.width, canvas.height);
+```
+
+See
+[`examples/squares.js`](https://github.com/windowjs/windowjs/blob/main/examples/squares.js)
+for an example.
+
+
 See also
 [clearRect](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect)
 at MDN.
