@@ -44,7 +44,7 @@ jobs:
             libraries/skia
             libraries/v8
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-mac.gn') }}
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-mac.gn', 'libraries/build_v8.sh', 'libraries/v8-args-mac.gn') }}
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'

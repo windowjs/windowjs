@@ -50,7 +50,7 @@ jobs:
             libraries/skia
             libraries/v8
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.bat', 'libraries/skia-args-windows.gn') }}
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.bat', 'libraries/skia-args-windows.gn', 'libraries/build_v8.bat', 'libraries/v8-args-windows.gn') }}
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'
