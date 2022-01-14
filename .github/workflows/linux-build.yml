@@ -7,12 +7,14 @@ on:
       - '.github/**'
       - 'docs/**'
       - 'examples/**'
+      - 'types/**'
   pull_request:
     branches: [ main ]
     paths-ignore:
       - '.github/**'
       - 'docs/**'
       - 'examples/**'
+      - 'types/**'
   release:
     types: [released]
 
