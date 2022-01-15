@@ -83,8 +83,8 @@ class Js final {
   void SuppressNextScriptResult();
 
  private:
-  v8::Local<v8::Module> LoadModuleByPath(std::filesystem::path path,
-                                         bool is_main_module);
+  bool LoadModuleByPath(std::filesystem::path path,
+                        v8::Local<v8::Promise::Resolver> resolver);
 
   v8::Local<v8::Module> LoadModuleTree(
       v8::Local<v8::Context> context, const std::filesystem::path& path,
@@ -107,7 +107,11 @@ class Js final {
       const v8::FunctionCallbackInfo<v8::Value>& info);
   static void OnMainModuleFailure(
       const v8::FunctionCallbackInfo<v8::Value>& info);
-  static void OnModuleFailure(const v8::FunctionCallbackInfo<v8::Value>& info);
+
+  static void OnDynamicModuleResolve(
+      const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void OnDynamicModuleFailure(
+      const v8::FunctionCallbackInfo<v8::Value>& info);
 
   static v8::MaybeLocal<v8::Promise> ImportDynamic(
       v8::Local<v8::Context> context, v8::Local<v8::ScriptOrModule> referrer,
@@ -120,6 +124,7 @@ class Js final {
   void ImportDynamic(std::string path_str);
 
   static void HandlePromiseRejectCallback(v8::PromiseRejectMessage message);
+  void RemovePendingFailedPromise(v8::Local<v8::Promise> promise);
 
   Delegate* delegate_;
   std::filesystem::path base_path_;

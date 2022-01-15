@@ -280,7 +280,7 @@ void Js::LoadMainModule(std::string_view name) {
   std::filesystem::path path =
       name.substr(0, 2) == "--" ? name : (base_path_ / name).lexically_normal();
 
-  LoadModuleByPath(std::move(path), true);
+  LoadModuleByPath(std::move(path), {});
 
   if (try_catch.HasCaught()) {
     ReportException(try_catch.Message());
@@ -288,8 +288,20 @@ void Js::LoadMainModule(std::string_view name) {
   }
 }
 
-v8::Local<v8::Module> Js::LoadModuleByPath(std::filesystem::path path,
-                                           bool is_main_module) {
+// LoadModuleByPath is used in two flows:
+// 1. Loading the main module
+// 2. Loading a dynamically imported module.
+//
+// The "resolver" is set for the second case.
+//
+// LoadModuleByPath returns false if the module couldn't be located,
+// instantiated, etc. In those cases, an exception has been thrown.
+//
+// Otherwise, the module is either fully loaded and ready, or has a top-level
+// await and is still pending. In those case, a resolver or reject handler
+// will handle cases 1 and 2 later.
+bool Js::LoadModuleByPath(std::filesystem::path path,
+                          v8::Local<v8::Promise::Resolver> resolver) {
   std::vector<std::filesystem::path> paths;
   paths.push_back(path);
 
@@ -297,7 +309,7 @@ v8::Local<v8::Module> Js::LoadModuleByPath(std::filesystem::path path,
 
   v8::Local<v8::Module> module = LoadModuleTree(context, path, &paths);
   if (module.IsEmpty()) {
-    return {};
+    return false;
   }
 
   // At this stage, the module is compiled but not instantiated yet.
@@ -305,32 +317,48 @@ v8::Local<v8::Module> Js::LoadModuleByPath(std::filesystem::path path,
   // that haven't been instantiated yet.
 
   if (!module->InstantiateModule(context, ResolveModule).FromMaybe(false)) {
-    return {};
+    return false;
   }
 
   v8::Local<v8::Value> result;
   if (!module->Evaluate(context).ToLocal(&result)) {
-    return {};
+    return false;
   }
 
   v8::Local<v8::Promise> promise = result.As<v8::Promise>();
 
-  if (promise->State() == v8::Promise::kPending) {
-    if (is_main_module) {
+  if (resolver.IsEmpty()) {
+    // Loading the main module.
+    if (promise->State() == v8::Promise::kPending) {
       IGNORE_RESULT(promise->Then(
           context,
           v8::Function::New(context, OnMainModuleResolve).ToLocalChecked(),
           v8::Function::New(context, OnMainModuleFailure).ToLocalChecked()));
     } else {
-      IGNORE_RESULT(promise->Catch(
-          context,
-          v8::Function::New(context, OnModuleFailure).ToLocalChecked()));
+      delegate_->OnMainModuleLoaded();
     }
-  } else if (is_main_module) {
-    delegate_->OnMainModuleLoaded();
+  } else {
+    // Dynamic import: pass the result to the resolver.
+    v8::Local<v8::Value> ns = module->GetModuleNamespace();
+    if (promise->State() == v8::Promise::kPending) {
+      v8::Local<v8::Array> data = v8::Array::New(isolate_, 2);
+      ASSERT(data->Set(context, 0, resolver).FromMaybe(false));
+      ASSERT(data->Set(context, 1, ns).FromMaybe(false));
+      IGNORE_RESULT(promise->Then(
+          context,
+          v8::Function::New(context, OnDynamicModuleResolve, data)
+              .ToLocalChecked(),
+          v8::Function::New(context, OnDynamicModuleFailure, resolver)
+              .ToLocalChecked()));
+    } else if (promise->State() == v8::Promise::kFulfilled) {
+      ASSERT(resolver->Resolve(context, ns).FromMaybe(false));
+    } else {
+      RemovePendingFailedPromise(promise);
+      ASSERT(resolver->Reject(context, promise->Result()).FromMaybe(false));
+    }
   }
 
-  return module;
+  return true;
 }
 
 v8::Local<v8::Module> Js::LoadModuleTree(
@@ -481,17 +509,33 @@ void Js::OnMainModuleResolve(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 // static
 void Js::OnMainModuleFailure(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  OnModuleFailure(info);
-  Js::Get(info.GetIsolate())->delegate_->OnMainModuleLoaded();
+  ASSERT(info.Length() >= 1);
+  Js* js = Js::Get(info.GetIsolate());
+  v8::Local<v8::Value> error = info[0];
+  v8::Local<v8::Message> message = MakeErrorMessage(js->isolate_, error);
+  js->ReportException(message);
+  js->delegate_->OnMainModuleLoaded();
 }
 
 // static
-void Js::OnModuleFailure(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() >= 1) {
-    v8::Local<v8::Value> error = info[0];
-    v8::Local<v8::Message> message = MakeErrorMessage(info.GetIsolate(), error);
-    Js::Get(info.GetIsolate())->ReportException(message);
-  }
+void Js::OnDynamicModuleResolve(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Js* js = Js::Get(info.GetIsolate());
+  v8::Local<v8::Array> data = info.Data().As<v8::Array>();
+  v8::Local<v8::Promise::Resolver> resolver =
+      data->Get(js->context(), 0).ToLocalChecked().As<v8::Promise::Resolver>();
+  v8::Local<v8::Value> ns =
+      data->Get(js->context(), 1).ToLocalChecked().As<v8::Value>();
+  ASSERT(resolver->Resolve(js->context(), ns).FromMaybe(false));
+}
+
+// static
+void Js::OnDynamicModuleFailure(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Js* js = Js::Get(info.GetIsolate());
+  v8::Local<v8::Promise::Resolver> resolver =
+      info.Data().As<v8::Promise::Resolver>();
+  ASSERT(resolver->Reject(js->context(), info[0]).FromMaybe(false));
 }
 
 // static
@@ -563,21 +607,36 @@ void Js::ImportDynamic(std::string path_str) {
 
   std::filesystem::path path{path_str};
 
-  v8::Local<v8::Module> module = LoadModuleByPath(path, false);
-
-  if (module.IsEmpty()) {
+  if (LoadModuleByPath(path, resolver)) {
+    // Everything has been handled inside LoadModuleByPath.
+    try_catch.Reset();
+  } else {
+    // LoadModuleByPath failed to load the module.
     v8::Local<v8::Value> exception;
     if (try_catch.HasCaught()) {
       exception = try_catch.Exception();
+      // Reset() is important to clear the pending exception state;
+      // otherwise, v8 might crash. Repro: await on a dynamic import()
+      // that has a syntax error in the imported module.
+      try_catch.Reset();
     } else {
       exception = v8::Exception::Error(
           v8::String::NewFromUtf8Literal(isolate_, "Failed to import."));
     }
     ASSERT(!exception.IsEmpty());
     ASSERT(resolver->Reject(scope.context, exception).FromMaybe(false));
-  } else {
-    ASSERT(resolver->Resolve(scope.context, module->GetModuleNamespace())
-               .FromMaybe(false));
+  }
+}
+
+void Js::RemovePendingFailedPromise(v8::Local<v8::Promise> promise) {
+  auto it = failed_promises_.begin();
+  while (it != failed_promises_.end()) {
+    v8::Local<v8::Promise> failed_promise = it->first.Get(isolate_);
+    if (failed_promise == promise) {
+      it = failed_promises_.erase(it);
+    } else {
+      ++it;
+    }
   }
 }
 
@@ -605,15 +664,7 @@ void Js::HandlePromiseRejectCallback(v8::PromiseRejectMessage data) {
   } else if (data.GetEvent() == v8::kPromiseHandlerAddedAfterReject) {
     // A handler has been added after a promise has failed;
     // ignore its exception and don't report it.
-    auto it = js->failed_promises_.begin();
-    while (it != js->failed_promises_.end()) {
-      v8::Local<v8::Promise> failed_promise = it->first.Get(isolate);
-      if (failed_promise == promise) {
-        it = js->failed_promises_.erase(it);
-      } else {
-        ++it;
-      }
-    }
+    js->RemovePendingFailedPromise(promise);
   }
 }
 
