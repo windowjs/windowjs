@@ -159,8 +159,11 @@ bool Copy(const std::filesystem::path& from, const std::filesystem::path& to,
 
 bool CopyTree(const std::filesystem::path& from,
               const std::filesystem::path& to, std::string* error) {
+  std::filesystem::copy_options options = std::filesystem::copy_options::none;
+  options |= std::filesystem::copy_options::recursive;
+  options |= std::filesystem::copy_options::copy_symlinks;
   std::error_code error_code;
-  std::filesystem::copy(from, to, error_code);
+  std::filesystem::copy(from, to, options, error_code);
   if (error_code) {
     *error = error_code.message();
     return false;
