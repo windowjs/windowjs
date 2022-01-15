@@ -20,8 +20,8 @@ let scrollSkipLines = 0;
 const ZOOM_LEVELS = [
   0.25, 0.33, 0.5, 0.67, 0.75, 0.8, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3,
   4, 5
-];
-let zoom = 1.0;
+].map(zoom => zoom * devicePixelRatio);
+let zoom = devicePixelRatio;
 
 const inputHistory = [];
 let inputHistoryIndex = 0;
@@ -218,11 +218,11 @@ function clearConsole() {
 
 function updateZoom(delta) {
   if (delta == 0) {
-    zoom = 1.0;
+    zoom = devicePixelRatio;
   } else {
     let k = ZOOM_LEVELS.indexOf(zoom);
     if (k < 0) {
-      zoom = 1.0;
+      zoom = devicePixelRatio;
     } else if (delta < 0 && k > 0) {
       zoom = ZOOM_LEVELS[k - 1];
     } else if (delta > 0 && k < ZOOM_LEVELS.length - 1) {
@@ -230,7 +230,6 @@ function updateZoom(delta) {
     }
   }
   canvas.resetTransform();
-  zoom *= devicePixelRatio;
   canvas.scale(zoom, zoom);
   updateBlocks();
   requestDraw();
@@ -578,7 +577,9 @@ function init() {
   const metrics = canvas.measureText('Ap');
   fontDescent = Math.abs(metrics.actualBoundingBoxDescent);
 
-  Process.parent.addEventListener('message', onMessage);
+  if (Process.parent) {
+    Process.parent.addEventListener('message', onMessage);
+  }
 
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keypress', onKeyPress);
