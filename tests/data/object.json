@@ -1,0 +1,9 @@
+{
+  "string": "hello world",
+  "number": 123.456,
+  "true": true,
+  "false": false,
+  "null": null,
+  "array": ["hello world", 123.456, true, false, null],
+  "object": {}
+}
