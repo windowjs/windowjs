@@ -192,7 +192,13 @@ std::vector<std::filesystem::path> ListDir(const std::filesystem::path& path,
   std::error_code error_code;
   for (const std::filesystem::directory_entry& entry :
        std::filesystem::directory_iterator{path, error_code}) {
-    list.emplace_back(std::filesystem::relative(entry.path(), path));
+    std::error_code err;
+    std::filesystem::path p =
+        std::filesystem::relative(entry.path(), path, err);
+    if (err) {
+      continue;
+    }
+    list.emplace_back(std::move(p));
   }
   if (error_code) {
     *error = error_code.message();
@@ -207,7 +213,13 @@ std::vector<std::filesystem::path> ListTree(const std::filesystem::path& path,
   std::error_code error_code;
   for (const std::filesystem::directory_entry& entry :
        std::filesystem::recursive_directory_iterator{path, error_code}) {
-    list.emplace_back(std::filesystem::relative(entry.path(), path));
+    std::error_code err;
+    std::filesystem::path p =
+        std::filesystem::relative(entry.path(), path, err);
+    if (err) {
+      continue;
+    }
+    list.emplace_back(std::move(p));
   }
   if (error_code) {
     *error = error_code.message();
