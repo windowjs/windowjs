@@ -280,14 +280,11 @@ void Js::LoadMainModule(std::string_view name) {
   std::filesystem::path path =
       name.substr(0, 2) == "--" ? name : (base_path_ / name).lexically_normal();
 
-  v8::Local<v8::Module> module = LoadModuleByPath(std::move(path), true);
+  LoadModuleByPath(std::move(path), true);
 
-  if (module.IsEmpty()) {
-    ASSERT(try_catch.HasCaught());
+  if (try_catch.HasCaught()) {
     ReportException(try_catch.Message());
     delegate_->OnMainModuleLoaded();
-  } else {
-    ASSERT(!try_catch.HasCaught());
   }
 }
 
@@ -318,10 +315,7 @@ v8::Local<v8::Module> Js::LoadModuleByPath(std::filesystem::path path,
 
   v8::Local<v8::Promise> promise = result.As<v8::Promise>();
 
-  if (promise->State() == v8::Promise::kRejected) {
-    isolate_->ThrowException(promise->Result());
-    return {};
-  } else if (promise->State() == v8::Promise::kPending) {
+  if (promise->State() == v8::Promise::kPending) {
     if (is_main_module) {
       IGNORE_RESULT(promise->Then(
           context,
@@ -572,11 +566,14 @@ void Js::ImportDynamic(std::string path_str) {
   v8::Local<v8::Module> module = LoadModuleByPath(path, false);
 
   if (module.IsEmpty()) {
-    ASSERT(try_catch.HasCaught());
-    // ReportException(try_catch.Message());
-    v8::Local<v8::Value> exception = try_catch.Exception();
+    v8::Local<v8::Value> exception;
+    if (try_catch.HasCaught()) {
+      exception = try_catch.Exception();
+    } else {
+      exception = v8::Exception::Error(
+          v8::String::NewFromUtf8Literal(isolate_, "Failed to import."));
+    }
     ASSERT(!exception.IsEmpty());
-    try_catch.Reset();
     ASSERT(resolver->Reject(scope.context, exception).FromMaybe(false));
   } else {
     ASSERT(resolver->Resolve(scope.context, module->GetModuleNamespace())
@@ -621,6 +618,10 @@ void Js::HandlePromiseRejectCallback(v8::PromiseRejectMessage data) {
 }
 
 void Js::HandleUncaughtExceptionsInPromises() {
+  if (failed_promises_.empty()) {
+    return;
+  }
+
   std::vector<std::pair<v8::Global<v8::Promise>, v8::Global<v8::Message>>> list;
   failed_promises_.swap(list);
 
