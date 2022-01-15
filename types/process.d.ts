@@ -76,6 +76,15 @@ declare var Process: {
     readonly args: string[];
 
     /**
+     * The number of logical CPUs in the current machine. This is usually the number
+     * of CPU cores, or twice that for cores with HyperThreading.
+     *
+     * The CPU count gives an estimate of the maximum level of parallelism that can
+     * be obtained in the current machine when using multiple processes.
+     */
+    readonly cpus: number;
+
+    /**
      * A handle to the parent process. This is only present in child processes, as the
      * main process doesn't have a `parent`.
      * 

@@ -73,6 +73,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(ControlRight);
   SET_STRING(copy);
   SET_STRING(copyTree);
+  SET_STRING(cpus);
   SET_STRING(createImageData);
   SET_STRING(createLinearGradient);
   SET_STRING(createPattern);

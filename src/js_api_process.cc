@@ -1,5 +1,7 @@
 #include "js_api_process.h"
 
+#include <uv.h>
+
 #include "args.h"
 #include "fail.h"
 #include "file.h"
@@ -19,6 +21,17 @@ void GetArgs(v8::Local<v8::String> property,
   v8::Local<v8::Array> array =
       v8::Array::New(info.GetIsolate(), args.data(), args.size());
   info.GetReturnValue().Set(array);
+}
+
+void GetCpus(v8::Local<v8::String> property,
+             const v8::PropertyCallbackInfo<v8::Value>& info) {
+  static int cpus = 0;
+  if (cpus == 0) {
+    uv_cpu_info_t* info = nullptr;
+    uv_cpu_info(&info, &cpus);
+    uv_free_cpu_info(info, cpus);
+  }
+  info.GetReturnValue().Set(cpus);
 }
 
 void Process(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -72,6 +85,7 @@ v8::Local<v8::Function> ProcessApi::GetConstructor(JsApi* api,
   //   console.log(Process.args);
   //   const child = Process.spawn('another-window.js');
   scope.Set(process, StringId::args, GetArgs);
+  scope.Set(process, StringId::cpus, GetCpus);
   scope.Set(process, StringId::spawn, Spawn);
   scope.Set(process, StringId::exit, Exit);
 

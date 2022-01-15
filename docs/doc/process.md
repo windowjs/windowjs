@@ -9,6 +9,7 @@ events:
 class-name: Process
 class-properties:
   - args
+  - cpus
   - parent
 class-methods:
   - exit
@@ -165,6 +166,15 @@ Outputs the two arguments passed to the Javascript process:
 Argument: hello
 Argument: world
 ```
+
+
+{% include property class="Process" name="cpus" type="number" %}
+
+The number of logical CPUs in the current machine. This is usually the number
+of CPU cores, or twice that for cores with HyperThreading.
+
+The CPU count gives an estimate of the maximum level of parallelism that can
+be obtained in the current machine when using multiple processes.
 
 
 {% include property class="Process" name="parent" type="Process?" %}

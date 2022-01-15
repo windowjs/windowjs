@@ -68,6 +68,7 @@ enum class StringId {
   ControlRight,
   copy,
   copyTree,
+  cpus,
   createImageData,
   createLinearGradient,
   createPattern,
