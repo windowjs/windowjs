@@ -47,8 +47,6 @@ int main(int argc, char* argv[]) {
   ShutdownArgs();
   ShutdownLog();
 
-  std::cerr << "All done, clean exit.\n";
-
   return 0;
 }
 

@@ -93,8 +93,24 @@ Pipe::Pipe(OnMessage on_message, OnClose on_close)
 
 Pipe::~Pipe() {
   ASSERT(IsMainThread());
+
   uv_async_send(&async_quit_);
+
   thread_.join();
+
+  if (!is_child_process() && !uv_is_closing((const uv_handle_t*) &pipe_)) {
+    // Don't close the pipe on child processes, so that they can reload.
+    // The pipe is closed anyway once they exit.
+    uv_close((uv_handle_t*) &pipe_, nullptr);
+  }
+
+  uv_close((uv_handle_t*) &async_quit_, nullptr);
+  uv_close((uv_handle_t*) &async_send_, nullptr);
+  if (child_) {
+    uv_close((uv_handle_t*) child_.get(), nullptr);
+  }
+
+  uv_loop_close(&loop_);
 }
 
 // static
@@ -267,15 +283,4 @@ void Pipe::ReportMessage(uint32_t type, std::string message) {
 void Pipe::Run() {
   ASSERT(!IsMainThread());
   uv_run(&loop_, UV_RUN_DEFAULT);
-  if (!is_child_process()) {
-    // Don't close the pipe on child processes, so that they can reload.
-    // The pipe is closed anyway once they exit.
-    uv_close((uv_handle_t*) &pipe_, nullptr);
-  }
-  uv_close((uv_handle_t*) &async_quit_, nullptr);
-  uv_close((uv_handle_t*) &async_send_, nullptr);
-  if (child_) {
-    uv_close((uv_handle_t*) child_.get(), nullptr);
-  }
-  uv_loop_close(&loop_);
 }
