@@ -234,3 +234,14 @@ std::string GetUserHomePath(std::string* error) {
   }
   return buffer;
 }
+
+std::string GetTmpDir(std::string* error) {
+  size_t size = 4096;
+  char buffer[4096];
+  int result = uv_os_tmpdir(buffer, &size);
+  if (result != 0 || size > 4096) {
+    *error = uv_strerror(result);
+    return {};
+  }
+  return buffer;
+}

@@ -358,6 +358,7 @@ enum class StringId {
   textAlign,
   textBaseline,
   title,
+  tmp,
   top,
   totalJSHeapSize,
   transform,

@@ -10,6 +10,11 @@ interface File {
     readonly home: string;
 
     /**
+     * The system directory for temporary files.
+     */
+    readonly tmp: string;
+
+    /**
      * Returns the name of the file at the end of the given string path.
      */
     basename(path: string): string;

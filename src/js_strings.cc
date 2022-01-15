@@ -363,6 +363,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(textAlign);
   SET_STRING(textBaseline);
   SET_STRING(title);
+  SET_STRING(tmp);
   SET_STRING(top);
   SET_STRING(totalJSHeapSize);
   SET_STRING(transform);

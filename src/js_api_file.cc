@@ -419,6 +419,19 @@ void GetHome(v8::Local<v8::Name> property,
   }
 }
 
+void GetTmp(v8::Local<v8::Name> property,
+            const v8::PropertyCallbackInfo<v8::Value>& info) {
+  ASSERT(IsMainThread());
+  std::string error;
+  std::string tmp = GetTmpDir(&error);
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  if (error.empty()) {
+    info.GetReturnValue().Set(api->js()->MakeString(tmp));
+  } else {
+    api->js()->ThrowError(error);
+  }
+}
+
 }  // namespace
 
 v8::Local<v8::Object> MakeFileApi(JsApi* api, const JsScope& scope) {
@@ -447,6 +460,7 @@ v8::Local<v8::Object> MakeFileApi(JsApi* api, const JsScope& scope) {
 
   scope.Set(file, StringId::cwd, GetCwd);
   scope.Set(file, StringId::home, GetHome);
+  scope.Set(file, StringId::tmp, GetTmp);
 
   scope.Set(file, StringId::basename, Basename);
   scope.Set(file, StringId::dirname, Dirname);

@@ -5,6 +5,7 @@ class-name: File
 class-properties:
   - cwd
   - home
+  - tmp
 class-methods:
   - basename
   - copy
@@ -44,6 +45,11 @@ The current working directory.
 {% include property class="File" name="home" type="string" %}
 
 The user home directory.
+
+
+{% include property class="File" name="tmp" type="string" %}
+
+The system directory for temporary files.
 
 
 {% include method class="File" name="basename" type="(string) => string" %}

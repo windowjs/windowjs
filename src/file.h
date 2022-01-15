@@ -45,5 +45,6 @@ std::vector<std::filesystem::path> ListTree(const std::filesystem::path& path,
 std::filesystem::path GetCwd();
 std::string GetExePath(std::string* error);
 std::string GetUserHomePath(std::string* error);
+std::string GetTmpDir(std::string* error);
 
 #endif  // WINDOWJS_FILE_H
