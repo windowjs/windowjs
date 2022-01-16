@@ -29,11 +29,6 @@ int main(int argc, char* argv[]) {
     $(DEV) << "[profile-startup] main() enter: " << glfwGetTime();
   }
 
-  if (Args().initial_module.empty()) {
-    std::cerr << "Must pass an initial module.\n";
-    return 1;
-  }
-
   Js::Init(argv[0]);
   Window::Init();
 
