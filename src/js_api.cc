@@ -540,7 +540,8 @@ void GetVersion(v8::Local<v8::Name> property,
 
 JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
              ThreadPoolTaskQueue* background_queue)
-    : window_(win),
+    : weak_factory_(this),
+      window_(win),
       js_(js),
       events_(events),
       task_queue_(task_queue),
@@ -872,16 +873,34 @@ v8::Local<v8::Promise> JsApi::PostToBackgroundAndResolve(
       v8::Promise::Resolver::New(isolate->GetCurrentContext()).ToLocalChecked();
   size_t index = StorePendingPromise(isolate, resolver);
 
-  background_queue_->Post([this, index, b = std::move(background_task)] {
+  WeakPtr<JsApi> weak_this = weak_factory_.MakeWeakPtr();
+  TaskQueue* task_queue = task_queue_;
+
+  background_queue_->Post([weak_this, task_queue, index,
+                           b = std::move(background_task)] {
     ASSERT(!IsMainThread());
+
     ResolveFunction resolve_task = b();
-    task_queue_->Post([this, index, r = std::move(resolve_task)] {
+
+    // Subtle: this is safe because the task_queue_ is deleted *after* the
+    // background_queue_, and the background_queue_ joins its threads at
+    // shutdown. So as long as the background task is executing, the TaskQueue*
+    // instance is still valid.
+    task_queue->Post([weak_this, index, r = std::move(resolve_task)] {
       ASSERT(IsMainThread());
-      JsScope scope(js_);
+
+      JsApi* thiz = weak_this.Get();
+      if (!thiz) {
+        // The original JsApi instance was deleted while the background task
+        // was executing.
+        return;
+      }
+
+      JsScope scope(thiz->js_);
       v8::TryCatch try_catch(scope.isolate);
       v8::Local<v8::Promise::Resolver> resolver =
-          ReleasePendingPromise(scope.isolate, index);
-      r(this, scope, *resolver);
+          thiz->ReleasePendingPromise(scope.isolate, index);
+      r(thiz, scope, *resolver);
       if (try_catch.HasCaught()) {
         if (resolver->GetPromise()->State() == v8::Promise::kPending) {
           IGNORE_RESULT(

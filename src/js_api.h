@@ -12,6 +12,7 @@
 #include "js_events.h"
 #include "task_queue.h"
 #include "thread.h"
+#include "weak.h"
 #include "window.h"
 
 class CanvasApi;
@@ -199,6 +200,7 @@ class JsApi final : public v8::PersistentHandleVisitor {
   v8::Local<v8::Promise::Resolver> ReleasePendingPromise(v8::Isolate* isolate,
                                                          size_t index);
 
+  WeakPtrFactory<JsApi> weak_factory_;
   Window* window_;
   Js* js_;
   JsEvents* events_;

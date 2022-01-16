@@ -120,6 +120,8 @@ add_executable(windowjs
     thread.h
     util.h
     version.h
+    weak.cc
+    weak.h
     window.cc
     window.h
     zip.cc

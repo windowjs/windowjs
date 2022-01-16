@@ -65,8 +65,12 @@ class Main final : public Js::Delegate, public Window::Delegate, LogHandler {
   void HandleConsoleProcessExit(std::string error);
   void PostMessageToConsole(std::string json);
 
+  // This order is important. Background tasks may reference the TaskQueue
+  // and post tasks to the foreground, so task_queue_ must be valid as long as
+  // background_queue_ is still valid too. See PostToBackgroundAndResolve.
   TaskQueue task_queue_;
   ThreadPoolTaskQueue background_queue_;
+
   std::vector<PendingEvent> pending_events_;
   JsEvents events_;
   Window window_;
