@@ -35,3 +35,13 @@ export function assertEquals(a, b) {
     throw new Error('Assertion failed: ' + a + ' != ' + b);
   }
 }
+
+export function resolveOnNextEvent(eventType) {
+  return new Promise(function(resolve) {
+    const listener = function(event) {
+      window.removeEventListener(eventType, listener);
+      resolve(event);
+    };
+    window.addEventListener(eventType, listener);
+  });
+}
