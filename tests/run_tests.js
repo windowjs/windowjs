@@ -10,7 +10,7 @@
 //
 // $ out/src/windowjs.exe tests/run_tests.js -- tests/hello.js
 
-import * as lib from './lib.js';
+import * as lib from './lib/lib.js';
 
 function post(message) {
   if (Process.parent) {
@@ -20,7 +20,9 @@ function post(message) {
 
 function fixModulePath(path) {
   // Fix paths on Windows.
-  path = path.replaceAll('\\', '/');
+  if (File.sep == '\\') {
+    path = path.replaceAll('\\', '/');
+  }
   // Make the module path relative to this script.
   return '../' + path;
 }
@@ -39,7 +41,7 @@ async function resetForNewTest(testName, tmpDirForTest) {
   lib.setTmpDirForTests(tmpDirForTest + '/' + testName);
 
   window.width = 200;
-  window.height = 200;
+  window.height = 100;
   window.resizable = false;
 
   const canvas = window.canvas;

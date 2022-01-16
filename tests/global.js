@@ -1,6 +1,6 @@
 // Tests for the global functions: https://windowjs.org/doc/global
 
-import {assert, assertEquals} from './lib.js';
+import {assert, assertEquals} from './lib/lib.js';
 
 export async function devicePixelRatioIsANumber() {
   assert(typeof(devicePixelRatio) == 'number');

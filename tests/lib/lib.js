@@ -45,3 +45,22 @@ export function resolveOnNextEvent(eventType) {
     window.addEventListener(eventType, listener);
   });
 }
+
+export async function diffCanvasToFile(path) {
+  const golden = await File.readImageData(File.dirname(__dirname) + '/' + path);
+  const canvas = window.canvas;
+  assertEquals(golden.width, canvas.width);
+  assertEquals(golden.height, canvas.height);
+  const pixels = canvas.getImageData();
+  const a = golden.data;
+  const b = pixels.data;
+  assertEquals(a.length, b.length);
+  const length = a.length;
+  let diffs = 0;
+  for (let i = 0; i < length; i++) {
+    if (a[i] != b[i]) {
+      diffs++;
+    }
+  }
+  assertEquals(diffs, 0);
+}

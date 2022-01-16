@@ -1,6 +1,11 @@
 // Tests for the window API: https://windowjs.org/doc/window
 
-import {assert, assertEquals, getTmpDir, resolveOnNextEvent} from './lib.js';
+import {
+  assert,
+  assertEquals,
+  getTmpDir,
+  resolveOnNextEvent,
+} from './lib/lib.js';
 
 export async function canvasSizeMatchesWindowSize() {
   if (window.platform == 'Linux') {
