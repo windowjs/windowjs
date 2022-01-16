@@ -45,8 +45,4 @@ Each test is a module and all of its exported functions will be executed as a
 test. The test fails if the function throws, or if it returns a Promise that
 gets rejected (e.g. async functions that throw).
 
-The tests are executed with the
-[build workflows](https://github.com/windowjs/windowjs/actions). The workflows
-fail if the tests fail.
-
-Test file can import `tests/lib.js` to use common test utilities.
+Test files can import `tests/lib.js` to use common test utilities.

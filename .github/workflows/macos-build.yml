@@ -7,6 +7,7 @@ on:
       - '.github/**'
       - 'docs/**'
       - 'examples/**'
+      - 'tests/**'
       - 'types/**'
   pull_request:
     branches: [ main ]
@@ -14,6 +15,7 @@ on:
       - '.github/**'
       - 'docs/**'
       - 'examples/**'
+      - 'tests/**'
       - 'types/**'
   release:
     types: [published]
@@ -71,16 +73,16 @@ jobs:
           cmake --build out
           strip out/src/windowjs
 
-      - name: Debug build
-        run: |
-          source libraries/setup_build_env.sh
-          cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
-          cmake --build out-debug
-
-      - name: Tests
-        run: |
-          # Note: run tests in Debug to have more assertions.
-          out-debug/src/windowjs tests/run_tests.js --log
+#      - name: Debug build
+#        run: |
+#          source libraries/setup_build_env.sh
+#          cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
+#          cmake --build out-debug
+#
+#      - name: Tests
+#        run: |
+#          # Note: run tests in Debug to have more assertions.
+#          out-debug/src/windowjs tests/run_tests.js --log
 
       - name: Binary size
         run: |
