@@ -10,6 +10,12 @@ interface File {
     readonly home: string;
 
     /**
+     * The preferred path separator for the current platform. This is usually
+     * the forward slash character `/`, but is a backslash `\` on Windows.
+     */
+    readonly sep: string;
+
+    /**
      * The system directory for temporary files.
      */
     readonly tmp: string;

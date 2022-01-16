@@ -331,6 +331,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(ScrollLock);
   SET_STRING(Semicolon);
   SET_STRING(sender);
+  SET_STRING(sep);
   SET_STRING(setClipboardText);
   SET_STRING(setLineDash);
   SET_STRING(setTimeout);

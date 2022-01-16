@@ -326,6 +326,7 @@ enum class StringId {
   ScrollLock,
   Semicolon,
   sender,
+  sep,
   setClipboardText,
   setLineDash,
   setTimeout,

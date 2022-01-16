@@ -5,6 +5,7 @@ class-name: File
 class-properties:
   - cwd
   - home
+  - sep
   - tmp
 class-methods:
   - basename
@@ -45,6 +46,12 @@ The current working directory.
 {% include property class="File" name="home" type="string" %}
 
 The user home directory.
+
+
+{% include property class="File" name="sep" type="string" %}
+
+The preferred path separator for the current platform. This is usually the
+forward slash character `/`, but is a backslash `\` on Windows.
 
 
 {% include property class="File" name="tmp" type="string" %}

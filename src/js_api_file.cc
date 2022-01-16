@@ -432,6 +432,14 @@ void GetTmp(v8::Local<v8::Name> property,
   }
 }
 
+void GetSep(v8::Local<v8::Name> property,
+            const v8::PropertyCallbackInfo<v8::Value>& info) {
+  ASSERT(IsMainThread());
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  char sep[2] = {std::filesystem::path::preferred_separator, '\0'};
+  info.GetReturnValue().Set(api->js()->MakeString(sep));
+}
+
 }  // namespace
 
 v8::Local<v8::Object> MakeFileApi(JsApi* api, const JsScope& scope) {
@@ -460,6 +468,7 @@ v8::Local<v8::Object> MakeFileApi(JsApi* api, const JsScope& scope) {
 
   scope.Set(file, StringId::cwd, GetCwd);
   scope.Set(file, StringId::home, GetHome);
+  scope.Set(file, StringId::sep, GetSep);
   scope.Set(file, StringId::tmp, GetTmp);
 
   scope.Set(file, StringId::basename, Basename);
