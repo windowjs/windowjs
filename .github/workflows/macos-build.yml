@@ -7,6 +7,7 @@ on:
       - '.github/**'
       - 'docs/**'
       - 'examples/**'
+      - 'tests/**'
       - 'types/**'
   pull_request:
     branches: [ main ]
@@ -14,9 +15,10 @@ on:
       - '.github/**'
       - 'docs/**'
       - 'examples/**'
+      - 'tests/**'
       - 'types/**'
   release:
-    types: [released]
+    types: [published]
 
   # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
