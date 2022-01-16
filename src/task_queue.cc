@@ -6,15 +6,29 @@ static inline double Now() {
   return glfwGetTime();
 }
 
+TaskQueue::TaskQueue() : post_empty_event_(false) {}
+
+TaskQueue::~TaskQueue() {}
+
 void TaskQueue::Post(Task task) {
-  std::lock_guard<std::mutex> lock(lock_);
-  tasks_.emplace(std::move(task));
+  {
+    std::lock_guard<std::mutex> lock(lock_);
+    tasks_.emplace(std::move(task));
+  }
+  if (post_empty_event_) {
+    glfwPostEmptyEvent();
+  }
 }
 
 void TaskQueue::Post(double delay_in_seconds, Task task) {
-  double when = Now() + delay_in_seconds;
-  std::lock_guard<std::mutex> lock(lock_);
-  delayed_tasks_.emplace(DelayedTask{std::move(task), when});
+  {
+    double when = Now() + delay_in_seconds;
+    std::lock_guard<std::mutex> lock(lock_);
+    delayed_tasks_.emplace(DelayedTask{std::move(task), when});
+  }
+  if (post_empty_event_) {
+    glfwPostEmptyEvent();
+  }
 }
 
 double TaskQueue::GetSecondsToNextTask() const {

@@ -114,14 +114,12 @@ ProcessApi* ProcessApi::MaybeAttachToParent(
         api->task_queue()->Post([process, type, message = std::move(message)] {
           process->HandleMessageFromParentProcess(type, std::move(message));
         });
-        glfwPostEmptyEvent();
       },
       [api, process](int64_t status, std::string error) {
         // Called on the Pipe's background thread.
         api->task_queue()->Post([process, status, error = std::move(error)] {
           process->HandleParentProcessExit(status, std::move(error));
         });
-        glfwPostEmptyEvent();
       });
 
   scope.Set(constructor, StringId::parent, object);
@@ -202,13 +200,11 @@ void ProcessApi::Spawn(const v8::FunctionCallbackInfo<v8::Value>& info) {
         api->task_queue()->Post([process, type, message = std::move(message)] {
           process->HandleMessageFromChildProcess(type, std::move(message));
         });
-        glfwPostEmptyEvent();
       },
       [api, process](int64_t status, std::string error) {
         api->task_queue()->Post([process, status, error = std::move(error)] {
           process->HandleChildProcessExit(status, std::move(error));
         });
-        glfwPostEmptyEvent();
       });
 
   info.GetReturnValue().Set(object);

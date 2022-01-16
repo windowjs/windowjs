@@ -54,6 +54,7 @@ Main::Main()
       first_load_(true) {
   ASSERT(IsMainThread());
   SetLogHandler(this);
+  task_queue_.SetPostsEmptyEvents(true);
   window_.SetDelegate(this);
   window_.SetTitle(Args().initial_module);
   Reload();
@@ -277,14 +278,12 @@ void Main::ShowConsole() {
           task_queue_.Post([this, message = std::move(message)] {
             HandleMessageFromConsoleProcess(std::move(message));
           });
-          glfwPostEmptyEvent();
         },
         [this](int64_t status, std::string error) {
           // Called on the Pipe's background thread.
           task_queue_.Post([this, error = std::move(error)] {
             HandleConsoleProcessExit(std::move(error));
           });
-          glfwPostEmptyEvent();
         });
     std::stringstream json;
     json << "{\"type\":\"init\"";
