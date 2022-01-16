@@ -170,7 +170,6 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(globalCompositeOperation);
   SET_STRING(h);
   SET_STRING(hanging);
-  SET_STRING(headless);
   SET_STRING(height);
   SET_STRING(Home);
   SET_STRING(home);

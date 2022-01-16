@@ -165,7 +165,6 @@ enum class StringId {
   globalCompositeOperation,
   h,
   hanging,
-  headless,
   height,
   Home,
   home,

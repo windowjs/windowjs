@@ -213,9 +213,11 @@ It takes one to three arguments:
 | args    | string[]? | Optional list of string arguments to pass to the child process. They will be available in [Process.args](#Process.args) in the child process. |
 | options | Object?   | Optional object with options to `spawn`.               |
 
-The `options` object isn't used currently. It is meant to support disabling
-features in the client, such as restricting filesystem access and running in
-headless mode (without a window).
+The `options` object contains parameters for the child process:
+
+{: .parameters}
+| headless | boolean | Whether to run the child process without a window. This isn't supported yet. |
+| log      | boolean | Whether output of the child process to stdout and stderr should appear in the parent's stdout and stderr. |
 
 
 {% include method object="process" name="addEventListener"

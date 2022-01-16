@@ -3,14 +3,13 @@
 #include <algorithm>
 #include <sstream>
 
-#include "args.h"
 #include "fail.h"
 #include "file.h"
 #include "thread.h"
 
 // static
 std::unique_ptr<Pipe> Pipe::Spawn(std::string exe_path,
-                                  std::vector<std::string> args,
+                                  std::vector<std::string> args, bool child_log,
                                   OnMessage on_message, OnClose on_close) {
   ASSERT(IsMainThread());
 
@@ -18,7 +17,8 @@ std::unique_ptr<Pipe> Pipe::Spawn(std::string exe_path,
       new Pipe(std::move(on_message), std::move(on_close))};
 
   pipe->thread_ = std::thread([exe_path = std::move(exe_path),
-                               args = std::move(args), pipe = pipe.get()] {
+                               args = std::move(args), child_log,
+                               pipe = pipe.get()] {
     std::vector<char*> argv;
     argv.resize(args.size() + 1);
     for (unsigned i = 0; i < args.size(); i++) {
@@ -35,7 +35,7 @@ std::unique_ptr<Pipe> Pipe::Spawn(std::string exe_path,
     options.stdio_count = 4;
     uv_stdio_container_t child_stdio[4];
     child_stdio[0].flags = UV_IGNORE;
-    if (Args().child_log) {
+    if (child_log) {
       child_stdio[1].flags = UV_INHERIT_FD;
       child_stdio[1].data.fd = 1;
       child_stdio[2].flags = UV_INHERIT_FD;

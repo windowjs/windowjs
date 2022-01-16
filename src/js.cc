@@ -182,6 +182,18 @@ std::string Js::ToStringOr(v8::Local<v8::Value> value,
   }
 }
 
+bool Js::GetBooleanOr(v8::Local<v8::Object> object, std::string_view key,
+                      bool fallback) {
+  v8::MaybeLocal<v8::Value> value = object->Get(context(), MakeString(key));
+  if (!value.IsEmpty()) {
+    v8::Local<v8::Value> v = value.ToLocalChecked();
+    if (v->IsBoolean()) {
+      return v.As<v8::Boolean>()->Value();
+    }
+  }
+  return fallback;
+}
+
 void Js::ThrowError(std::string_view error) {
   isolate_->ThrowError(MakeString(error));
 }

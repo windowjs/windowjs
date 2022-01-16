@@ -53,7 +53,8 @@ class Pipe final {
 
   static std::unique_ptr<Pipe> Spawn(std::string exe_path,
                                      std::vector<std::string> args,
-                                     OnMessage on_message, OnClose on_close);
+                                     bool child_log, OnMessage on_message,
+                                     OnClose on_close);
 
   static std::unique_ptr<Pipe> AttachToParent(OnMessage on_message,
                                               OnClose on_close);

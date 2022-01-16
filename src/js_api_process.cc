@@ -155,16 +155,11 @@ void ProcessApi::Spawn(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   bool headless = false;
+  bool log = Args().child_log;
   if (info.Length() >= 3 && info[2]->IsObject()) {
     v8::Local<v8::Object> options = info[2].As<v8::Object>();
-    v8::MaybeLocal<v8::Value> value =
-        options->Get(context, api->js()->GetConstantString(StringId::headless));
-    if (!value.IsEmpty()) {
-      v8::Local<v8::Value> v = value.ToLocalChecked();
-      if (v->IsBoolean()) {
-        headless = v.As<v8::Boolean>()->Value();
-      }
-    }
+    headless = api->js()->GetBooleanOr(options, "headless", headless);
+    log = api->js()->GetBooleanOr(options, "log", log);
   }
 
   std::string error;
@@ -178,7 +173,7 @@ void ProcessApi::Spawn(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (headless) {
     args.emplace_back("--headless");
   }
-  if (Args().child_log) {
+  if (log) {
     args.emplace_back("--log");
   }
   args.emplace_back(std::move(initial_module));
@@ -193,7 +188,7 @@ void ProcessApi::Spawn(const v8::FunctionCallbackInfo<v8::Value>& info) {
   ASSERT(process);
 
   process->pipe_ = Pipe::Spawn(
-      std::move(exe), std::move(args),
+      std::move(exe), std::move(args), log,
       [api, process](uint32_t type, std::string message) {
         // Called on the Pipe's background thread, which is owned by
         // the ProcessApi instance and synchronized in its destructor.

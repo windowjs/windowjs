@@ -69,6 +69,9 @@ class Js final {
   std::string ToStringOr(v8::Local<v8::Value> value,
                          std::string_view or_string);
 
+  bool GetBooleanOr(v8::Local<v8::Object> object, std::string_view key,
+                    bool fallback);
+
   void ThrowError(std::string_view error);
   void ThrowTypeError(std::string_view error);
   void ThrowIllegalConstructor();
