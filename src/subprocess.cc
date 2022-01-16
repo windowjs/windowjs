@@ -1,5 +1,7 @@
 #include "subprocess.h"
 
+#include <string.h>
+
 #include <algorithm>
 #include <sstream>
 
