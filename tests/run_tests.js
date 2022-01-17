@@ -268,6 +268,8 @@ async function runAllTests(pathPattern, testPattern) {
 
 async function main() {
   window.visible = false;
+  window.width = 200;
+  window.height = 100;
 
   const start = performance.now();
 
