@@ -13,3 +13,4 @@ libraries/v8
 tags
 out*
 node_modules
+package-lock.json

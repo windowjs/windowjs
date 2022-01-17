@@ -1,0 +1,78 @@
+<!--
+
+Utility to generate the golden screenshots for canvas.js tests.
+
+Load this file with a local webserver:
+
+$ npm install http-server
+$ npx http-server
+
+Then open http://localhost:8080/tests/canvas.html to load this file.
+
+The page will run each of the canvas.js tests in its own <canvas> element.
+The image can be saved via the right-click menu.
+
+Note that all of the goldens have been generated on Windows, and the tests
+expect 0 pixel diffs on that platforms. Due to rendering differences, other
+platforms let small diffs pass too.
+
+-->
+
+<head>
+<style>
+body {
+font-family: monospace;
+}
+img {
+margin-left: 20px;
+}
+</style>
+</head>
+
+<body>
+For each test: Chrome live render, Golden screenshot, Test output (if present).
+</body>
+
+<script type="module">
+
+import * as lib from './lib/lib.js';
+
+lib.setDiffCallback(function(path) {
+  const img = document.createElement('img');
+  img.src = path;
+  document.body.appendChild(img);
+  const out = document.createElement('img');
+  out.src = path + '__test_output.png';
+  out.style.visibility = 'hidden';
+  out.onload = () => out.style.visibility = '';
+  document.body.appendChild(out);
+});
+
+const mod = await import('./canvas.js');
+
+for (const f in mod) {
+  const label = document.createElement('h1');
+  label.innerText = f;
+  document.body.appendChild(label);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 200;
+  canvas.height = 100;
+  const options = {alpha: true};
+  window.canvas = canvas.getContext('2d', options);
+  window.canvas.width = 200;
+  window.canvas.height = 100;
+  window.canvas.fillStyle = 'black';
+  window.canvas.fillRect(0, 0, canvas.width, canvas.height);
+  document.body.appendChild(canvas);
+
+  try {
+    await mod[f]();
+  } catch (e) {
+    label.innerText += ' - uncaught exception!';
+    label.style.color = 'red';
+  }
+}
+
+
+</script>

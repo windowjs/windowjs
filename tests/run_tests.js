@@ -46,7 +46,7 @@ async function resetForNewTest(testName, tmpDirForTest) {
 
   const canvas = window.canvas;
   canvas.resetTransform();
-  canvas.antialias = false;
+  canvas.antialias = true;
   canvas.fillStyle = '#000';
   canvas.strokeStyle = '#000';
   canvas.font = '24px sans';
@@ -62,6 +62,7 @@ async function resetForNewTest(testName, tmpDirForTest) {
   canvas.textAlign = 'left';
   canvas.textBaseline = 'alphabetic';
   canvas.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 async function runTestsInModule(path, tmpDirForTest, testPattern) {

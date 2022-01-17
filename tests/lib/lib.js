@@ -8,9 +8,14 @@ function checkNotPromise(x) {
 }
 
 let tmpDirForTests = null;
+let diffCallback = null;
 
 export function setTmpDirForTests(tmp) {
   tmpDirForTests = tmp;
+}
+
+export function setDiffCallback(callback) {
+  diffCallback = callback;
 }
 
 export async function getTmpDir() {
@@ -47,14 +52,24 @@ export function resolveOnNextEvent(eventType) {
 }
 
 export async function diffCanvasToFile(path) {
-  const golden = await File.readImageData(File.dirname(__dirname) + '/' + path);
+  if (diffCallback) {
+    // Running in a browser e.g. in canvas.html; skip this.
+    diffCallback(path);
+    return;
+  }
+
+  const goldenPath = File.dirname(__dirname) + '/' + path;
+  const golden = await File.readImageData(goldenPath);
   const canvas = window.canvas;
   assertEquals(golden.width, canvas.width);
   assertEquals(golden.height, canvas.height);
   const pixels = canvas.getImageData();
-  const a = golden.data;
-  const b = pixels.data;
+  const a = new Uint32Array(golden.data.buffer);
+  const b = new Uint32Array(pixels.data.buffer);
   assertEquals(a.length, b.length);
+  assertEquals(golden.data.byteLength, golden.width * golden.height * 4);
+  assertEquals(a.length, golden.width * golden.height);
+
   const length = a.length;
   let diffs = 0;
   for (let i = 0; i < length; i++) {
@@ -62,5 +77,16 @@ export async function diffCanvasToFile(path) {
       diffs++;
     }
   }
-  assertEquals(diffs, 0);
+
+  // Pixel diffs should really run without antialias.
+  // Unfortunately, antialiasing can't be turned off for the HTML5 <canvas>
+  // element for 2D contents (only for WebGL).
+  const tolerance = window.platform == 'Windows' ? 0 : 25;
+
+  if (diffs > tolerance) {
+    const outPath = goldenPath + '__test_output.png';
+    await File.write(outPath, await canvas.encode('png'));
+    throw new Error(diffs + ' pixels changed.\n\n       Expected: ' +
+                    goldenPath + '\n       Actual:   ' + outPath + '\n');
+  }
 }

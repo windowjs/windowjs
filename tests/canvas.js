@@ -1,4 +1,12 @@
 // Tests for the Canvas API: https://windowjs.org/doc/canvas
+//
+// Many of these tests compare the pixels in the canvas to a golden screenshot.
+// The golden screenshots are generated with canvas.html.
+// If this file is changed, then verify that canvas.html still works too.
+//
+// After adding a new test, open canvas.html to render its output in Chrome
+// and save that canvas (right-click, Save image as...) as the golden for
+// that test.
 
 import {
   diffCanvasToFile,
@@ -39,4 +47,16 @@ export async function fillRect() {
   canvas.fillStyle = '#00000080';
   canvas.fillRect(0, 50, 200, 50);
   await diffCanvasToFile('data/fill_rect.png');
+}
+
+export async function arcs() {
+  const canvas = window.canvas;
+  canvas.fillStyle = 'red';
+  canvas.arc(50, 50, 20, 0, Math.PI / 4 * 3);
+  canvas.fill();
+  canvas.fillStyle = 'green';
+  canvas.beginPath();
+  canvas.arc(100, 50, 20, 0, Math.PI / 4 * 3);
+  canvas.fill();
+  await diffCanvasToFile('data/arcs.png');
 }
