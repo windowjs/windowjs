@@ -103,6 +103,11 @@ interface Window {
     readonly minimized: boolean;
 
     /**
+     * The current system platform: `"Windows"`, `"macOS"` or `"Linux"`.
+     */
+    readonly platform: string;
+
+    /**
      * Whether the native window can be resized by the user. Defaults to true.
      */
     resizable: boolean;

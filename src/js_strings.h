@@ -288,6 +288,7 @@ enum class StringId {
   Pause,
   performance,
   Period,
+  platform,
   postMessage,
   PrintScreen,
   Process,

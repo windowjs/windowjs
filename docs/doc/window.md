@@ -41,6 +41,7 @@ object-properties:
   - keepAspectRatio
   - maximized
   - minimized
+  - platform
   - resizable
   - retinaScale
   - title
@@ -409,6 +410,11 @@ Whether the window is maximized.
 {% include property object="window" name="minimized" type="boolean" %}
 
 Whether the window is minimized.
+
+
+{% include property object="window" name="platform" type="string" %}
+
+The current system platform: `"Windows"`, `"macOS"` or `"Linux"`.
 
 
 {% include property object="window" name="resizable" type="boolean" %}
