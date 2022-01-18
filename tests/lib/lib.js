@@ -51,7 +51,7 @@ export function resolveOnNextEvent(eventType) {
   });
 }
 
-export async function diffCanvasToFile(path) {
+export async function diffCanvasToFile(path, tolerance) {
   if (diffCallback) {
     // Running in a browser e.g. in canvas.html; skip this.
     diffCallback(path);
@@ -81,11 +81,14 @@ export async function diffCanvasToFile(path) {
   // Pixel diffs should really run without antialias.
   // Unfortunately, antialiasing can't be turned off for the HTML5 <canvas>
   // element for 2D contents (only for WebGL).
-  const tolerance = window.platform == 'Windows' ? 0 : 25;
-
-  if (diffs > tolerance) {
-    const outPath = goldenPath + '__test_output.png';
+  const outPath = goldenPath + '__test_output.png';
+  if (diffs > 0) {
     await File.write(outPath, await canvas.encode('png'));
+  } else {
+    await File.remove(outPath);
+  }
+
+  if (diffs > (tolerance || 0)) {
     throw new Error(diffs + ' pixels changed.\n\n       Expected: ' +
                     goldenPath + '\n       Actual:   ' + outPath + '\n');
   }

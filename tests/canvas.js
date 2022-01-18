@@ -54,9 +54,30 @@ export async function arcs() {
   canvas.fillStyle = 'red';
   canvas.arc(50, 50, 20, 0, Math.PI / 4 * 3);
   canvas.fill();
-  canvas.fillStyle = 'green';
+
+  // TODO: removing beginPath does different glitches in Chrome and Window.js.
   canvas.beginPath();
   canvas.arc(100, 50, 20, 0, Math.PI / 4 * 3);
+  canvas.fillStyle = 'green';
   canvas.fill();
-  await diffCanvasToFile('data/arcs.png');
+
+  canvas.beginPath();
+  canvas.arc(50, 30, 20, Math.PI, 0);
+  canvas.strokeStyle = 'cyan';
+  canvas.lineWidth = 10;
+  canvas.stroke();
+
+  canvas.beginPath();
+  canvas.arc(110, 30, 20, Math.PI, 0);
+  canvas.strokeStyle = 'yellow';
+  canvas.lineCap = 'round';
+  canvas.stroke();
+
+  canvas.beginPath();
+  canvas.moveTo(190, 20);
+  canvas.arcTo(200, 110, 50, 20, 40);
+  canvas.strokeStyle = 'magenta';
+  canvas.stroke();
+
+  await diffCanvasToFile('data/arcs.png', 520);
 }

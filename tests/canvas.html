@@ -23,14 +23,13 @@ platforms let small diffs pass too.
 body {
 font-family: monospace;
 }
-img {
+canvas, img {
 margin-left: 20px;
 }
 </style>
 </head>
 
 <body>
-For each test: Chrome live render, Golden screenshot, Test output (if present).
 </body>
 
 <script type="module">
@@ -38,14 +37,65 @@ For each test: Chrome live render, Golden screenshot, Test output (if present).
 import * as lib from './lib/lib.js';
 
 lib.setDiffCallback(function(path) {
-  const img = document.createElement('img');
-  img.src = path;
-  document.body.appendChild(img);
-  const out = document.createElement('img');
-  out.src = path + '__test_output.png';
-  out.style.visibility = 'hidden';
-  out.onload = () => out.style.visibility = '';
-  document.body.appendChild(out);
+  const golden = document.createElement('img');
+  golden.src = path;
+  golden.title = 'Golden (screenshot saved in tests/data/ to diff in tests)';
+  document.body.appendChild(golden);
+
+  const output = document.createElement('img');
+  output.src = path + '__test_output.png';
+  output.style.visibility = 'hidden';
+  output.title = 'Output (image produced in the last test run)';
+  document.body.appendChild(output);
+
+  output.onload = function(event) {
+    console.log('-- load event:');
+    console.dir(event);
+    output.style.visibility = '';
+
+    let canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 100;
+    canvas.title = 'Diff (from Golden to Output)';
+    document.body.insertBefore(canvas, output.nextElementSibling);
+
+    const options = {alpha: true};
+    canvas = canvas.getContext('2d', options);
+    canvas.fillStyle = 'black';
+    canvas.fillRect(0, 0, 200, 100);
+
+    canvas.imageSmoothingEnabled = false;
+    canvas.drawImage(golden, 0, 0);
+    const goldenPixels = canvas.getImageData(0, 0, 200, 100).data;
+    canvas.clearRect(0, 0, 200, 100);
+    canvas.fillStyle = 'black';
+    canvas.fillRect(0, 0, 200, 100);
+    canvas.drawImage(output, 0, 0);
+    const outputPixels = canvas.getImageData(0, 0, 200, 100).data;
+    const diffImageData = canvas.createImageData(200, 100);
+    const diffPixels = diffImageData.data;
+    for (let i = 0; i < 200 * 100; i++) {
+      diffPixels[i*4 + 0] = 0x00;
+      diffPixels[i*4 + 1] = 0x00;
+      diffPixels[i*4 + 2] = 0x00;
+      diffPixels[i*4 + 3] = 0xff;
+      if (goldenPixels[i*4 + 0] != outputPixels[i*4 + 0]) {
+        diffPixels[i*4 + 0] = 0xff;
+      } else if (goldenPixels[i*4 + 1] != outputPixels[i*4 + 1]) {
+        diffPixels[i*4 + 1] = 0xff;
+      } else if (goldenPixels[i*4 + 2] != outputPixels[i*4 + 2]) {
+        diffPixels[i*4 + 1] = 0x80;
+        diffPixels[i*4 + 2] = 0xff;
+      } else if (goldenPixels[i*4 + 3] != outputPixels[i*4 + 3]) {
+        diffPixels[i*4 + 0] = 0xff;
+        diffPixels[i*4 + 2] = 0xff;
+      }
+    }
+    canvas.clearRect(0, 0, 200, 100);
+    canvas.fillStyle = 'black';
+    canvas.fillRect(0, 0, 200, 100);
+    canvas.putImageData(diffImageData, 0, 0);
+  };
 });
 
 const mod = await import('./canvas.js');
@@ -56,6 +106,7 @@ for (const f in mod) {
   document.body.appendChild(label);
 
   const canvas = document.createElement('canvas');
+  canvas.title = 'Live canvas (rendered by the current browser)';
   canvas.width = 200;
   canvas.height = 100;
   const options = {alpha: true};
