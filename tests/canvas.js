@@ -155,3 +155,21 @@ export async function ellipses() {
 
   await diffCanvasToFile('data/ellipses.png', 410);
 }
+
+export async function fillText() {
+  if (window.platform != 'Windows') {
+    return;
+  }
+
+  const canvas = window.canvas;
+
+  canvas.font = '48px "Times New Roman"';
+  canvas.fillStyle = 'white';
+  canvas.fillText('Left', 0, 50);
+  canvas.textAlign = 'right';
+  canvas.fillText('Right', 200, 50);
+  canvas.textAlign = 'center';
+  canvas.fillText('Center', 100, 100);
+
+  await diffCanvasToFile('data/fill_text.png', 2350);
+}
