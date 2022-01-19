@@ -5,105 +5,116 @@
 
 <body>
 
-{% include top.html %}
+    {% include top.html %}
 
-<div id="documentation-container">
+    <div id="documentation-container">
 
-<div id="sidebar-left-container" class="flex1 flex-right">
-<div id="sidebar-left">
-<h1 class="hidden">.</h1>
-{% include link name="Getting started" path="/doc/" %}
-<hr>
-{% include link name="Javascript runtime" path="/doc/runtime" %}
-{% include link name="Console" path="/doc/console" %}
-{% include link name="Command line" path="/doc/args" %}
-{% include link name="API index" path="/doc/api" %}
-<hr>
-{% include link name="Global" path="/doc/global" %}
-{% include link name="Window" path="/doc/window" %}
-<hr>
-{% include link name="Canvas" path="/doc/canvas" %}
-{% include link name="CanvasGradient" path="/doc/canvasgradient" %}
-{% include link name="ImageBitmap" path="/doc/imagebitmap" %}
-{% include link name="ImageData" path="/doc/imagedata" %}
-<hr>
-{% include link name="File" path="/doc/file" %}
-{% include link name="Process" path="/doc/process" %}
-{% include link name="Performance" path="/doc/performance" %}
-</div>
-</div>
+        <div id="sidebar-left-container" class="flex1 flex-right">
+            <div id="sidebar-left">
+                <h1 class="hidden">.</h1>
+                {% include link name="Getting started" path="/doc/" %}
+                <hr>
+                {% include link name="Javascript runtime" path="/doc/runtime" %}
+                {% include link name="Console" path="/doc/console" %}
+                {% include link name="Command line" path="/doc/args" %}
+                {% include link name="API index" path="/doc/api" %}
+                <hr>
+                {% include link name="Global" path="/doc/global" %}
+                {% include link name="Window" path="/doc/window" %}
+                <hr>
+                {% include link name="Canvas" path="/doc/canvas" %}
+                {% include link name="CanvasGradient" path="/doc/canvasgradient" %}
+                {% include link name="ImageBitmap" path="/doc/imagebitmap" %}
+                {% include link name="ImageData" path="/doc/imagedata" %}
+                <hr>
+                {% include link name="File" path="/doc/file" %}
+                {% include link name="Process" path="/doc/process" %}
+                {% include link name="Performance" path="/doc/performance" %}
+            </div>
+        </div>
 
-<div id="content">
+        <div id="content">
 
-{{ content }}
+            {{ content }}
 
-<p>&nbsp;<p>
+            <p>&nbsp;
+            <p>
 
-</div>
+        </div>
 
-<div id="sidebar-right-container" class="flex1">
-<div id="sidebar-right">
+        <div id="sidebar-right-container" class="flex1">
+            <div id="sidebar-right">
 
-{% if page.events %}
-{% for item in page.events %}
-<a href="#event-{{item}}"><span class="code-event">"{{item}}"</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                {% if page.events %}
+                {% for item in page.events %}
+                <a href="#event-{{item}}"><span class="code-event">"{{item}}"</span></a><br>
+                {% endfor %}
+                <p>
+                    {% endif %}
 
-{% if page.properties %}
-{% for item in page.properties %}
-<a href="#{{ item }}"><span class="code-name">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                    {% if page.properties %}
+                    {% for item in page.properties %}
+                    <a href="#{{ item }}"><span class="code-name">{{item}}</span></a><br>
+                    {% endfor %}
+                <p>
+                    {% endif %}
 
-{% if page.functions %}
-{% for item in page.functions %}
-<a href="#{{ item }}"><span class="code-name">{{item}}()</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                    {% if page.functions %}
+                    {% for item in page.functions %}
+                    <a href="#{{ item }}"><span class="code-name">{{item}}()</span></a><br>
+                    {% endfor %}
+                <p>
+                    {% endif %}
 
-{% if page.constructors %}
-{% for item in page.constructors %}
-<a href="#{{ item }}"><span class="code-class">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                    {% if page.constructors %}
+                    {% for item in page.constructors %}
+                    <a href="#{{ item }}"><span class="code-class">{{item}}</span></a><br>
+                    {% endfor %}
+                <p>
+                    {% endif %}
 
-{% if page.class-properties %}
-{% for item in page.class-properties %}
-<a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                    {% if page.class-properties %}
+                    {% for item in page.class-properties %}
+                    <a href="#{{ page.class-name }}.{{ item }}"><span
+                            class="code-class">{{page.class-name}}</span>.<span
+                            class="code-name">{{item}}</span></a><br>
+                    {% endfor %}
+                <p>
+                    {% endif %}
 
-{% if page.class-methods %}
-{% for item in page.class-methods %}
-<a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                    {% if page.class-methods %}
+                    {% for item in page.class-methods %}
+                    <a href="#{{ page.class-name }}.{{ item }}"><span
+                            class="code-class">{{page.class-name}}</span>.<span
+                            class="code-name">{{item}}()</span></a><br>
+                    {% endfor %}
+                <p>
+                    {% endif %}
 
-{% if page.object-properties %}
-{% for item in page.object-properties %}
-<a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                    {% if page.object-properties %}
+                    {% for item in page.object-properties %}
+                    <a href="#{{ page.object-name }}.{{ item }}"><span
+                            class="code-object">{{page.object-name}}</span>.<span
+                            class="code-name">{{item}}</span></a><br>
+                    {% endfor %}
+                <p>
+                    {% endif %}
 
-{% if page.object-methods %}
-{% for item in page.object-methods %}
-<a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                    {% if page.object-methods %}
+                    {% for item in page.object-methods %}
+                    <a href="#{{ page.object-name }}.{{ item }}"><span
+                            class="code-object">{{page.object-name}}</span>.<span
+                            class="code-name">{{item}}()</span></a><br>
+                    {% endfor %}
+                <p>
+                    {% endif %}
 
-</div>
-</div>
+            </div>
+        </div>
 
-</div>
+    </div>
 
+    {% include bottom.html %}
 </body>
+
 </html>

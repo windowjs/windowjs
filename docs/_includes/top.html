@@ -1,20 +1,34 @@
 {% assign top = page.url | slice: 1, 3 %}
-
-<div id="top">
-
-<div id="top-left" class="flex1">
-<a href="/" class="windowjs top-selected">Window.js</a>
-</div>
-
-<div id="top-center">
-<a href="/about" {% if top == "abo" %}class="top-selected"{% endif %}>About</a>
-<a href="/doc" {% if top == "doc" %}class="top-selected"{% endif %}>Documentation</a>
-<a href="/dev" {% if top == "dev" %}class="top-selected"{% endif %}>Development</a>
-<a href="/download" {% if top == "dow" %}class="top-selected"{% endif %}>Download</a>
-</div>
-
-<div id="top-right" class="flex1 flex-right">
-<a href="http://github.com/windowjs/windowjs" class="github-icon"><img src="https://cdnjs.cloudflare.com/ajax/libs/octicons/8.5.0/svg/mark-github.svg"></a>
-</div>
-
-</div>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fs-2" href="/">Window.js</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a href="/about" class="nav-link fs-5{% if top=="abo" %} active{% endif %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/doc" class="nav-link fs-5{% if top=="doc" %} active{% endif %}">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/dev" class="nav-link fs-5{% if top=="dev" %} active{% endif %}">Development</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/download" class="nav-link fs-5{% if top=="dow" %} active{% endif %}">Download</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav flex-row">
+                    <li class="nav-item">
+                        <a class="github-icon" href="http://github.com/windowjs/windowjs "><img
+                                src="https://cdnjs.cloudflare.com/ajax/libs/octicons/8.5.0/svg/mark-github.svg "></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

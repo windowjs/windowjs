@@ -1,107 +1,51 @@
+{% assign navpage = page.url | slice: 6, 3 %}
 <!doctype html>
-<html>
-
+<html lang="en">
 {% include head.html %}
 
 <body>
+    {% include top.html %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2 fixed-top d-none d-md-block side-nav">
+                <hr>
+                <div><a href="/about" {% if navpage=="/" %} class="active" {% endif %}>Introduction</a></div>
+                <hr>
+                <div><a href="/about/examples" {% if navpage=="/ex" %} class="active" {% endif %}>Examples</a></div>
+                <div><a href="/download" {% if navpage=="oad" %} class="active" {% endif %}>Download</a></div>
+                <hr>
+                <div><a href="/about/processing" {% if navpage=="/pr" %} class="active" {% endif %}>Processing</a></div>
+                <hr>
+                <div><a href="/about/faq" {% if navpage=="/fa" %} class="active" {% endif %}>FAQ</a></div>
+                <div><a href="/about/license" {% if navpage=="/li" %} class="active" {% endif %}>License</a></div>
+                <div><a href="/about/issues" {% if navpage=="/is" %} class="active" {% endif %}>Issues</a></div>
+                <div><a href="/about/contact" {% if navpage=="/co" %} class="active" {% endif %}>Contact</a></div>
+                <hr>
+            </div>
+            <div class="col-12 col-md-7 offset-md-2">
+                {{ content }}
+            </div>
+            <div class="col-md-3 d-none d-md-block">
+                <!-- This column not used in this layout -->
+            </div>
+        </div>
+    </div>
+    <div class="container d-block d-md-none">
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <ul class="nav col-md-12 justify-content-center">
+                <li class="nav-item"><a href="/about" class="bottom-nav {% if navpage=="/" %} active {% endif %}">Introduction</a></li>
+                <li class="nav-item"><a href="/about/examples" class="bottom-nav {% if navpage=="/ex" %} active {% endif %}">Examples</a></li>
+                <li class="nav-item"><a href="/download" class="bottom-nav {% if navpage=="oad" %} active {% endif %}">Download</a></li>
+                <li class="nav-item"><a href="/about/processing" class="bottom-nav {% if navpage=="/pr" %} active {% endif %}">Processing</a></li>
+                <li class="nav-item"><a href="/about/faq" class="bottom-nav {% if navpage=="/fa" %} active {% endif %}">FAQ</a></li>
+                <li class="nav-item"><a href="/about/license" class="bottom-nav {% if navpage=="/li" %} active {% endif %}">License</a></li>
+                <li class="nav-item"><a href="/about/issues" class="bottom-nav {% if navpage=="/is" %} active {% endif %}">Issues</a></li>
+                <li class="nav-item"><a href="/about/contact" class="bottom-nav {% if navpage=="/co" %} active {% endif %}">Contact</a></li>
+            </ul>
+        </footer>
+    </div>
 
-{% include top.html %}
-
-<div id="documentation-container">
-
-<div id="sidebar-left-container" class="flex1 flex-right">
-<div id="sidebar-left">
-<h1 class="hidden">.</h1>
-{% include link name="Development" path="/dev/" %}
-<hr>
-{% include link name="Checkout" path="/dev/checkout" %}
-{% include link name="Build" path="/dev/build" %}
-{% include link name="Troubleshooting" path="/dev/trouble" %}
-<hr>
-{% include link name="Build config" path="/dev/config" %}
-{% include link name="Dependencies" path="/dev/dependencies" %}
-{% include link name="Documentation" path="/dev/documentation" %}
-{% include link name="Tests" path="/dev/tests" %}
-<hr>
-{% include link name="Releases" path="/dev/release" %}
-{% include link name="Maintenance" path="/dev/maintenance" %}
-<hr>
-{% include link name="Plans" path="/dev/plans" %}
-{% include link name="Contributing" path="/dev/contributing" %}
-</div>
-</div>
-
-<div id="content">
-
-{{ content }}
-
-<p>&nbsp;<p>
-
-</div>
-
-<div id="sidebar-right-container" class="flex1">
-<div id="sidebar-right">
-
-{% if page.events %}
-{% for item in page.events %}
-<a href="#event-{{item}}"><span class="code-event">"{{item}}"</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
-
-{% if page.properties %}
-{% for item in page.properties %}
-<a href="#{{ item }}"><span class="code-name">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
-
-{% if page.functions %}
-{% for item in page.functions %}
-<a href="#{{ item }}"><span class="code-name">{{item}}()</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
-
-{% if page.constructors %}
-{% for item in page.constructors %}
-<a href="#{{ item }}"><span class="code-class">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
-
-{% if page.class-properties %}
-{% for item in page.class-properties %}
-<a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
-
-{% if page.class-methods %}
-{% for item in page.class-methods %}
-<a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
-
-{% if page.object-properties %}
-{% for item in page.object-properties %}
-<a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
-
-{% if page.object-methods %}
-{% for item in page.object-methods %}
-<a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
-
-</div>
-</div>
-
-</div>
-
+    {% include bottom.html %}
 </body>
+
 </html>
