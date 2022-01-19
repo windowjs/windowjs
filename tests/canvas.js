@@ -113,5 +113,22 @@ export async function clip() {
   canvas.fillStyle = 'blue';
   canvas.fillRect(0, 0, 200, 50);
 
-  await diffCanvasToFile('data/clip.png', 830);
+  await diffCanvasToFile('data/clip.png');
+}
+
+export async function drawImageBitmap() {
+  const canvas = window.canvas;
+  const image = await File.readImageBitmap(__dirname + '/data/image.png');
+  canvas.drawImage(image, 0, 0);
+  canvas.drawImage(image, 100, 0, 100, 50);
+  await diffCanvasToFile('data/draw_image_bitmap.png', 2400);
+}
+
+export async function drawImageBitmapWithSmoothing() {
+  const canvas = window.canvas;
+  canvas.imageSmoothingEnabled = true;
+  const image = await File.readImageBitmap(__dirname + '/data/image.png');
+  canvas.drawImage(image, 0, 0);
+  canvas.drawImage(image, 100, 0, 100, 50);
+  await diffCanvasToFile('data/draw_image_bitmap.png', 3000);
 }
