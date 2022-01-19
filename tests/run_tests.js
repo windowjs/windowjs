@@ -63,6 +63,7 @@ async function resetForNewTest(testName, tmpDirForTest) {
   canvas.textBaseline = 'alphabetic';
   canvas.clearRect(0, 0, canvas.width, canvas.height);
   canvas.fillRect(0, 0, canvas.width, canvas.height);
+  canvas.beginPath();
 }
 
 async function runTestsInModule(path, tmpDirForTest, testPattern) {

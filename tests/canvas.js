@@ -81,3 +81,12 @@ export async function arcs() {
 
   await diffCanvasToFile('data/arcs.png', 520);
 }
+
+export async function bezierCurves() {
+  const canvas = window.canvas;
+  canvas.strokeStyle = 'red';
+  canvas.moveTo(10, 20);
+  canvas.bezierCurveTo(190, 30, 110, 80, 210, 100);
+  canvas.stroke();
+  await diffCanvasToFile('data/bezier_curves.png');
+}
