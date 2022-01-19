@@ -84,9 +84,34 @@ export async function arcs() {
 
 export async function bezierCurves() {
   const canvas = window.canvas;
+
   canvas.strokeStyle = 'red';
+  canvas.lineWidth = 10;
   canvas.moveTo(10, 20);
   canvas.bezierCurveTo(190, 30, 110, 80, 210, 100);
   canvas.stroke();
-  await diffCanvasToFile('data/bezier_curves.png');
+
+  canvas.strokeStyle = 'green';
+  canvas.beginPath();
+  canvas.moveTo(100, 20);
+  canvas.quadraticCurveTo(280, 30, 100, 100);
+  canvas.stroke();
+
+  await diffCanvasToFile('data/bezier_curves.png', 830);
+}
+
+export async function clip() {
+  const canvas = window.canvas;
+
+  canvas.save();
+  canvas.rect(50, 50, 50, 50);
+  canvas.clip();
+  canvas.fillStyle = 'red';
+  canvas.fillRect(0, 0, 200, 100);
+
+  canvas.restore();
+  canvas.fillStyle = 'blue';
+  canvas.fillRect(0, 0, 200, 50);
+
+  await diffCanvasToFile('data/clip.png', 830);
 }
