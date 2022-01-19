@@ -130,7 +130,7 @@ export async function drawImageBitmapWithSmoothing() {
   const image = await File.readImageBitmap(__dirname + '/data/image.png');
   canvas.drawImage(image, 0, 0);
   canvas.drawImage(image, 100, 0, 100, 50);
-  await diffCanvasToFile('data/draw_image_bitmap.png', 3000);
+  await diffCanvasToFile('data/draw_image_bitmap_smooth.png', 3000);
 }
 
 export async function ellipses() {
