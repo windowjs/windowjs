@@ -132,3 +132,26 @@ export async function drawImageBitmapWithSmoothing() {
   canvas.drawImage(image, 100, 0, 100, 50);
   await diffCanvasToFile('data/draw_image_bitmap.png', 3000);
 }
+
+export async function ellipses() {
+  const canvas = window.canvas;
+
+  canvas.scale(0.7, 0.7);
+
+  canvas.fillStyle = 'red';
+  canvas.beginPath();
+  canvas.ellipse(60, 75, 50, 30, Math.PI * .25, 0, Math.PI * 1.5);
+  canvas.fill();
+
+  canvas.fillStyle = 'blue';
+  canvas.beginPath();
+  canvas.ellipse(150, 75, 50, 30, Math.PI * .25, 0, Math.PI);
+  canvas.fill();
+
+  canvas.fillStyle = 'green';
+  canvas.beginPath();
+  canvas.ellipse(240, 75, 50, 30, Math.PI * .25, 0, Math.PI, true);
+  canvas.fill();
+
+  await diffCanvasToFile('data/ellipses.png', 410);
+}
