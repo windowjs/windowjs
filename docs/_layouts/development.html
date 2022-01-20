@@ -1,4 +1,4 @@
-{% assign navpage = page.url | slice: 6, 3 %}
+{% assign navpage = page.url | slice: 4, 5 %}
 <!doctype html>
 <html lang="en">
 {% include head.html %}
@@ -9,38 +9,126 @@
         <div class="row">
             <div class="col-md-2 fixed-top d-none d-md-block side-nav">
                 <hr>
-                <div><a href="/about" {% if navpage=="/" %} class="active" {% endif %}>Introduction</a></div>
+                <div><a href="/dev" {% if navpage=="/" %} class="active" {% endif %}>Development</a></div>
                 <hr>
-                <div><a href="/about/examples" {% if navpage=="/ex" %} class="active" {% endif %}>Examples</a></div>
-                <div><a href="/download" {% if navpage=="oad" %} class="active" {% endif %}>Download</a></div>
+                <div><a href="/dev/checkout" {% if navpage=="/chec" %} class="active" {% endif %}>Checkout</a></div>
+                <div><a href="/dev/build" {% if navpage=="/buil" %} class="active" {% endif %}>Build</a></div>
+                <div><a href="/dev/trouble" {% if navpage=="/trou" %} class="active" {% endif %}>Troubleshooting</a></div>
                 <hr>
-                <div><a href="/about/processing" {% if navpage=="/pr" %} class="active" {% endif %}>Processing</a></div>
+                <div><a href="/dev/config" {% if navpage=="/conf" %} class="active" {% endif %}>Build config</a></div>
+                <div><a href="/dev/dependencies" {% if navpage=="/depe" %} class="active" {% endif %}>Dependencies</a></div>
+                <div><a href="/dev/documentation" {% if navpage=="/docu" %} class="active" {% endif %}>Documentation</a></div>
+                <div><a href="/dev/tests" {% if navpage=="/test" %} class="active" {% endif %}>Tests</a></div>
                 <hr>
-                <div><a href="/about/faq" {% if navpage=="/fa" %} class="active" {% endif %}>FAQ</a></div>
-                <div><a href="/about/license" {% if navpage=="/li" %} class="active" {% endif %}>License</a></div>
-                <div><a href="/about/issues" {% if navpage=="/is" %} class="active" {% endif %}>Issues</a></div>
-                <div><a href="/about/contact" {% if navpage=="/co" %} class="active" {% endif %}>Contact</a></div>
+                <div><a href="/dev/release" {% if navpage=="/rele" %} class="active" {% endif %}>Releases</a></div>
+                <div><a href="/dev/maintenance" {% if navpage=="/main" %} class="active" {% endif %}>Maintenance</a></div>
+                <hr>
+                <div><a href="/dev/plans" {% if navpage=="/plan" %} class="active" {% endif %}>Plans</a></div>
+                <div><a href="/dev/contributing" {% if navpage=="/cont" %} class="active" {% endif %}>Contributing</a></div>
                 <hr>
             </div>
             <div class="col-12 col-md-7 offset-md-2">
                 {{ content }}
             </div>
             <div class="col-md-3 d-none d-md-block">
-                <!-- This column not used in this layout -->
+                <div>
+                    {% if page.events %}
+                    <div class="fw-bold">Events</div>
+                    <dl class="row">
+                        {% for item in page.events %}
+                        <dt><a href="#event-{{item}}">{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if page.properties %}
+                    <div class="fw-bold">Properties</div>
+                    <dl class="row">
+                        {% for item in page.properties %}
+                        <dt><a href="#{{ item }}">{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if page.functions %}
+                    <div class="fw-bold">Functions</div>
+                    <dl class="row">
+                        {% for item in page.functions %}
+                        <dt><a href="#{{ item }}">{{item}}()</a></dt>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if page.constructors %}
+                    <div class="fw-bold">Constructors</div>
+                    <dl class="row">
+                        {% for item in page.constructors %}
+                        <dt><a href="#{{ item }}">{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if page.class-properties %}
+                    <div class="fw-bold">Class Properties</div>
+                    <dl class="row">
+                        {% for item in page.class-properties %}
+                        <dt><a href="#{{ page.class-name }}.{{ item }}">{{page.class-name}}.{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if page.class-methods %}
+                    <div class="fw-bold">Class Methods</div>
+                    <dl class="row">
+                        {% for item in page.class-methods %}
+                        <dt><a href="#{{ page.class-name }}.{{ item }}">{{page.class-name}}.{{item}}()</a></dt>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if page.object-properties %}
+                    <div class="fw-bold">Object Properties</div>
+                    <dl class="row">
+                        {% for item in page.object-properties %}
+                        <dt><a href="#{{ page.object-name }}.{{ item }}">{{page.object-name}}.{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if page.object-methods %}
+                    <div class="fw-bold">Object Methods</div>
+                    <dl class="row">
+                        {% for item in page.object-methods %}
+                        <dt><a href="#{{ page.object-name }}.{{ item }}">{{page.object-name}}.{{item}}()</a></dt>
+                        {% endfor %}
+                    </dl>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
     <div class="container d-block d-md-none">
         <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
             <ul class="nav col-md-12 justify-content-center">
-                <li class="nav-item"><a href="/about" class="bottom-nav {% if navpage=="/" %} active {% endif %}">Introduction</a></li>
-                <li class="nav-item"><a href="/about/examples" class="bottom-nav {% if navpage=="/ex" %} active {% endif %}">Examples</a></li>
-                <li class="nav-item"><a href="/download" class="bottom-nav {% if navpage=="oad" %} active {% endif %}">Download</a></li>
-                <li class="nav-item"><a href="/about/processing" class="bottom-nav {% if navpage=="/pr" %} active {% endif %}">Processing</a></li>
-                <li class="nav-item"><a href="/about/faq" class="bottom-nav {% if navpage=="/fa" %} active {% endif %}">FAQ</a></li>
-                <li class="nav-item"><a href="/about/license" class="bottom-nav {% if navpage=="/li" %} active {% endif %}">License</a></li>
-                <li class="nav-item"><a href="/about/issues" class="bottom-nav {% if navpage=="/is" %} active {% endif %}">Issues</a></li>
-                <li class="nav-item"><a href="/about/contact" class="bottom-nav {% if navpage=="/co" %} active {% endif %}">Contact</a></li>
+                <li class="nav-item"><a href="/dev" class="bottom-nav {% if navpage=="/" %} active {% endif %}">Development</a></li>
+                <li class="nav-item"><a href="/dev/checkout" class="bottom-nav {% if navpage=="/chec" %} active {% endif %}">Checkout</a></li>
+                <li class="nav-item"><a href="/dev/build" class="bottom-nav {% if navpage=="/buil" %} active {% endif %}">Build</a></li>
+                <li class="nav-item"><a href="/dev/trouble" class="bottom-nav {% if navpage=="/trou" %} active {% endif %}">Troubleshooting</a></li>
+                <li class="nav-item"><a href="/dev/config" class="bottom-nav {% if navpage=="/conf" %} active {% endif %}">Build config</a></li>
+                <li class="nav-item"><a href="/dev/dependencies" class="bottom-nav {% if navpage=="/depe" %} active {% endif %}">Dependencies</a></li>
+                <li class="nav-item"><a href="/dev/documentation" class="bottom-nav {% if navpage=="/docu" %} active {% endif %}">Documentation</a></li>
+                <li class="nav-item"><a href="/dev/tests" class="bottom-nav {% if navpage=="/test" %} active {% endif %}">Tests</a></li>
+                <li class="nav-item"><a href="/dev/release" class="bottom-nav {% if navpage=="/rele" %} active {% endif %}">Releases</a></li>
+                <li class="nav-item"><a href="/dev/maintenance" class="bottom-nav {% if navpage=="/main" %} active {% endif %}">Maintenance</a></li>
+                <li class="nav-item"><a href="/dev/plans" class="bottom-nav {% if navpage=="/plan" %} active {% endif %}">Plans</a></li>
+                <li class="nav-item"><a href="/dev/contributing" class="bottom-nav {% if navpage=="/cont" %} active {% endif %}">Contributing</a></li>
             </ul>
         </footer>
     </div>

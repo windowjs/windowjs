@@ -130,3 +130,28 @@ p .title .magenta strong {
     font-family: 'Oleo Script Swash Caps', cursive;
     color: var(--red);
 }
+
+dl {
+    background-color: var(--lightgrey);
+}
+
+.api {
+    margin-top: 64px;
+    font-family: monospace;
+    font-size: var(--normal4);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+    
+.api-left {
+    font-weight: bold;
+}
+    
+.api-right {
+    text-align: right;
+    margin-left: 8px;
+    font-size: var(--normal);
+    max-width: 360px;
+}

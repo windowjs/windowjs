@@ -1,117 +1,140 @@
+{% assign navpage = page.url | slice: 4, 8 %}
 <!doctype html>
-<html>
-
+<html lang="en">
 {% include head.html %}
 
 <body>
-
     {% include top.html %}
-
-    <div id="documentation-container">
-
-        <div id="sidebar-left-container" class="flex1 flex-right">
-            <div id="sidebar-left">
-                <h1 class="hidden">.</h1>
-                {% include link name="Getting started" path="/doc/" %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2 fixed-top d-none d-md-block side-nav">
                 <hr>
-                {% include link name="Javascript runtime" path="/doc/runtime" %}
-                {% include link name="Console" path="/doc/console" %}
-                {% include link name="Command line" path="/doc/args" %}
-                {% include link name="API index" path="/doc/api" %}
+                <div><a href="/doc" {% if navpage=="/" %} class="active" {% endif %}>Getting started</a></div>
                 <hr>
-                {% include link name="Global" path="/doc/global" %}
-                {% include link name="Window" path="/doc/window" %}
+                <div><a href="/doc/runtime" {% if navpage=="/runtime" %} class="active" {% endif %}>Javascript runtime</a></div>
+                <div><a href="/doc/console" {% if navpage=="/console" %} class="active" {% endif %}>Console</a></div>
+                <div><a href="/doc/args" {% if navpage=="/args.ht" %} class="active" {% endif %}>Command line</a></div>
+                <div><a href="/doc/api" {% if navpage=="/api.htm" %} class="active" {% endif %}>API index</a></div>
                 <hr>
-                {% include link name="Canvas" path="/doc/canvas" %}
-                {% include link name="CanvasGradient" path="/doc/canvasgradient" %}
-                {% include link name="ImageBitmap" path="/doc/imagebitmap" %}
-                {% include link name="ImageData" path="/doc/imagedata" %}
+                <div><a href="/doc/global" {% if navpage=="/global." %} class="active" {% endif %}>Global</a></div>
+                <div><a href="/doc/window" {% if navpage=="/window." %} class="active" {% endif %}>Window</a></div>
                 <hr>
-                {% include link name="File" path="/doc/file" %}
-                {% include link name="Process" path="/doc/process" %}
-                {% include link name="Performance" path="/doc/performance" %}
+                <div><a href="/doc/canvas" {% if navpage=="/canvas." %} class="active" {% endif %}>Canvas</a></div>
+                <div><a href="/doc/canvasgradient" {% if navpage=="/canvasg" %} class="active" {% endif %}>CanvasGradient</a></div>
+                <div><a href="/doc/imagebitmap" {% if navpage=="/imagebi" %} class="active" {% endif %}>ImageBitmap</a></div>
+                <div><a href="/doc/imagedata" {% if navpage=="/imageda" %} class="active" {% endif %}>ImageData</a></div>
+                <hr>
+                <div><a href="/doc/file" {% if navpage=="/file.ht" %} class="active" {% endif %}>File</a></div>
+                <div><a href="/doc/process" {% if navpage=="/process" %} class="active" {% endif %}>Process</a></div>
+                <div><a href="/doc/performance" {% if navpage=="/perform" %} class="active" {% endif %}>Performance</a></div>
+                <hr>
             </div>
-        </div>
-
-        <div id="content">
-
-            {{ content }}
-
-            <p>&nbsp;
-            <p>
-
-        </div>
-
-        <div id="sidebar-right-container" class="flex1">
-            <div id="sidebar-right">
-
-                {% if page.events %}
-                {% for item in page.events %}
-                <a href="#event-{{item}}"><span class="code-event">"{{item}}"</span></a><br>
-                {% endfor %}
-                <p>
+            <div class="col-12 col-md-7 offset-md-2">
+                {{ content }}
+            </div>
+            <div class="col-md-3 d-none d-md-block">
+                <div>
+                    {% if page.events %}
+                    <div class="fw-bold">Events</div>
+                    <dl class="row">
+                        {% for item in page.events %}
+                        <dt><a href="#event-{{item}}">{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
                     {% endif %}
-
+                </div>
+                <div>
                     {% if page.properties %}
-                    {% for item in page.properties %}
-                    <a href="#{{ item }}"><span class="code-name">{{item}}</span></a><br>
-                    {% endfor %}
-                <p>
+                    <div class="fw-bold">Properties</div>
+                    <dl class="row">
+                        {% for item in page.properties %}
+                        <dt><a href="#{{ item }}">{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
                     {% endif %}
-
+                </div>
+                <div>
                     {% if page.functions %}
-                    {% for item in page.functions %}
-                    <a href="#{{ item }}"><span class="code-name">{{item}}()</span></a><br>
-                    {% endfor %}
-                <p>
+                    <div class="fw-bold">Functions</div>
+                    <dl class="row">
+                        {% for item in page.functions %}
+                        <dt><a href="#{{ item }}">{{item}}()</a></dt>
+                        {% endfor %}
+                    </dl>
                     {% endif %}
-
+                </div>
+                <div>
                     {% if page.constructors %}
-                    {% for item in page.constructors %}
-                    <a href="#{{ item }}"><span class="code-class">{{item}}</span></a><br>
-                    {% endfor %}
-                <p>
+                    <div class="fw-bold">Constructors</div>
+                    <dl class="row">
+                        {% for item in page.constructors %}
+                        <dt><a href="#{{ item }}">{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
                     {% endif %}
-
+                </div>
+                <div>
                     {% if page.class-properties %}
-                    {% for item in page.class-properties %}
-                    <a href="#{{ page.class-name }}.{{ item }}"><span
-                            class="code-class">{{page.class-name}}</span>.<span
-                            class="code-name">{{item}}</span></a><br>
-                    {% endfor %}
-                <p>
+                    <div class="fw-bold">Class Properties</div>
+                    <dl class="row">
+                        {% for item in page.class-properties %}
+                        <dt><a href="#{{ page.class-name }}.{{ item }}">{{page.class-name}}.{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
                     {% endif %}
-
+                </div>
+                <div>
                     {% if page.class-methods %}
-                    {% for item in page.class-methods %}
-                    <a href="#{{ page.class-name }}.{{ item }}"><span
-                            class="code-class">{{page.class-name}}</span>.<span
-                            class="code-name">{{item}}()</span></a><br>
-                    {% endfor %}
-                <p>
+                    <div class="fw-bold">Class Methods</div>
+                    <dl class="row">
+                        {% for item in page.class-methods %}
+                        <dt><a href="#{{ page.class-name }}.{{ item }}">{{page.class-name}}.{{item}}()</a></dt>
+                        {% endfor %}
+                    </dl>
                     {% endif %}
-
+                </div>
+                <div>
                     {% if page.object-properties %}
-                    {% for item in page.object-properties %}
-                    <a href="#{{ page.object-name }}.{{ item }}"><span
-                            class="code-object">{{page.object-name}}</span>.<span
-                            class="code-name">{{item}}</span></a><br>
-                    {% endfor %}
-                <p>
+                    <div class="fw-bold">Object Properties</div>
+                    <dl class="row">
+                        {% for item in page.object-properties %}
+                        <dt><a href="#{{ page.object-name }}.{{ item }}">{{page.object-name}}.{{item}}</a></dt>
+                        {% endfor %}
+                    </dl>
                     {% endif %}
-
+                </div>
+                <div>
                     {% if page.object-methods %}
-                    {% for item in page.object-methods %}
-                    <a href="#{{ page.object-name }}.{{ item }}"><span
-                            class="code-object">{{page.object-name}}</span>.<span
-                            class="code-name">{{item}}()</span></a><br>
-                    {% endfor %}
-                <p>
+                    <div class="fw-bold">Object Methods</div>
+                    <dl class="row">
+                        {% for item in page.object-methods %}
+                        <dt><a href="#{{ page.object-name }}.{{ item }}">{{page.object-name}}.{{item}}()</a></dt>
+                        {% endfor %}
+                    </dl>
                     {% endif %}
-
+                </div>
             </div>
         </div>
-
+    </div>
+    <div class="container d-block d-md-none">
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <ul class="nav col-md-12 justify-content-center">
+                <li class="nav-item"><a href="/doc" class="bottom-nav {% if navpage=="/" %} active {% endif %}">Getting started</a></li>
+                <li class="nav-item"><a href="/doc/runtime" class="bottom-nav {% if navpage=="/runtime" %} active {% endif %}">Javascript runtime</a></li>
+                <li class="nav-item"><a href="/doc/console" class="bottom-nav {% if navpage=="/console" %} active {% endif %}">Console</a></li>
+                <li class="nav-item"><a href="/doc/args" class="bottom-nav {% if navpage=="/args.ht" %} active {% endif %}">Command line</a></li>
+                <li class="nav-item"><a href="/doc/api" class="bottom-nav {% if navpage=="/api.htm" %} active {% endif %}">API index</a></li>
+                <li class="nav-item"><a href="/doc/global" class="bottom-nav {% if navpage=="/global." %} active {% endif %}">Global</a></li>
+                <li class="nav-item"><a href="/doc/window" class="bottom-nav {% if navpage=="/window." %} active {% endif %}">Window</a></li>
+                <li class="nav-item"><a href="/doc/canvas" class="bottom-nav {% if navpage=="/canvas." %} active {% endif %}">Canvas</a></li>
+                <li class="nav-item"><a href="/doc/canvasgradient" class="bottom-nav {% if navpage=="/canvasg" %} active {% endif %}">CanvasGradient</a></li>
+                <li class="nav-item"><a href="/doc/imagebitmap" class="bottom-nav {% if navpage=="/imagebi" %} active {% endif %}">ImageBitmap</a></li>
+                <li class="nav-item"><a href="/doc/imagedata" class="bottom-nav {% if navpage=="/imageda" %} active {% endif %}">ImageData</a></li>
+                <li class="nav-item"><a href="/doc/file" class="bottom-nav {% if navpage=="/file.ht" %} active {% endif %}">File</a></li>
+                <li class="nav-item"><a href="/doc/process" class="bottom-nav {% if navpage=="/process" %} active {% endif %}">Process</a></li>
+                <li class="nav-item"><a href="/doc/performance" class="bottom-nav {% if navpage=="/perform" %} active {% endif %}">Performance</a></li>
+            </ul>
+        </footer>
     </div>
 
     {% include bottom.html %}
