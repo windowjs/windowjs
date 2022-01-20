@@ -1,6 +1,6 @@
 // Tests for the Process API: https://windowjs.org/doc/process
 
-import {assert, assertEquals} from './lib.js';
+import {assert, assertEquals} from './lib/lib.js';
 
 function waitUntilChildExit(child) {
   return new Promise(function(resolve) {

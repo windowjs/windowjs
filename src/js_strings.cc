@@ -293,6 +293,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(Pause);
   SET_STRING(performance);
   SET_STRING(Period);
+  SET_STRING(platform);
   SET_STRING(postMessage);
   SET_STRING(PrintScreen);
   SET_STRING(Process);

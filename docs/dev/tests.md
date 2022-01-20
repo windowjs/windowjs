@@ -34,6 +34,35 @@ $ windowjs.exe tests/run_tests.js --log -- test_file.js functionName
 ```
 
 
+Pixel diffs
+-----------
+
+Tests can compare the pixels in their canvas to an image with the expected
+output (the *golden* screenshot image).
+
+The [canvas](https://github.com/windowjs/windowjs/blob/main/tests/canvas.js)
+tests compare their output to the image rendered by Chrome, using the same code.
+
+The [canvas.html](https://github.com/windowjs/windowjs/blob/main/tests/canvas.html)
+tool generates goldens in Chrome directly, by executing the same test code.
+It needs a web server to run:
+
+```shell
+$ npm install http-server
+$ npx http-server
+```
+
+This starts a web server in the current directory, listening on port 8080.
+
+Navigating to
+[http://localhost:8080/tests/canvas.html](http://localhost:8080/tests/canvas.html)
+shows an HTML `<canvas>` with the output of each test, and the golden image
+next to it.
+
+If that tests has executed and *failed*, then the test output is also shown
+next to the golden. These output files should *not* be checked in.
+
+
 Details
 -------
 

@@ -10,7 +10,7 @@
 //
 // $ out/src/windowjs.exe tests/run_tests.js -- tests/hello.js
 
-import * as lib from './lib.js';
+import * as lib from './lib/lib.js';
 
 function post(message) {
   if (Process.parent) {
@@ -20,7 +20,9 @@ function post(message) {
 
 function fixModulePath(path) {
   // Fix paths on Windows.
-  path = path.replaceAll('\\', '/');
+  if (File.sep == '\\') {
+    path = path.replaceAll('\\', '/');
+  }
   // Make the module path relative to this script.
   return '../' + path;
 }
@@ -39,12 +41,12 @@ async function resetForNewTest(testName, tmpDirForTest) {
   lib.setTmpDirForTests(tmpDirForTest + '/' + testName);
 
   window.width = 200;
-  window.height = 200;
+  window.height = 100;
   window.resizable = false;
 
   const canvas = window.canvas;
   canvas.resetTransform();
-  canvas.antialias = false;
+  canvas.antialias = true;
   canvas.fillStyle = '#000';
   canvas.strokeStyle = '#000';
   canvas.font = '24px sans';
@@ -60,6 +62,8 @@ async function resetForNewTest(testName, tmpDirForTest) {
   canvas.textAlign = 'left';
   canvas.textBaseline = 'alphabetic';
   canvas.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.fillRect(0, 0, canvas.width, canvas.height);
+  canvas.beginPath();
 }
 
 async function runTestsInModule(path, tmpDirForTest, testPattern) {
@@ -266,6 +270,8 @@ async function runAllTests(pathPattern, testPattern) {
 
 async function main() {
   window.visible = false;
+  window.width = 200;
+  window.height = 100;
 
   const start = performance.now();
 

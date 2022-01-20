@@ -1,0 +1,143 @@
+<!--
+
+Utility to generate the golden screenshots for canvas.js tests.
+
+Load this file with a local webserver:
+
+$ npm install http-server
+$ npx http-server
+
+Then open http://localhost:8080/tests/canvas.html to load this file.
+
+The page will run each of the canvas.js tests in its own <canvas> element.
+The image can be saved via the right-click menu.
+
+Note that all of the goldens have been generated on Windows, and the tests
+expect 0 pixel diffs on that platforms. Due to rendering differences, other
+platforms let small diffs pass too.
+
+-->
+
+<head>
+<style>
+body {
+font-family: monospace;
+}
+canvas, img {
+margin-left: 20px;
+}
+</style>
+</head>
+
+<body>
+</body>
+
+<script type="module">
+
+import * as lib from './lib/lib.js';
+
+lib.setDiffCallback(function(path) {
+  const golden = document.createElement('img');
+  golden.src = path;
+  golden.title = 'Golden (screenshot saved in tests/data/ to diff in tests)';
+  document.body.appendChild(golden);
+
+  const output = document.createElement('img');
+  output.src = path + '__test_output.png';
+  output.style.visibility = 'hidden';
+  output.title = 'Output (image produced in the last test run)';
+  document.body.appendChild(output);
+
+  output.onload = function(event) {
+    output.style.visibility = '';
+
+    let canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 100;
+    canvas.title = 'Diff (from Golden to Output)';
+    document.body.insertBefore(canvas, output.nextElementSibling);
+
+    const options = {alpha: true};
+    canvas = canvas.getContext('2d', options);
+    canvas.imageSmoothingEnabled = false;
+    canvas.fillStyle = 'black';
+    canvas.fillRect(0, 0, 200, 100);
+
+    canvas.drawImage(golden, 0, 0);
+    const goldenPixels = canvas.getImageData(0, 0, 200, 100).data;
+    canvas.clearRect(0, 0, 200, 100);
+    canvas.fillStyle = 'black';
+    canvas.fillRect(0, 0, 200, 100);
+    canvas.drawImage(output, 0, 0);
+    const outputPixels = canvas.getImageData(0, 0, 200, 100).data;
+    const diffImageData = canvas.createImageData(200, 100);
+    const diffPixels = diffImageData.data;
+    for (let i = 0; i < 200 * 100; i++) {
+      diffPixels[i*4 + 0] = 0x00;
+      diffPixels[i*4 + 1] = 0x00;
+      diffPixels[i*4 + 2] = 0x00;
+      diffPixels[i*4 + 3] = 0xff;
+      if (goldenPixels[i*4 + 0] != outputPixels[i*4 + 0]) {
+        diffPixels[i*4 + 0] = 0xff;
+      } else if (goldenPixels[i*4 + 1] != outputPixels[i*4 + 1]) {
+        diffPixels[i*4 + 1] = 0xff;
+      } else if (goldenPixels[i*4 + 2] != outputPixels[i*4 + 2]) {
+        diffPixels[i*4 + 1] = 0x80;
+        diffPixels[i*4 + 2] = 0xff;
+      } else if (goldenPixels[i*4 + 3] != outputPixels[i*4 + 3]) {
+        diffPixels[i*4 + 0] = 0xff;
+        diffPixels[i*4 + 2] = 0xff;
+      }
+    }
+    canvas.clearRect(0, 0, 200, 100);
+    canvas.fillStyle = 'black';
+    canvas.fillRect(0, 0, 200, 100);
+    canvas.putImageData(diffImageData, 0, 0);
+  };
+});
+
+const hiddenImg = document.createElement('img');
+hiddenImg.style.display = 'none';
+document.body.appendChild(hiddenImg);
+
+globalThis.__dirname = '';
+globalThis.File = {};
+globalThis.File.readImageBitmap = function(path) {
+  return new Promise(function (resolve) {
+    hiddenImg.src = path.substr(1);
+    hiddenImg.onload = async function() {
+      resolve(await createImageBitmap(hiddenImg));
+    };
+  });
+}
+
+const mod = await import('./canvas.js');
+
+for (const f in mod) {
+  const label = document.createElement('h1');
+  label.innerText = f;
+  document.body.appendChild(label);
+
+  const canvas = document.createElement('canvas');
+  canvas.title = 'Live canvas (rendered by the current browser)';
+  canvas.width = 200;
+  canvas.height = 100;
+  const options = {alpha: true};
+  window.canvas = canvas.getContext('2d', options);
+  window.canvas.imageSmoothingEnabled = false;
+  window.canvas.width = 200;
+  window.canvas.height = 100;
+  window.canvas.fillStyle = 'black';
+  window.canvas.fillRect(0, 0, canvas.width, canvas.height);
+  document.body.appendChild(canvas);
+
+  try {
+    await mod[f]();
+  } catch (e) {
+    label.innerText += ' - uncaught exception!';
+    label.style.color = 'red';
+  }
+}
+
+
+</script>

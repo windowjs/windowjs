@@ -43,7 +43,8 @@ Domain renewal
 Verify if the domain name registration for `windowjs.org` is due for a renewal.
 
 The domain is registered with [hostpoint.ch](https://hostpoint.ch) and is
-currently registered until **2022-11-29**.
+currently registered until **2022-11-29**. The registration renews automatically
+3 weeks before the expiration.
 
 
 Windows code signing certificate renewal

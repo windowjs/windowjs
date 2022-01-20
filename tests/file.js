@@ -1,6 +1,10 @@
 // Tests for the File API: https://windowjs.org/doc/file
 
-import { assert, assertEquals, getTmpDir } from './lib.js';
+import {
+  assert,
+  assertEquals,
+  getTmpDir,
+} from './lib/lib.js';
 
 export async function cwd() {
   assert(await File.isDir(File.cwd));

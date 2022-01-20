@@ -536,6 +536,21 @@ void GetVersion(v8::Local<v8::Name> property,
   info.GetReturnValue().Set(api->js()->MakeString(GetVersionString()));
 }
 
+void GetPlatform(v8::Local<v8::Name> property,
+                 const v8::PropertyCallbackInfo<v8::Value>& info) {
+  ASSERT(IsMainThread());
+  JsApi* api = JsApi::Get(info.GetIsolate());
+#if defined(WINDOWJS_WIN)
+  info.GetReturnValue().Set(api->js()->MakeString("Windows"));
+#elif defined(WINDOWJS_MAC)
+  info.GetReturnValue().Set(api->js()->MakeString("macOS"));
+#elif defined(WINDOWJS_LINUX)
+  info.GetReturnValue().Set(api->js()->MakeString("Linux"));
+#else
+#error "Missing platform configuration for window.platform."
+#endif
+}
+
 }  // namespace
 
 JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
@@ -626,6 +641,7 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   scope.Set(window, StringId::open, Open);
   scope.Set(window, StringId::retinaScale, GetRetinaScale);
   scope.Set(window, StringId::version, GetVersion);
+  scope.Set(window, StringId::platform, GetPlatform);
   scope.Set(global, StringId::window, window);
 
   v8::Local<v8::Object> debug = v8::Object::New(scope.isolate);
