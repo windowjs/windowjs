@@ -569,7 +569,6 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
       cursor_x_(0),
       cursor_y_(0),
       cursor_(nullptr),
-      window_canvas_(nullptr),
       parent_process_(nullptr) {
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] create JS APIs start: " << glfwGetTime();
@@ -697,9 +696,9 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   v8::Local<v8::Object> canvas =
       canvas_context->NewInstance(scope.context, 2, args).ToLocalChecked();
   scope.Set(window, StringId::canvas, canvas);
-  window_canvas_ = GetCanvasApi(canvas);
-  ASSERT(window_canvas_);
-  window_->SetWindowCanvas(window_canvas_->canvas());
+  CanvasApi* window_canvas = GetCanvasApi(canvas);
+  ASSERT(window_canvas);
+  window_->SetWindowCanvas(window_canvas->canvas());
 
   scope.Set(global, StringId::File, MakeFileApi(this, scope));
 
@@ -716,9 +715,7 @@ JsApi::~JsApi() {
   // Delete all of the wrapped C++ objects that weren't cleaned up by GC so far.
   v8::Locker locker(isolate());
   v8::HandleScope scope(isolate());
-  window_canvas()->SetCurrentContext();
   isolate()->VisitHandlesWithClassIds(this);
-  delete window_canvas_;
 }
 
 void JsApi::VisitPersistentHandle(v8::Persistent<v8::Value>* value,
@@ -729,13 +726,6 @@ void JsApi::VisitPersistentHandle(v8::Persistent<v8::Value>* value,
   v8::Local<v8::Object> o = v.As<v8::Object>();
   JsApiWrapper* w =
       static_cast<JsApiWrapper*>(o->GetAlignedPointerFromInternalField(0));
-  if (w == window_canvas_) {
-    // The main CanvasApi wraps the main Skia context too, which is where other
-    // resources like textures, etc. are allocated. All of those resources must
-    // be cleaned up before the main canvas context, so we handle this object
-    // explicitly in ~JsApi() to ensure the correct shutdown order.
-    return;
-  }
   delete w;
 }
 
@@ -892,40 +882,40 @@ v8::Local<v8::Promise> JsApi::PostToBackgroundAndResolve(
   WeakPtr<JsApi> weak_this = weak_factory_.MakeWeakPtr();
   TaskQueue* task_queue = task_queue_;
 
-  background_queue_->Post([weak_this, task_queue, index,
-                           b = std::move(background_task)] {
-    ASSERT(!IsMainThread());
+  background_queue_->Post(
+      [weak_this, task_queue, index, b = std::move(background_task)] {
+        ASSERT(!IsMainThread());
 
-    ResolveFunction resolve_task = b();
+        ResolveFunction resolve_task = b();
 
-    // Subtle: this is safe because the task_queue_ is deleted *after* the
-    // background_queue_, and the background_queue_ joins its threads at
-    // shutdown. So as long as the background task is executing, the TaskQueue*
-    // instance is still valid.
-    task_queue->Post([weak_this, index, r = std::move(resolve_task)] {
-      ASSERT(IsMainThread());
+        // Subtle: this is safe because the task_queue_ is deleted *after* the
+        // background_queue_, and the background_queue_ joins its threads at
+        // shutdown. So as long as the background task is executing, the
+        // TaskQueue* instance is still valid.
+        task_queue->Post([weak_this, index, r = std::move(resolve_task)] {
+          ASSERT(IsMainThread());
 
-      JsApi* thiz = weak_this.Get();
-      if (!thiz) {
-        // The original JsApi instance was deleted while the background task
-        // was executing.
-        return;
-      }
+          JsApi* thiz = weak_this.Get();
+          if (!thiz) {
+            // The original JsApi instance was deleted while the background task
+            // was executing.
+            return;
+          }
 
-      JsScope scope(thiz->js_);
-      v8::TryCatch try_catch(scope.isolate);
-      v8::Local<v8::Promise::Resolver> resolver =
-          thiz->ReleasePendingPromise(scope.isolate, index);
-      r(thiz, scope, *resolver);
-      if (try_catch.HasCaught()) {
-        if (resolver->GetPromise()->State() == v8::Promise::kPending) {
-          IGNORE_RESULT(
-              resolver->Reject(scope.context, try_catch.Message()->Get()));
-        }
-      }
-      ASSERT(resolver->GetPromise()->State() != v8::Promise::kPending);
-    });
-  });
+          JsScope scope(thiz->js_);
+          v8::TryCatch try_catch(scope.isolate);
+          v8::Local<v8::Promise::Resolver> resolver =
+              thiz->ReleasePendingPromise(scope.isolate, index);
+          r(thiz, scope, *resolver);
+          if (try_catch.HasCaught()) {
+            if (resolver->GetPromise()->State() == v8::Promise::kPending) {
+              IGNORE_RESULT(
+                  resolver->Reject(scope.context, try_catch.Message()->Get()));
+            }
+          }
+          ASSERT(resolver->GetPromise()->State() != v8::Promise::kPending);
+        });
+      });
 
   return resolver->GetPromise();
 }

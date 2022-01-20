@@ -37,7 +37,7 @@ class WeakPtrBase {
 template <typename T>
 class WeakPtrFactory;
 
-template<typename T>
+template <typename T>
 class WeakPtr : public WeakPtrBase {
  public:
   // Can be copied across threads.
@@ -63,9 +63,7 @@ class WeakPtrFactoryBase {
  public:
   explicit WeakPtrFactoryBase(void* ptr);
 
-  ~WeakPtrFactoryBase() {
-    Invalidate();
-  }
+  ~WeakPtrFactoryBase() { Invalidate(); }
 
  protected:
   void EnsureFlag();

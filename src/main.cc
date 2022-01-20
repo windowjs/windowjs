@@ -42,6 +42,10 @@ int main(int argc, char* argv[]) {
   ShutdownArgs();
   ShutdownLog();
 
+#if !defined(WINDOWJS_RELEASE_BUILD)
+  std::cerr << "Shutdown complete, clean exit.\n";
+#endif
+
   return 0;
 }
 
@@ -574,8 +578,7 @@ void Main::OnResize(int width, int height) {
   //
   // This makes resizes smoother (i.e. black borders aren't visible).
   bool has_resize_callbacks = events_.HasListeners(JsEventType::RESIZE);
-  bool has_raf_callbacks =
-      api_->has_animation_frame_callbacks() && main_module_loaded_;
+  bool has_raf_callbacks = api_->has_animation_frame_callbacks();
 
   if (has_resize_callbacks || has_raf_callbacks) {
     v8::Locker locker(js_->isolate());
@@ -606,8 +609,8 @@ void Main::OnResize(int width, int height) {
       }
     }
 
-    if (has_raf_callbacks) {
-      // This is only called after main_module_loaded_ has finished.
+    // The 'resize' event might have scheduled a requestAnimationFrame.
+    if (main_module_loaded_) {
       api_->CallAnimationFrameCallbacks(scope);
       ASSERT(!try_catch.HasCaught());
     }

@@ -1,6 +1,7 @@
 window.title = 'Hello!';
 
 const canvas = window.canvas;
+let keepDrawing = true;
 
 window.addEventListener('click', function(event) {
   console.log(`Clicked on ${event.x}, ${event.y}`);
@@ -8,6 +9,12 @@ window.addEventListener('click', function(event) {
 
 window.addEventListener('keydown', function(event) {
   console.log(`Key down: ${event.key}`);
+  if (event.key == ' ') {
+    keepDrawing = !keepDrawing;
+    if (keepDrawing) {
+      requestAnimationFrame(draw);
+    }
+  }
 });
 
 function draw() {
@@ -29,7 +36,9 @@ function draw() {
   canvas.restore();
 
   // Request to draw again when the next frame is ready.
-  requestAnimationFrame(draw);
+  if (keepDrawing) {
+    requestAnimationFrame(draw);
+  }
 }
 
 requestAnimationFrame(draw);

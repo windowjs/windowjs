@@ -284,15 +284,11 @@ int ConsoleOverlay::height() const {
   return 144 * window_->device_pixel_ratio();
 }
 
-GLuint ConsoleOverlay::texture() {
-  return canvas_->GetTextureForDraw();
-}
-
 void ConsoleOverlay::SetEnabled(bool enabled) {
   if (enabled) {
     if (!canvas_) {
-      canvas_.reset(
-          new RenderCanvas(window_->shared_context(), width(), height()));
+      canvas_.reset(new RenderCanvas(window_->shared_context(), width(),
+                                     height(), RenderCanvas::TEXTURE));
       redraw_ = true;
     }
   } else {
@@ -349,7 +345,6 @@ void ConsoleOverlay::Draw() {
     return;
   }
 
-  canvas_->SetCurrentContext();
   SkCanvas* canvas = canvas_->canvas();
   canvas->clear(SkColorSetARGB(0x80, 0x00, 0x00, 0x00));
 
