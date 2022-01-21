@@ -119,7 +119,7 @@ class ChildProcess {
 
   async waitUntilDone() {
     try {
-      await Promise.race([ this.promise, resolveAfterTimeout(10 * 1000) ]);
+      await Promise.race([ this.promise, resolveAfterTimeout(30 * 1000) ]);
     } finally {
       this.child.close();
       if (!this.resolved) {
