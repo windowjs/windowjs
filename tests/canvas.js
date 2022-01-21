@@ -79,7 +79,7 @@ export async function arcs() {
   canvas.strokeStyle = 'magenta';
   canvas.stroke();
 
-  await diffCanvasToFile('data/arcs.png', 520);
+  await diffCanvasToFile('data/arcs.png', 540);
 }
 
 export async function bezierCurves() {
@@ -121,7 +121,7 @@ export async function drawImageBitmap() {
   const image = await File.readImageBitmap(__dirname + '/data/image.png');
   canvas.drawImage(image, 0, 0);
   canvas.drawImage(image, 100, 0, 100, 50);
-  await diffCanvasToFile('data/draw_image_bitmap.png', 2400);
+  await diffCanvasToFile('data/draw_image_bitmap.png', 3000);
 }
 
 export async function drawImageBitmapWithSmoothing() {
@@ -153,7 +153,7 @@ export async function ellipses() {
   canvas.ellipse(240, 75, 50, 30, Math.PI * .25, 0, Math.PI, true);
   canvas.fill();
 
-  await diffCanvasToFile('data/ellipses.png', 410);
+  await diffCanvasToFile('data/ellipses.png', 480);
 }
 
 export async function fillText() {
