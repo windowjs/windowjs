@@ -11,7 +11,6 @@
 #include <GLFW/glfw3.h>
 
 #include "console.h"
-#include "gl.h"
 #include "render_canvas.h"
 #include "stats.h"
 
@@ -60,8 +59,6 @@ class Window final {
 
   void OnLoadingStart();
   void OnLoadingFinished();
-
-  void SetCurrentContext(GLFWwindow* context);
 
   void SetWindowCanvas(RenderCanvas* canvas);
 
@@ -166,19 +163,13 @@ class Window final {
   bool reloading_;
   int block_visibility_for_n_frames_;
 
-  // Every GLFWwindow object has a GL context associated with it.
-  // Each GL context can be "current" in only one thread at a time,
-  // and each thread can only have one GL context at a time too.
-  // This field tracks the current GLFWwindow whose context is active,
-  // so that we only switch to offscreen contexts as needed.
-  GLFWwindow* current_context_;
-
   std::unique_ptr<RenderCanvasSharedContext> shared_context_;
 
-  // The canvas that renders to the window.
-  RenderCanvas* canvas_;
+  // The canvas that renders to the screen.
+  std::unique_ptr<RenderCanvas> screen_canvas_;
 
-  std::unique_ptr<TextureShader> texture_shader_;
+  // The canvas that backs window.canvas in Javascript.
+  RenderCanvas* canvas_;
 
   std::unique_ptr<ConsoleOverlay> console_overlay_;
   std::unique_ptr<Stats> stats_;

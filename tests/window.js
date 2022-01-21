@@ -14,9 +14,9 @@ export async function canvasSizeMatchesWindowSize() {
     return;
   }
   window.width = 246;
-  window.height = 357;
+  window.height = 356;
   assertEquals(window.canvas.width, 246);
-  assertEquals(window.canvas.height, 357);
+  assertEquals(window.canvas.height, 356);
 }
 
 export async function maximize() {

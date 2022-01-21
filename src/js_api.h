@@ -233,7 +233,6 @@ class JsApi final : public v8::PersistentHandleVisitor {
   std::unordered_map<std::string, sk_sp<SkTypeface>> fonts_;
   std::unordered_map<std::string, sk_sp<SkTypeface>> fonts_cache_;
 
-  CanvasApi* window_canvas_;
   ProcessApi* parent_process_;
 };
 

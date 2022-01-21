@@ -1,9 +1,9 @@
 #include "subprocess.h"
 
-#include <string.h>
-
 #include <algorithm>
 #include <sstream>
+
+#include <string.h>
 
 #include "fail.h"
 #include "file.h"

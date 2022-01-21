@@ -256,7 +256,8 @@ sk_sp<SkData> PrepareToDecode(JsApi* api,
 CanvasApi::CanvasApi(JsApi* api, v8::Local<v8::Object> thiz, int width,
                      int height)
     : JsApiWrapper(api->isolate(), thiz),
-      canvas_(new RenderCanvas(api->canvas_shared_context(), width, height)) {
+      canvas_(new RenderCanvas(api->canvas_shared_context(), width, height,
+                               RenderCanvas::TEXTURE)) {
   // Each RenderCanvas has two render buffers with 4 bytes per pixel
   // each. Tell v8 about the external size used to inform GC.
   // Note that this class ignores resizes to the RenderCanvas.
@@ -545,7 +546,6 @@ static void DrawRect(const v8::FunctionCallbackInfo<v8::Value>& info,
   SkRect rect = SkRect::MakeXYWH(
       info[0].As<v8::Number>()->Value(), info[1].As<v8::Number>()->Value(),
       info[2].As<v8::Number>()->Value(), info[3].As<v8::Number>()->Value());
-  api->canvas()->SetCurrentContext();
   api->skia_canvas()->drawRect(rect, paint);
 }
 
@@ -1260,7 +1260,6 @@ void CanvasApi::DrawText(const v8::FunctionCallbackInfo<v8::Value>& info,
     }
   }
 
-  api->canvas()->SetCurrentContext();
   api->skia_canvas()->drawSimpleText(text.c_str(), text.size(),
                                      SkTextEncoding::kUTF8, x, y, state.font,
                                      paint);
@@ -1498,7 +1497,6 @@ void CanvasApi::Fill(const v8::FunctionCallbackInfo<v8::Value>& info) {
       api->path_.setFillType(SkPathFillType::kWinding);
     }
   }
-  api->canvas()->SetCurrentContext();
   api->skia_canvas()->drawPath(api->path_, api->state_.fill_paint);
 
   api->path_.setFillType(SkPathFillType::kWinding);
@@ -1508,7 +1506,6 @@ void CanvasApi::Fill(const v8::FunctionCallbackInfo<v8::Value>& info) {
 void CanvasApi::Stroke(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
   if (api) {
-    api->canvas()->SetCurrentContext();
     api->skia_canvas()->drawPath(api->path_, api->state_.stroke_paint);
   }
 }
@@ -2052,8 +2049,6 @@ void CanvasApi::DrawImage(const v8::FunctionCallbackInfo<v8::Value>& info) {
     }
   }
 
-  canvas->canvas()->SetCurrentContext();
-
   if (sx == 0 && sy == 0 && sw == source_width && sh == source_height &&
       dw == source_width && dh == source_height) {
     canvas->skia_canvas()->drawImage(source_image.get(), dx, dy);
@@ -2466,7 +2461,6 @@ void ImageBitmapApi::Decode(const v8::FunctionCallbackInfo<v8::Value>& info) {
         return [image](JsApi* api, const JsScope& scope,
                        v8::Promise::Resolver* resolver) {
           RenderCanvasSharedContext* context = api->canvas_shared_context();
-          context->SetCurrentContext();
           sk_sp<SkImage> texture = image->makeTextureImage(
               context->skia_context(), GrMipMapped::kNo, SkBudgeted::kNo);
           ASSERT(texture);

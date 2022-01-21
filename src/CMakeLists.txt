@@ -85,8 +85,6 @@ add_executable(windowjs
     file.h
     generated_blobs.cc
     generated_version.cc
-    gl.cc
-    gl.h
     js.cc
     js.h
     js_api.cc

@@ -29,7 +29,6 @@ Window::Window(Delegate* delegate, int width, int height)
       loading_(true),
       reloading_(false),
       block_visibility_for_n_frames_(1),
-      current_context_(nullptr),
       canvas_(nullptr),
       console_overlay_(new ConsoleOverlay(this)),
       stats_(new Stats(this)) {
@@ -97,7 +96,7 @@ Window::Window(Delegate* delegate, int width, int height)
   // Skia crashes if it gets zero width of height; force a min size of 1.
   glfwSetWindowSizeLimits(window_, 1, 1, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-  SetCurrentContext(window_);
+  glfwMakeContextCurrent(window_);
 
   // Enable waiting for vsync.
   glfwSwapInterval(1);
@@ -125,25 +124,21 @@ Window::Window(Delegate* delegate, int width, int height)
   glClear(GL_COLOR_BUFFER_BIT);
   ASSERT_NO_GL_ERROR();
 
-  texture_shader_.reset(new TextureShader());
-
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] Created texture shader: " << glfwGetTime();
   }
 
   shared_context_.reset(new RenderCanvasSharedContext(this));
+  screen_canvas_.reset(new RenderCanvas(shared_context_.get(), width_, height_,
+                                        RenderCanvas::FRAMEBUFFER_0));
 }
 
 Window::~Window() {
-  shared_context_->SetCurrentContext();
+  screen_canvas_.reset();
   console_overlay_.reset();
   stats_.reset();
   shared_context_.reset();
-
-  SetCurrentContext(window_);
-  texture_shader_.reset();
-
-  SetCurrentContext(nullptr);
+  glfwMakeContextCurrent(nullptr);
   glfwDestroyWindow(window_);
 }
 
@@ -174,13 +169,6 @@ void Window::OnLoadingFinished() {
   }
 }
 
-void Window::SetCurrentContext(GLFWwindow* context) {
-  if (context != current_context_) {
-    glfwMakeContextCurrent(context);
-    current_context_ = context;
-  }
-}
-
 void Window::SetWindowCanvas(RenderCanvas* canvas) {
   if (canvas) {
     ASSERT(canvas_ == nullptr);
@@ -195,43 +183,26 @@ void Window::RenderAndSwapBuffers() {
     return;
   }
 
+  // Clear the screen, in case it was resized or swapped and not cleared yet.
+  screen_canvas_->canvas()->clear(SK_ColorTRANSPARENT);
+
+  // Blit the main content.
+  canvas_->surface()->draw(screen_canvas_->canvas(), 0, 0);
+
   if (console_overlay_->is_enabled()) {
     console_overlay_->Draw();
+    console_overlay_->canvas()->surface()->draw(
+        screen_canvas_->canvas(), 0,
+        screen_canvas_->height() - console_overlay_->canvas()->height());
   }
+
   if (stats_->is_enabled()) {
     stats_->Draw();
+    stats_->canvas()->surface()->draw(screen_canvas_->canvas(), 0, 0);
   }
 
+  // Make sure that all Skia operations are sent to the GPU before swapping.
   shared_context_->Flush();
-
-  SetCurrentContext(window_);
-
-  // TODO: figure why this is needed on some machines and not others.
-  // Clearing the color buffer doesn't seem to actually do anything;
-  // but if one of the overlays is shown then it works as expected.
-  // Seems like a bug in the GL driver?
-  // Or a sync issue with the target texture passed as the Skia backend?
-  texture_shader_->Clear(1, 1, 0, 0);
-  // glClear(GL_COLOR_BUFFER_BIT);
-
-  float sw = (float) canvas_->GetWidthForDraw() / width_;
-  float sh = (float) canvas_->GetHeightForDraw() / height_;
-  texture_shader_->DrawTexture(canvas_->GetTextureForDraw(), sw, sh, sw - 1,
-                               1 - sh);
-
-  if (console_overlay_->is_enabled()) {
-    float sw = (float) console_overlay_->width() / width_;
-    float sh = (float) console_overlay_->height() / height_;
-    texture_shader_->DrawTexture(console_overlay_->texture(), sw, sh, sw - 1,
-                                 sh - 1, true);
-  }
-
-  if (stats_->is_enabled()) {
-    float sw = (float) stats_->width() / width_;
-    float sh = (float) stats_->height() / height_;
-    texture_shader_->DrawTexture(stats_->texture(), sw, sh, sw - 1, 1 - sh,
-                                 true);
-  }
 
   glfwSwapBuffers(window_);
 
@@ -252,13 +223,6 @@ void Window::RenderAndSwapBuffers() {
   }
 
   stats_->OnFrameFinished();
-
-  // TODO: figure why is resetContext needed here. If it's removed then
-  // hiding and showing the overlay stops drawing text, and reloading font.js
-  // stops drawing text too.
-  shared_context_->SetCurrentContext();
-  shared_context()->skia_context()->resetContext(
-      kTextureBinding_GrGLBackendState);
 }
 
 void Window::SetVisible(bool visible) {
@@ -402,7 +366,6 @@ bool Window::vsync() const {
 }
 
 void Window::SetVsync(bool wait_for_vsync) {
-  SetCurrentContext(window_);
   vsync_ = wait_for_vsync;
   glfwSwapInterval(wait_for_vsync ? 1 : 0);
 }
@@ -496,13 +459,13 @@ void Window::SetY(int y) {
 }
 
 void Window::OnResize(int width, int height) {
-  SetCurrentContext(window_);
   width_ = width;
   height_ = height;
   glViewport(0, 0, width, height);
   ASSERT_NO_GL_ERROR();
   if (canvas_ && (width != canvas_->width() || height != canvas_->height())) {
     canvas_->Resize(width, height);
+    screen_canvas_->Resize(width, height);
     ASSERT_NO_GL_ERROR();
   }
 }

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include <glad/glad.h>
 #include <skia/include/core/SkColor.h>
 #include <v8/include/v8.h>
 
@@ -71,7 +70,7 @@ class ConsoleOverlay {
 
   int width() const;
   int height() const;
-  GLuint texture();
+  RenderCanvas* canvas() const { return canvas_.get(); }
 
   void SetEnabled(bool enabled);
   void SetEnableOnErrors(bool enable);
