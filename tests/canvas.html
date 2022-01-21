@@ -52,8 +52,8 @@ lib.setDiffCallback(function(path) {
     output.style.visibility = '';
 
     let canvas = document.createElement('canvas');
-    canvas.width = 200;
-    canvas.height = 100;
+    canvas.width = 400;
+    canvas.height = 200;
     canvas.title = 'Diff (from Golden to Output)';
     document.body.insertBefore(canvas, output.nextElementSibling);
 
@@ -61,18 +61,18 @@ lib.setDiffCallback(function(path) {
     canvas = canvas.getContext('2d', options);
     canvas.imageSmoothingEnabled = false;
     canvas.fillStyle = 'black';
-    canvas.fillRect(0, 0, 200, 100);
+    canvas.fillRect(0, 0, 400, 200);
 
     canvas.drawImage(golden, 0, 0);
-    const goldenPixels = canvas.getImageData(0, 0, 200, 100).data;
-    canvas.clearRect(0, 0, 200, 100);
+    const goldenPixels = canvas.getImageData(0, 0, 400, 200).data;
+    canvas.clearRect(0, 0, 400, 200);
     canvas.fillStyle = 'black';
-    canvas.fillRect(0, 0, 200, 100);
+    canvas.fillRect(0, 0, 400, 200);
     canvas.drawImage(output, 0, 0);
-    const outputPixels = canvas.getImageData(0, 0, 200, 100).data;
-    const diffImageData = canvas.createImageData(200, 100);
+    const outputPixels = canvas.getImageData(0, 0, 400, 200).data;
+    const diffImageData = canvas.createImageData(400, 200);
     const diffPixels = diffImageData.data;
-    for (let i = 0; i < 200 * 100; i++) {
+    for (let i = 0; i < 400 * 200; i++) {
       diffPixels[i*4 + 0] = 0x00;
       diffPixels[i*4 + 1] = 0x00;
       diffPixels[i*4 + 2] = 0x00;
@@ -89,9 +89,9 @@ lib.setDiffCallback(function(path) {
         diffPixels[i*4 + 2] = 0xff;
       }
     }
-    canvas.clearRect(0, 0, 200, 100);
+    canvas.clearRect(0, 0, 400, 200);
     canvas.fillStyle = 'black';
-    canvas.fillRect(0, 0, 200, 100);
+    canvas.fillRect(0, 0, 400, 200);
     canvas.putImageData(diffImageData, 0, 0);
   };
 });
@@ -99,6 +99,8 @@ lib.setDiffCallback(function(path) {
 const hiddenImg = document.createElement('img');
 hiddenImg.style.display = 'none';
 document.body.appendChild(hiddenImg);
+
+window.platform = 'Windows';
 
 globalThis.__dirname = '';
 globalThis.File = {};
@@ -120,13 +122,13 @@ for (const f in mod) {
 
   const canvas = document.createElement('canvas');
   canvas.title = 'Live canvas (rendered by the current browser)';
-  canvas.width = 200;
-  canvas.height = 100;
+  canvas.width = 400;
+  canvas.height = 200;
   const options = {alpha: true};
   window.canvas = canvas.getContext('2d', options);
   window.canvas.imageSmoothingEnabled = false;
-  window.canvas.width = 200;
-  window.canvas.height = 100;
+  window.canvas.width = 400;
+  window.canvas.height = 200;
   window.canvas.fillStyle = 'black';
   window.canvas.fillRect(0, 0, canvas.width, canvas.height);
   document.body.appendChild(canvas);
