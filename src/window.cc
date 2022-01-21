@@ -67,8 +67,8 @@ Window::Window(Delegate* delegate, int width, int height)
     std::cerr << "-- new Window 3 FAILED!\n";
     const char* ptr = nullptr;
     int err = glfwGetError(&ptr);
-    std::cerr << "-- new Window 3 FAILED err is " << err << "\n;
-    std::cerr << "-- new Window 3 FAILED ptr is " << ptr << "\n;
+    std::cerr << "-- new Window 3 FAILED err is " << err << "\n";
+    std::cerr << "-- new Window 3 FAILED ptr is " << ptr << "\n";
     Fail("glfwCreateWindow failed (%d): %s\n", err, ptr);
   }
   std::cerr << "-- new Window 4\n";
