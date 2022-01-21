@@ -75,12 +75,19 @@ Main::Main()
       main_module_loaded_(false),
       reload_requested_(false),
       first_load_(true) {
+  std::cerr << "-- new Main 1\n";
   ASSERT(IsMainThread());
+  std::cerr << "-- new Main 2\n";
   SetLogHandler(this);
+  std::cerr << "-- new Main 3\n";
   task_queue_.SetPostsEmptyEvents(true);
+  std::cerr << "-- new Main 4\n";
   window_.SetDelegate(this);
+  std::cerr << "-- new Main 5\n";
   window_.SetTitle(Args().initial_module);
+  std::cerr << "-- new Main 6\n";
   Reload();
+  std::cerr << "-- new Main 7\n";
 }
 
 Main::~Main() {

@@ -37,6 +37,7 @@ Window::Window(Delegate* delegate, int width, int height)
       canvas_(nullptr),
       console_overlay_(new ConsoleOverlay(this)),
       stats_(new Stats(this)) {
+  std::cerr << "-- new Window 1\n";
   glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -53,23 +54,27 @@ Window::Window(Delegate* delegate, int width, int height)
   glfwWindowHint(GLFW_STENCIL_BITS, 8);
   glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
   glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
+  std::cerr << "-- new Window 2\n";
 
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] create window start: " << glfwGetTime();
   }
 
   window_ = glfwCreateWindow(width, height, "window.js", nullptr, nullptr);
+  std::cerr << "-- new Window 3\n";
 
   if (!window_) {
     const char* ptr = nullptr;
     int err = glfwGetError(&ptr);
     Fail("glfwCreateWindow failed (%d): %s\n", err, ptr);
   }
+  std::cerr << "-- new Window 4\n";
 
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] create window end: " << glfwGetTime();
   }
 
+  std::cerr << "-- new Window 5\n";
 #if defined(WINDOWJS_WIN)
   // TODO: on Windows, the first window paint sometimes flashes white before
   // showing the first frame. This hint prevents that from happening but isn't
@@ -82,8 +87,10 @@ Window::Window(Delegate* delegate, int width, int height)
     $(DEV) << "[profile-startup] focusing window hack: " << glfwGetTime();
   }
 #endif
+  std::cerr << "-- new Window 6\n";
 
   glfwSetWindowUserPointer(window_, this);
+  std::cerr << "-- new Window 7\n";
 
   glfwSetKeyCallback(window_, KeyCallback);
   glfwSetCharCallback(window_, CharCallback);
@@ -98,44 +105,56 @@ Window::Window(Delegate* delegate, int width, int height)
   glfwSetWindowIconifyCallback(window_, IconifyCallback);
   glfwSetWindowMaximizeCallback(window_, MaximizeCallback);
 
+  std::cerr << "-- new Window 8\n";
   // Skia crashes if it gets zero width of height; force a min size of 1.
   glfwSetWindowSizeLimits(window_, 1, 1, GLFW_DONT_CARE, GLFW_DONT_CARE);
+  std::cerr << "-- new Window 9\n";
 
   glfwMakeContextCurrent(window_);
+  std::cerr << "-- new Window 10\n";
 
   // Enable waiting for vsync.
   glfwSwapInterval(1);
+  std::cerr << "-- new Window 11\n";
 
   static bool loaded_gl_loader = false;
   if (!loaded_gl_loader) {
     if (Args().profile_startup) {
       $(DEV) << "[profile-startup] GL loader start: " << glfwGetTime();
     }
+    std::cerr << "-- new Window 12\n";
     ASSERT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress));
+    std::cerr << "-- new Window 13\n";
     loaded_gl_loader = true;
     if (Args().profile_startup) {
       $(DEV) << "[profile-startup] GL loader end: " << glfwGetTime();
     }
   }
 
+  std::cerr << "-- new Window 14\n";
   int window_width;
   glfwGetFramebufferSize(window_, &width_, &height_);
   glfwGetWindowSize(window_, &window_width, nullptr);
   retina_scale_ = (float) width_ / window_width;
+  std::cerr << "-- new Window 15\n";
 
   glEnable(GL_BLEND);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glViewport(0, 0, width_, height_);
   glClear(GL_COLOR_BUFFER_BIT);
   ASSERT_NO_GL_ERROR();
+  std::cerr << "-- new Window 16\n";
 
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] Created texture shader: " << glfwGetTime();
   }
 
+  std::cerr << "-- new Window 17\n";
   shared_context_.reset(new RenderCanvasSharedContext(this));
+  std::cerr << "-- new Window 18\n";
   screen_canvas_.reset(new RenderCanvas(shared_context_.get(), width_, height_,
                                         RenderCanvas::FRAMEBUFFER_0));
+  std::cerr << "-- new Window 19\n";
 }
 
 Window::~Window() {

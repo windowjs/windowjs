@@ -74,6 +74,10 @@ jobs:
       - name: Debug build
         run: |
           source libraries/setup_build_env.sh
+          cd libraries/glfw
+          git checkout HEAD .
+          git apply ../glfw.patch
+          cd ../..
           cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
           cmake --build out-debug
 
