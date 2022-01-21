@@ -36,6 +36,10 @@ int main(int argc, char* argv[]) {
   main->RunUntilClosed();
   main.reset();
 
+#if !defined(WINDOWJS_RELEASE_BUILD)
+  const bool log_shutdown = !Args().is_child_process;
+#endif
+
   uv_library_shutdown();
   Window::Shutdown();
   Js::Shutdown();
@@ -43,7 +47,9 @@ int main(int argc, char* argv[]) {
   ShutdownLog();
 
 #if !defined(WINDOWJS_RELEASE_BUILD)
-  std::cerr << "Shutdown complete, clean exit.\n";
+  if (log_shutdown) {
+    std::cerr << "Shutdown complete, clean exit.\n";
+  }
 #endif
 
   return 0;

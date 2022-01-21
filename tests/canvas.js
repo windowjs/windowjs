@@ -121,7 +121,7 @@ export async function drawImageBitmap() {
   const image = await File.readImageBitmap(__dirname + '/data/image.png');
   canvas.drawImage(image, 0, 0);
   canvas.drawImage(image, 100, 0, 100, 50);
-  await diffCanvasToFile('data/draw_image_bitmap.png', 4000);
+  await diffCanvasToFile('data/draw_image_bitmap.png', 4020);
 }
 
 export async function drawImageBitmapWithSmoothing() {
