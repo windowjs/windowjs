@@ -641,7 +641,7 @@ at MDN.
 
 
 {% include method object="canvas" name="drawImage"
-   type="(ImageBitmap|CanvasRenderingContext2D, number, number, number? number?, number?, number? => void"
+   type="(ImageBitmap | CanvasRenderingContext2D, number, number, number? number?, number?, number? => void"
 %}
 
 Draws an [ImageBitmap](/doc/imagebitmap) or an

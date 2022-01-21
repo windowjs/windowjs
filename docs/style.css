@@ -176,11 +176,13 @@ dl {
 #content table.parameters td:first-child {
     color: var(--blue);
     font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
 }
 
 #content table.parameters td:nth-child(2) {
     color: var(--red);
     font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
 }
 
 #content table.strings {
@@ -189,6 +191,7 @@ dl {
     border-spacing: 2px;
     width: 100%;
     color: #393a34;
+    font-size: 12px;
 }
 
 #content table.strings td {
@@ -216,16 +219,24 @@ dl {
     background-color: var(--lighter);
 }
 
+td {
+    border-color: white;
+    border-width: 2px;
+}
+
 .code-object {
     color: var(--dark);
+    font-size: 13px;
 }
 
 .code-class {
     color: var(--red);
+    font-size: 13px;
 }
 
 .code-name {
     color: var(--blue);
+    font-size: 13px;
 }
 
 .code-event {
@@ -234,8 +245,23 @@ dl {
 
 .code-type {
     color: #a0a0a0;
+    font-size: 14px;
 }
 
 .code-object:hover, .code-class:hover, .code-name:hover, .code-event:hover, .code-type:hover {
     color: var(--magenta);
+}
+
+.tag {
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 2px;
+    padding-bottom: 4px;
+    border-radius: 6px;
+    font-size: var(--normal-2);
+}
+
+.tag.extension {
+    color: white;
+    background-color: var(--red);
 }
