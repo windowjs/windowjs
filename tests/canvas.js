@@ -97,7 +97,7 @@ export async function bezierCurves() {
   canvas.quadraticCurveTo(280, 30, 100, 100);
   canvas.stroke();
 
-  await diffCanvasToFile('data/bezier_curves.png', 900);
+  await diffCanvasToFile('data/bezier_curves.png', 1000);
 }
 
 export async function clip() {
