@@ -12,6 +12,8 @@
 
 import * as lib from './lib/lib.js';
 
+console.log('---------------- run_tests.js executing');
+
 function post(message) {
   if (Process.parent) {
     Process.parent.postMessage(message);

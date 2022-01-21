@@ -68,6 +68,98 @@ index 9503dd0d..4aece364 100644
   *  @sa @ref window_size
   *  @sa @ref glfwSetWindowSizeCallback
   *
+diff --git a/src/cocoa_init.m b/src/cocoa_init.m
+index 209639e2..12889c9c 100644
+--- a/src/cocoa_init.m
++++ b/src/cocoa_init.m
+@@ -32,6 +32,8 @@
+ // Needed for _NSGetProgname
+ #include <crt_externs.h>
+ 
++#include <stdio.h>
++
+ // Change to our application bundle's resources directory, if present
+ //
+ static void changeToResourcesDirectory(void)
+@@ -497,6 +499,7 @@ void* _glfwLoadLocalVulkanLoaderNS(void)
+ 
+ int _glfwPlatformInit(void)
+ {
++    fprintf(stderr, "-- _glfwPlatformInit 1\n");
+     @autoreleasepool {
+ 
+     _glfw.ns.helper = [[GLFWHelper alloc] init];
+@@ -559,7 +562,9 @@ int _glfwPlatformInit(void)
+     _glfwInitTimerNS();
+     _glfwInitJoysticksNS();
+ 
++    fprintf(stderr, "-- _glfwPlatformInit calling _glfwPollMonitorsNS\n");
+     _glfwPollMonitorsNS();
++    fprintf(stderr, "-- _glfwPlatformInit _glfwPollMonitorsNS returned\n");
+     return GLFW_TRUE;
+ 
+     } // autoreleasepool
+diff --git a/src/cocoa_monitor.m b/src/cocoa_monitor.m
+index f64d78d7..aeb94f45 100644
+--- a/src/cocoa_monitor.m
++++ b/src/cocoa_monitor.m
+@@ -299,16 +299,23 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
+ //
+ void _glfwPollMonitorsNS(void)
+ {
++    fprintf(stderr, "-- _glfwPollMonitorsNS 1\n");
++
+     uint32_t displayCount;
+     CGGetOnlineDisplayList(0, NULL, &displayCount);
++    fprintf(stderr, "-- _glfwPollMonitorsNS 2 displayCount: %u\n", displayCount);
+     CGDirectDisplayID* displays = calloc(displayCount, sizeof(CGDirectDisplayID));
++    fprintf(stderr, "-- _glfwPollMonitorsNS 3\n");
+     CGGetOnlineDisplayList(displayCount, displays, &displayCount);
++    fprintf(stderr, "-- _glfwPollMonitorsNS 4\n");
++    fprintf(stderr, "-- _glfwPollMonitorsNS 4 _glfw.monitorCount %d\n", (int) _glfw.monitorCount);
+ 
+     for (int i = 0;  i < _glfw.monitorCount;  i++)
+         _glfw.monitors[i]->ns.screen = nil;
+ 
+     _GLFWmonitor** disconnected = NULL;
+     uint32_t disconnectedCount = _glfw.monitorCount;
++    fprintf(stderr, "-- _glfwPollMonitorsNS 5\n");
+     if (disconnectedCount)
+     {
+         disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
+@@ -316,9 +323,11 @@ void _glfwPollMonitorsNS(void)
+                _glfw.monitors,
+                _glfw.monitorCount * sizeof(_GLFWmonitor*));
+     }
++    fprintf(stderr, "-- _glfwPollMonitorsNS 6 displayCount %u\n", displayCount);
+ 
+     for (uint32_t i = 0;  i < displayCount;  i++)
+     {
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop iter %u\n", i);
+         if (CGDisplayIsAsleep(displays[i]))
+             continue;
+ 
+@@ -372,15 +381,20 @@ void _glfwPollMonitorsNS(void)
+ 
+         _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_LAST);
+     }
++    fprintf(stderr, "-- _glfwPollMonitorsNS 7\n");
++    fprintf(stderr, "-- _glfwPollMonitorsNS 7 disconnectedCount %u\n", disconnectedCount);
+ 
+     for (uint32_t i = 0;  i < disconnectedCount;  i++)
+     {
+         if (disconnected[i])
+             _glfwInputMonitor(disconnected[i], GLFW_DISCONNECTED, 0);
+     }
++    fprintf(stderr, "-- _glfwPollMonitorsNS 8\n");
+ 
+     free(disconnected);
++    fprintf(stderr, "-- _glfwPollMonitorsNS 9\n");
+     free(displays);
++    fprintf(stderr, "-- _glfwPollMonitorsNS 10\n");
+ }
+ 
+ // Change the current video mode
 diff --git a/src/init.c b/src/init.c
 index aebbece4..19857e49 100644
 --- a/src/init.c

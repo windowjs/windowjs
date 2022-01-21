@@ -44,7 +44,9 @@ int main(int argc, char* argv[]) {
   std::cerr << "-- main.cc 10\n";
 
   std::unique_ptr<Main> main = std::make_unique<Main>();
+  std::cerr << "-- main.cc 11\n";
   main->RunUntilClosed();
+  std::cerr << "-- main.cc 12 RunUntilClosed returned\n";
   main.reset();
 
 #if !defined(WINDOWJS_RELEASE_BUILD)
@@ -153,6 +155,7 @@ void Main::OnMainModuleLoaded() {
 }
 
 void Main::RunUntilClosed() {
+  std::cerr << "-- main.cc RunUntilClosed 1\n";
   while (!glfwWindowShouldClose(window_.window())) {
     // === Loop part 1 ===
     //
