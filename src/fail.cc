@@ -55,6 +55,8 @@ void Fail(const char* reason, ...) {
   description += buffer;
   description += "\n\n" + GetVersionString();
 
+  fprintf(stderr, "%s\n", description.c_str());
+
   UINT flags = MB_OK | MB_ICONERROR | MB_SETFOREGROUND;
   MessageBox(nullptr, description.c_str(), "Crash in Window.js", flags);
 

@@ -100,7 +100,7 @@ index 209639e2..12889c9c 100644
  
      } // autoreleasepool
 diff --git a/src/cocoa_monitor.m b/src/cocoa_monitor.m
-index f64d78d7..aeb94f45 100644
+index f64d78d7..939e51e7 100644
 --- a/src/cocoa_monitor.m
 +++ b/src/cocoa_monitor.m
 @@ -299,16 +299,23 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
@@ -127,7 +127,7 @@ index f64d78d7..aeb94f45 100644
      if (disconnectedCount)
      {
          disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
-@@ -316,9 +323,11 @@ void _glfwPollMonitorsNS(void)
+@@ -316,14 +323,18 @@ void _glfwPollMonitorsNS(void)
                 _glfw.monitors,
                 _glfw.monitorCount * sizeof(_GLFWmonitor*));
      }
@@ -138,10 +138,59 @@ index f64d78d7..aeb94f45 100644
 +        fprintf(stderr, "-- _glfwPollMonitorsNS loop iter %u\n", i);
          if (CGDisplayIsAsleep(displays[i]))
              continue;
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 1\n");
  
-@@ -372,15 +381,20 @@ void _glfwPollMonitorsNS(void)
+         const uint32_t unitNumber = CGDisplayUnitNumber(displays[i]);
+         NSScreen* screen = nil;
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 2\n");
+ 
+         for (screen in [NSScreen screens])
+         {
+@@ -335,6 +346,7 @@ void _glfwPollMonitorsNS(void)
+             if (CGDisplayUnitNumber([screenNumber unsignedIntValue]) == unitNumber)
+                 break;
+         }
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 3\n");
+ 
+         // HACK: Compare unit numbers instead of display IDs to work around
+         //       display replacement on machines with automatic graphics
+@@ -349,38 +361,54 @@ void _glfwPollMonitorsNS(void)
+                 break;
+             }
+         }
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 4\n");
+ 
+         if (j < disconnectedCount)
+             continue;
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 5\n");
+ 
+         const CGSize size = CGDisplayScreenSize(displays[i]);
+         char* name = getMonitorName(displays[i], screen);
+         if (!name)
+             continue;
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 6\n");
+ 
+         _GLFWmonitor* monitor = _glfwAllocMonitor(name, size.width, size.height);
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 7\n");
+         monitor->ns.displayID  = displays[i];
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 8\n");
+         monitor->ns.unitNumber = unitNumber;
+         monitor->ns.screen     = screen;
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 9\n");
+ 
+         free(name);
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 10\n");
+ 
+         CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displays[i]);
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11\n");
+         if (CGDisplayModeGetRefreshRate(mode) == 0.0)
+             monitor->ns.fallbackRefreshRate = getFallbackRefreshRate(displays[i]);
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 12\n");
+         CGDisplayModeRelease(mode);
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 13\n");
  
          _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_LAST);
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 14\n");
      }
 +    fprintf(stderr, "-- _glfwPollMonitorsNS 7\n");
 +    fprintf(stderr, "-- _glfwPollMonitorsNS 7 disconnectedCount %u\n", disconnectedCount);
