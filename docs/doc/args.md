@@ -16,22 +16,13 @@ Outputs the git hash and tag of the Window.js build. This is also available
 as [window.version](/doc/window#window.version).
 
 
-`--log`
+`--no-log`
 -------
 
 By default, calls to `console.log` show their output in the
-[console](/doc/console) but not in the process stdout or stderr.
+[console](/doc/console) and in the process stdout.
 
-Passing `--log` also logs console output to `stderr`.
-
-
-`--child-log`
--------------
-
-By default, [child processes](/doc/process) don't log to `stderr`.
-
-Passing `--child-log` makes child processes copy their output to `stdout` and
-`stderr` to the parent process `stdout` and `stderr`.
+Passing `--no-log` also prevents console output to stdout.
 
 
 `--profile-startup`
@@ -60,7 +51,7 @@ Those arguments will be available to Javascript code in
 This command line:
 
 ```shell
-./windowjs main.js --log -- hello world
+./windowjs main.js --disable-dev-keys -- hello world
 ```
 
 With this Javascript content in `main.js`:

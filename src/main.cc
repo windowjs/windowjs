@@ -268,11 +268,8 @@ void Main::ShowConsole() {
     ASSERT(error.empty());
     std::vector<std::string> args{Basename(exe).string(), "--child",
                                   "--console"};
-    if (Args().child_log) {
-      args.emplace_back("--log");
-    }
     console_ = Pipe::Spawn(
-        std::move(exe), std::move(args), Args().child_log,
+        std::move(exe), std::move(args), Args().log,
         [this](uint32_t type, std::string message) {
           // Called on the Pipe's background thread.
           task_queue_.Post([this, message = std::move(message)] {

@@ -60,7 +60,7 @@ export async function childProcessMessaging() {
 }
 
 export async function childLogs() {
-  const child = spawnChild([ 'receive-command' ], {});
+  const child = spawnChild([ 'receive-command' ], {log : false});
   const expected = ['log', 'debug', 'info', 'warn', 'error'];
   return new Promise(function(resolve, reject) {
     child.addEventListener('log', function(event) {

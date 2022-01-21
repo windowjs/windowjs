@@ -92,7 +92,7 @@ jobs:
 #          # Note: run tests in Debug on Windows because Release builds
 #          # don't have a console, and so their exit code is always 0;
 #          # that would prevent test failures from making the workflow fail.
-#          out-debug/src/windowjs.exe tests/run_tests.js --log
+#          out-debug/src/windowjs.exe tests/run_tests.js
 
       - name: Binary size
         run: |

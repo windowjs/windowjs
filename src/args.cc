@@ -11,12 +11,8 @@ void InitArgs(int argc, char* argv[]) {
   args = new CommandLineArgs;
 
   for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "--log") == 0) {
-      args->log = true;
-      continue;
-    }
-    if (strcmp(argv[i], "--child-log") == 0) {
-      args->child_log = true;
+    if (strcmp(argv[i], "--no-log") == 0) {
+      args->log = false;
       continue;
     }
     if (strcmp(argv[i], "--profile-startup") == 0) {

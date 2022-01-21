@@ -85,7 +85,7 @@ jobs:
           # Note: run tests in Debug to have more assertions.
           export LIBGL_ALWAYS_SOFTWARE=true
           export GALLIUM_DRIVER=llvmpipe
-          xvfb-run -a out-debug/src/windowjs tests/run_tests.js --log
+          xvfb-run -a out-debug/src/windowjs tests/run_tests.js
 
       - name: Binary size
         run: |

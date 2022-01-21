@@ -82,7 +82,7 @@ jobs:
 #      - name: Tests
 #        run: |
 #          # Note: run tests in Debug to have more assertions.
-#          out-debug/src/windowjs tests/run_tests.js --log
+#          out-debug/src/windowjs tests/run_tests.js
 
       - name: Binary size
         run: |

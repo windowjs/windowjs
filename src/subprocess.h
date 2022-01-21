@@ -52,9 +52,8 @@ class Pipe final {
   using OnClose = std::function<void(int64_t status, std::string error)>;
 
   static std::unique_ptr<Pipe> Spawn(std::string exe_path,
-                                     std::vector<std::string> args,
-                                     bool child_log, OnMessage on_message,
-                                     OnClose on_close);
+                                     std::vector<std::string> args, bool log,
+                                     OnMessage on_message, OnClose on_close);
 
   static std::unique_ptr<Pipe> AttachToParent(OnMessage on_message,
                                               OnClose on_close);

@@ -155,11 +155,13 @@ void ProcessApi::Spawn(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   bool headless = false;
-  bool log = Args().child_log;
+  bool log = Args().log;
   if (info.Length() >= 3 && info[2]->IsObject()) {
     v8::Local<v8::Object> options = info[2].As<v8::Object>();
     headless = api->js()->GetBooleanOr(options, "headless", headless);
-    log = api->js()->GetBooleanOr(options, "log", log);
+    if (log) {
+      log = api->js()->GetBooleanOr(options, "log", log);
+    }
   }
 
   std::string error;
@@ -173,8 +175,8 @@ void ProcessApi::Spawn(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (headless) {
     args.emplace_back("--headless");
   }
-  if (log) {
-    args.emplace_back("--log");
+  if (!log) {
+    args.emplace_back("--no-log");
   }
   args.emplace_back(std::move(initial_module));
   args.emplace_back("--");
