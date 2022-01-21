@@ -47,7 +47,7 @@ or in an [ImageData](/doc/imagedata). The constructor has 4 additional, optional
 parameters:
 
 {: .parameters}
-| source | ImageBitmap\|ImageData | The source image pixels to copy.           |
+| source | ImageBitmap\| ImageData | The source image pixels to copy.           |
 | x      | number                   | The horizontal coordinate of the source rectangle to copy. Defaults to 0. |
 | y      | number                   | The vertical coordinate of the source rectangle to copy. Defaults to 0. |
 | w      | number                   | The width of the source rectangle to copy. Defaults to the width of the `source`. |

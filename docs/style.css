@@ -1,10 +1,13 @@
 :root {
-    --red: #eb005a;
+    --dark: #023047;
     --blue: #007ab8;
+    --light: #8ecae6;
+    --lighter: #f6f8fa;
+    --yellow: #FFB703;
     --orange: #fb8500;
-    --navy: #023047;
+    --red: #e63946;
+    --magenta: #eb005a;
     --grey: #393a34;
-    --lightgrey: #f6f8fa;
     --black: #212529;
 }
 
@@ -13,7 +16,7 @@ body {
 }
 
 h1, h2 {
-    color: var(--red);
+    color: var(--magenta);
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
@@ -33,7 +36,7 @@ a {
 }
 
 a.active, a:hover {
-    color: var(--red);
+    color: var(--magenta);
 }
 
 hr {
@@ -41,7 +44,7 @@ hr {
     margin-bottom: 8px;
     height: 1px;
     border: none;
-    background: -webkit-linear-gradient(left, var(--black), var(--lightgrey));
+    background: -webkit-linear-gradient(left, var(--blue), var(--lighter));
 }
 
 code {
@@ -62,7 +65,7 @@ pre {
 pre.highlight {
     border-radius: 5px;
     margin: 16px;
-    background-color: var(--lightgrey);
+    background-color: var(--lighter);
     color: var(--grey);
     padding: 8px;
 }
@@ -76,7 +79,7 @@ span.mi {
 }
 
 span.kd {
-    color: var(--red);
+    color: var(--magenta);
 }
 
 .row {
@@ -84,21 +87,21 @@ span.kd {
 }
 
 .navbar {
-    background-color: var(--navy);
+    background-color: var(--dark);
     padding-top: 1rem;
     padding-bottom: 1rem;
     z-index: 100;
 }
 
-.navbar-dark .navbar-brand, 
+.navbar-dark .navbar-brand,
 .navbar-dark .navbar-brand:hover {
     font-family: 'Oleo Script Swash Caps', cursive;
-    color: var(--red);
+    color: var(--magenta);
 }
 
 .navbar-dark .navbar-nav .nav-link:hover,
 .navbar-dark .navbar-nav .nav-link.active {
-    color: var(--red);
+    color: var(--magenta);
 }
 
 .github-icon img {
@@ -118,8 +121,8 @@ span.kd {
 }
 
 .btn-secondary {
-    background-color: var(--lightgrey);
-    color: var(--navy);
+    background-color: var(--lighter);
+    color: var(--dark);
 }
 
 p .title {
@@ -128,11 +131,11 @@ p .title {
 
 p .title .magenta strong {
     font-family: 'Oleo Script Swash Caps', cursive;
-    color: var(--red);
+    color: var(--magenta);
 }
 
 dl {
-    background-color: var(--lightgrey);
+    background-color: var(--lighter);
 }
 
 .api {
@@ -144,14 +147,95 @@ dl {
     justify-content: space-between;
     align-items: center;
 }
-    
+
 .api-left {
     font-weight: bold;
 }
-    
+
 .api-right {
     text-align: right;
     margin-left: 8px;
     font-size: var(--normal);
     max-width: 360px;
+}
+
+#content table.parameters {
+    padding-left: 16px;
+    padding-right: 16px;
+    border-spacing: 2px;
+    width: 100%;
+    color: #393a34;
+}
+
+#content table.parameters td {
+    padding: 8px;
+    background-color: var(--lighter);
+    vertical-align: top;
+}
+
+#content table.parameters td:first-child {
+    color: var(--blue);
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+#content table.parameters td:nth-child(2) {
+    color: var(--red);
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+#content table.strings {
+    padding-left: 16px;
+    padding-right: 16px;
+    border-spacing: 2px;
+    width: 100%;
+    color: #393a34;
+}
+
+#content table.strings td {
+    padding: 8px;
+    background-color: var(--lighter);
+    vertical-align: top;
+}
+
+#content table.strings td:first-child {
+    color: var(--blue);
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+#content table.matrix {
+    padding-left: 16px;
+    padding-right: 16px;
+    border-spacing: 2px;
+}
+
+#content table.matrix td {
+    padding: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: var(--blue);
+    background-color: var(--lighter);
+}
+
+.code-object {
+    color: var(--dark);
+}
+
+.code-class {
+    color: var(--red);
+}
+
+.code-name {
+    color: var(--blue);
+}
+
+.code-event {
+    color: var(--magenta);
+}
+
+.code-type {
+    color: #a0a0a0;
+}
+
+.code-object:hover, .code-class:hover, .code-name:hover, .code-event:hover, .code-type:hover {
+    color: var(--magenta);
 }
