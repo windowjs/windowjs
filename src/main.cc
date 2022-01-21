@@ -13,24 +13,35 @@
 #include "version.h"
 
 int main(int argc, char* argv[]) {
+  std::cerr << "-- main.cc enter\n";
   InitFail();
+  std::cerr << "-- main.cc 1\n";
   InitArgs(argc, argv);
+  std::cerr << "-- main.cc 2\n";
   InitLog();
+  std::cerr << "-- main.cc 3\n";
   InitMainThread();
+  std::cerr << "-- main.cc 4\n";
   uv_setup_args(argc, argv);
+  std::cerr << "-- main.cc 5\n";
   uv_disable_stdio_inheritance();
+  std::cerr << "-- main.cc 6\n";
 
   if (Args().version) {
     std::cout << GetVersionString() << std::endl;
     exit(0);
   }
+  std::cerr << "-- main.cc 7\n";
 
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] main() enter: " << glfwGetTime();
   }
+  std::cerr << "-- main.cc 8\n";
 
   Js::Init(argv[0]);
+  std::cerr << "-- main.cc 9\n";
   Window::Init();
+  std::cerr << "-- main.cc 10\n";
 
   std::unique_ptr<Main> main = std::make_unique<Main>();
   main->RunUntilClosed();

@@ -1,16 +1,21 @@
 #include "window.h"
 
+#include <iostream>
+
 #include "args.h"
 #include "fail.h"
 #include "platform.h"
 
 // static
 void Window::Init() {
+  std::cerr << "-- Window::Init 1\n";
   // See Main::OnResize. This hint makes GLFW pump the main event loop during
   // resizes, using a timer internally.
   glfwInitHint(GLFW_WIN32_MESSAGES_IN_FIBER, GLFW_TRUE);
+  std::cerr << "-- Window::Init 2\n";
 
   ASSERT(glfwInit());
+  std::cerr << "-- Window::Init 3\n";
 }
 
 // static
