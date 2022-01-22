@@ -38,6 +38,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(Backquote);
   SET_STRING(Backslash);
   SET_STRING(Backspace);
+  SET_STRING(base64ToArrayBuffer);
   SET_STRING(basename);
   SET_STRING(beginPath);
   SET_STRING(bevel);
@@ -64,6 +65,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(close);
   SET_STRING(closePath);
   SET_STRING(code);
+  SET_STRING(Codec);
   SET_STRING(color);
   SET_STRING(Comma);
   SET_STRING(content);
@@ -365,6 +367,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(textBaseline);
   SET_STRING(title);
   SET_STRING(tmp);
+  SET_STRING(toBase64);
   SET_STRING(top);
   SET_STRING(totalJSHeapSize);
   SET_STRING(transform);

@@ -11,6 +11,7 @@
 #include "css.h"
 #include "file.h"
 #include "js_api_canvas.h"
+#include "js_api_codec.h"
 #include "js_api_file.h"
 #include "js_api_process.h"
 #include "platform.h"
@@ -700,6 +701,7 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   ASSERT(window_canvas);
   window_->SetWindowCanvas(window_canvas->canvas());
 
+  scope.Set(global, StringId::Codec, MakeCodecApi(this, scope));
   scope.Set(global, StringId::File, MakeFileApi(this, scope));
 
   if (Args().profile_startup) {

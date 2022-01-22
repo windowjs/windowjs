@@ -80,11 +80,19 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
+# Merge the p5.js loader and the p5.js library.
+add_custom_command(
+    OUTPUT merged_p5.js
+    COMMAND merge-p5 ${CMAKE_CURRENT_BINARY_DIR}/merged_p5.js ./src/p5.js ./libraries/p5.min.js
+    DEPENDS merge-p5 p5.js ../libraries/p5.min.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
 # Generate the embedded p5 source.
 add_custom_command(
     OUTPUT generated_p5.cc
-    COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_p5.cc kEmbeddedDefaultSource ./src/p5.js
-    DEPENDS embed p5.js
+    COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_p5.cc kEmbeddedDefaultSource ${CMAKE_CURRENT_BINARY_DIR}/merged_p5.js
+    DEPENDS embed merged_p5.js
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
@@ -108,6 +116,8 @@ add_library(windowjs-library STATIC
     js_api.h
     js_api_canvas.cc
     js_api_canvas.h
+    js_api_codec.cc
+    js_api_codec.h
     js_api_file.cc
     js_api_file.h
     js_api_process.cc
