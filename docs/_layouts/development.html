@@ -1,107 +1,118 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 {% include head.html %}
 
 <body>
 
-{% include top.html %}
+    {% include top.html %}
 
-<div id="documentation-container">
+    <div id="documentation-container">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2 d-none d-md-block">
+                    <div id="sidebar-left-container" class="flex1 flex-right">
+                        <div id="sidebar-left">
 
-<div id="sidebar-left-container" class="flex1 flex-right">
-<div id="sidebar-left">
-<h1 class="hidden">.</h1>
-{% include link name="Development" path="/dev/" %}
-<hr>
-{% include link name="Checkout" path="/dev/checkout" %}
-{% include link name="Build" path="/dev/build" %}
-{% include link name="Troubleshooting" path="/dev/trouble" %}
-<hr>
-{% include link name="Build config" path="/dev/config" %}
-{% include link name="Dependencies" path="/dev/dependencies" %}
-{% include link name="Documentation" path="/dev/documentation" %}
-{% include link name="Tests" path="/dev/tests" %}
-<hr>
-{% include link name="Releases" path="/dev/release" %}
-{% include link name="Maintenance" path="/dev/maintenance" %}
-<hr>
-{% include link name="Plans" path="/dev/plans" %}
-{% include link name="Contributing" path="/dev/contributing" %}
-</div>
-</div>
+                            {% include link name="Development" path="/dev/" %}
+                            <hr>
+                            {% include link name="Checkout" path="/dev/checkout" %}
+                            {% include link name="Build" path="/dev/build" %}
+                            {% include link name="Troubleshooting" path="/dev/trouble" %}
+                            <hr>
+                            {% include link name="Build config" path="/dev/config" %}
+                            {% include link name="Dependencies" path="/dev/dependencies" %}
+                            {% include link name="Documentation" path="/dev/documentation" %}
+                            {% include link name="Tests" path="/dev/tests" %}
+                            <hr>
+                            {% include link name="Releases" path="/dev/release" %}
+                            {% include link name="Maintenance" path="/dev/maintenance" %}
+                            <hr>
+                            {% include link name="Plans" path="/dev/plans" %}
+                            {% include link name="Contributing" path="/dev/contributing" %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div id="content">
 
-<div id="content">
+                        {{ content }}
 
-{{ content }}
+                        <p>&nbsp;
+                        <p>
 
-<p>&nbsp;<p>
+                    </div>
+                </div>
+                <div class="col-md-3 d-none d-md-block">
+                    <div id="sidebar-right-container" class="flex1">
+                        <div id="sidebar-right">
 
-</div>
+                            {% if page.events %}
+                            {% for item in page.events %}
+                            <a href="#event-{{item}}"><span class="code-event">"{{item}}"</span></a><br>
+                            {% endfor %}
+                            <p>
+                                {% endif %}
 
-<div id="sidebar-right-container" class="flex1">
-<div id="sidebar-right">
+                                {% if page.properties %}
+                                {% for item in page.properties %}
+                                <a href="#{{ item }}"><span class="code-name">{{item}}</span></a><br>
+                                {% endfor %}
+                            <p>
+                                {% endif %}
 
-{% if page.events %}
-{% for item in page.events %}
-<a href="#event-{{item}}"><span class="code-event">"{{item}}"</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                                {% if page.functions %}
+                                {% for item in page.functions %}
+                                <a href="#{{ item }}"><span class="code-name">{{item}}()</span></a><br>
+                                {% endfor %}
+                            <p>
+                                {% endif %}
 
-{% if page.properties %}
-{% for item in page.properties %}
-<a href="#{{ item }}"><span class="code-name">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                                {% if page.constructors %}
+                                {% for item in page.constructors %}
+                                <a href="#{{ item }}"><span class="code-class">{{item}}</span></a><br>
+                                {% endfor %}
+                            <p>
+                                {% endif %}
 
-{% if page.functions %}
-{% for item in page.functions %}
-<a href="#{{ item }}"><span class="code-name">{{item}}()</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                                {% if page.class-properties %}
+                                {% for item in page.class-properties %}
+                                <a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}</span></a><br>
+                                {% endfor %}
+                            <p>
+                                {% endif %}
 
-{% if page.constructors %}
-{% for item in page.constructors %}
-<a href="#{{ item }}"><span class="code-class">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                                {% if page.class-methods %}
+                                {% for item in page.class-methods %}
+                                <a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
+                                {% endfor %}
+                            <p>
+                                {% endif %}
 
-{% if page.class-properties %}
-{% for item in page.class-properties %}
-<a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                                {% if page.object-properties %}
+                                {% for item in page.object-properties %}
+                                <a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}</span></a><br>
+                                {% endfor %}
+                            <p>
+                                {% endif %}
 
-{% if page.class-methods %}
-{% for item in page.class-methods %}
-<a href="#{{ page.class-name }}.{{ item }}"><span class="code-class">{{page.class-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                                {% if page.object-methods %}
+                                {% for item in page.object-methods %}
+                                <a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
+                                {% endfor %}
+                            <p>
+                                {% endif %}
 
-{% if page.object-properties %}
-{% for item in page.object-properties %}
-<a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-{% if page.object-methods %}
-{% for item in page.object-methods %}
-<a href="#{{ page.object-name }}.{{ item }}"><span class="code-object">{{page.object-name}}</span>.<span class="code-name">{{item}}()</span></a><br>
-{% endfor %}
-<p>
-{% endif %}
-
-</div>
-</div>
-
-</div>
-
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
