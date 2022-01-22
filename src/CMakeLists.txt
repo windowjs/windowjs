@@ -108,6 +108,8 @@ add_library(windowjs-library STATIC
     js_api.h
     js_api_canvas.cc
     js_api_canvas.h
+    js_api_codec.cc
+    js_api_codec.h
     js_api_file.cc
     js_api_file.h
     js_api_process.cc
