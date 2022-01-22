@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <errno.h>
+#include <string.h>
 
 std::string ReadFile(const std::string& path) {
   std::ifstream file(path, std::ios::binary);
