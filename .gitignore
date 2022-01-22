@@ -14,3 +14,4 @@ tags
 out*
 node_modules
 package-lock.json
+tests/data/*__test_output.png
