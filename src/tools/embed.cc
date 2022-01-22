@@ -18,7 +18,7 @@ int main(int argc, const char* argv[]) {
 
   std::ofstream out(argv[1], std::ios::binary);
   if (!out) {
-    std::cerr << "Couldn't open " << argv[3] << " for writing.\n";
+    std::cerr << "Couldn't open " << argv[1] << " for writing.\n";
     std::exit(1);
   }
 
