@@ -100,10 +100,10 @@ index 209639e2..12889c9c 100644
  
      } // autoreleasepool
 diff --git a/src/cocoa_monitor.m b/src/cocoa_monitor.m
-index f64d78d7..7e991fcf 100644
+index f64d78d7..8910a8d9 100644
 --- a/src/cocoa_monitor.m
 +++ b/src/cocoa_monitor.m
-@@ -226,67 +226,97 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
+@@ -226,67 +226,101 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
  //
  static double getFallbackRefreshRate(CGDirectDisplayID displayID)
  {
@@ -122,6 +122,10 @@ index f64d78d7..7e991fcf 100644
 +    fprintf(stderr, "-- getFallbackRefreshRate 2 framebuffer is %p\n", framebuffer);
 +
 +    if (!framebuffer)
++      return refreshRate;
++
++    // XXX see if this works.
++    if (true)
 +      return refreshRate;
 +
 +    CFRetain(framebuffer);
@@ -205,7 +209,7 @@ index f64d78d7..7e991fcf 100644
      return refreshRate;
  }
  
-@@ -299,16 +329,23 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
+@@ -299,16 +333,23 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
  //
  void _glfwPollMonitorsNS(void)
  {
@@ -229,7 +233,7 @@ index f64d78d7..7e991fcf 100644
      if (disconnectedCount)
      {
          disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
-@@ -316,14 +353,18 @@ void _glfwPollMonitorsNS(void)
+@@ -316,14 +357,18 @@ void _glfwPollMonitorsNS(void)
                 _glfw.monitors,
                 _glfw.monitorCount * sizeof(_GLFWmonitor*));
      }
@@ -248,7 +252,7 @@ index f64d78d7..7e991fcf 100644
  
          for (screen in [NSScreen screens])
          {
-@@ -335,6 +376,7 @@ void _glfwPollMonitorsNS(void)
+@@ -335,6 +380,7 @@ void _glfwPollMonitorsNS(void)
              if (CGDisplayUnitNumber([screenNumber unsignedIntValue]) == unitNumber)
                  break;
          }
@@ -256,7 +260,7 @@ index f64d78d7..7e991fcf 100644
  
          // HACK: Compare unit numbers instead of display IDs to work around
          //       display replacement on machines with automatic graphics
-@@ -349,38 +391,60 @@ void _glfwPollMonitorsNS(void)
+@@ -349,38 +395,60 @@ void _glfwPollMonitorsNS(void)
                  break;
              }
          }
