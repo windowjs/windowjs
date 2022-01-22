@@ -100,10 +100,103 @@ index 209639e2..12889c9c 100644
  
      } // autoreleasepool
 diff --git a/src/cocoa_monitor.m b/src/cocoa_monitor.m
-index f64d78d7..939e51e7 100644
+index f64d78d7..544656b2 100644
 --- a/src/cocoa_monitor.m
 +++ b/src/cocoa_monitor.m
-@@ -299,16 +299,23 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
+@@ -226,67 +226,91 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
+ //
+ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
+ {
++    fprintf(stderr, "-- getFallbackRefreshRate 1\n");
+     double refreshRate = 60.0;
+ 
+     io_iterator_t it;
+     io_service_t service;
++    fprintf(stderr, "-- getFallbackRefreshRate 2\n");
+ 
+     if (IOServiceGetMatchingServices(kIOMainPortDefault,
+                                      IOServiceMatching("IOFramebuffer"),
+                                      &it) != 0)
+     {
++        fprintf(stderr, "-- getFallbackRefreshRate 2 return\n");
+         return refreshRate;
+     }
++      fprintf(stderr, "-- getFallbackRefreshRate 3 return\n");
+ 
+     while ((service = IOIteratorNext(it)) != 0)
+     {
++        fprintf(stderr, "-- getFallbackRefreshRate loop 1\n");
+         const CFNumberRef indexRef =
+             IORegistryEntryCreateCFProperty(service,
+                                             CFSTR("IOFramebufferOpenGLIndex"),
+                                             kCFAllocatorDefault,
+                                             kNilOptions);
++        fprintf(stderr, "-- getFallbackRefreshRate loop 2\n");
+         if (!indexRef)
+             continue;
+ 
++        fprintf(stderr, "-- getFallbackRefreshRate loop 3\n");
+         uint32_t index = 0;
+         CFNumberGetValue(indexRef, kCFNumberIntType, &index);
+         CFRelease(indexRef);
++        fprintf(stderr, "-- getFallbackRefreshRate loop 4\n");
+ 
+         if (CGOpenGLDisplayMaskToDisplayID(1 << index) != displayID)
+             continue;
++        fprintf(stderr, "-- getFallbackRefreshRate loop 5\n");
+ 
+         const CFNumberRef clockRef =
+             IORegistryEntryCreateCFProperty(service,
+                                             CFSTR("IOFBCurrentPixelClock"),
+                                             kCFAllocatorDefault,
+                                             kNilOptions);
++        fprintf(stderr, "-- getFallbackRefreshRate loop 6\n");
+         const CFNumberRef countRef =
+             IORegistryEntryCreateCFProperty(service,
+                                             CFSTR("IOFBCurrentPixelCount"),
+                                             kCFAllocatorDefault,
+                                             kNilOptions);
++        fprintf(stderr, "-- getFallbackRefreshRate loop 7\n");
+ 
+         uint32_t clock = 0, count = 0;
+ 
+         if (clockRef)
+         {
++            fprintf(stderr, "-- getFallbackRefreshRate loop 8\n");
+             CFNumberGetValue(clockRef, kCFNumberIntType, &clock);
++            fprintf(stderr, "-- getFallbackRefreshRate loop 9\n");
+             CFRelease(clockRef);
++            fprintf(stderr, "-- getFallbackRefreshRate loop 10\n");
+         }
++        fprintf(stderr, "-- getFallbackRefreshRate loop 11\n");
+ 
+         if (countRef)
+         {
++            fprintf(stderr, "-- getFallbackRefreshRate loop 12\n");
+             CFNumberGetValue(countRef, kCFNumberIntType, &count);
++            fprintf(stderr, "-- getFallbackRefreshRate loop 13\n");
+             CFRelease(countRef);
++            fprintf(stderr, "-- getFallbackRefreshRate loop 14\n");
+         }
++        fprintf(stderr, "-- getFallbackRefreshRate loop 15\n");
+ 
+-        if (clock > 0 && count > 0)
++        if (clock > 0 && count > 0) {
++            fprintf(stderr, "-- getFallbackRefreshRate loop 16 count is %u\n", count);
+             refreshRate = clock / (double) count;
++        }
++        fprintf(stderr, "-- getFallbackRefreshRate loop 17\n");
+ 
+         break;
+     }
++    fprintf(stderr, "-- getFallbackRefreshRate loop 18\n");
+ 
+     IOObjectRelease(it);
++    fprintf(stderr, "-- getFallbackRefreshRate loop 19\n");
+     return refreshRate;
+ }
+ 
+@@ -299,16 +323,23 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
  //
  void _glfwPollMonitorsNS(void)
  {
@@ -127,7 +220,7 @@ index f64d78d7..939e51e7 100644
      if (disconnectedCount)
      {
          disconnected = calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
-@@ -316,14 +323,18 @@ void _glfwPollMonitorsNS(void)
+@@ -316,14 +347,18 @@ void _glfwPollMonitorsNS(void)
                 _glfw.monitors,
                 _glfw.monitorCount * sizeof(_GLFWmonitor*));
      }
@@ -146,7 +239,7 @@ index f64d78d7..939e51e7 100644
  
          for (screen in [NSScreen screens])
          {
-@@ -335,6 +346,7 @@ void _glfwPollMonitorsNS(void)
+@@ -335,6 +370,7 @@ void _glfwPollMonitorsNS(void)
              if (CGDisplayUnitNumber([screenNumber unsignedIntValue]) == unitNumber)
                  break;
          }
@@ -154,7 +247,7 @@ index f64d78d7..939e51e7 100644
  
          // HACK: Compare unit numbers instead of display IDs to work around
          //       display replacement on machines with automatic graphics
-@@ -349,38 +361,54 @@ void _glfwPollMonitorsNS(void)
+@@ -349,38 +385,60 @@ void _glfwPollMonitorsNS(void)
                  break;
              }
          }
@@ -182,9 +275,16 @@ index f64d78d7..939e51e7 100644
 +        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 10\n");
  
          CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displays[i]);
+-        if (CGDisplayModeGetRefreshRate(mode) == 0.0)
 +        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11\n");
-         if (CGDisplayModeGetRefreshRate(mode) == 0.0)
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11 mode is null? %d mode %p\n", mode == NULL, mode)
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11 CGDisplayModeGetRefreshRate %f\n", CGDisplayModeGetRefreshRate(mode));
++        if (CGDisplayModeGetRefreshRate(mode) == 0.0) {
++            fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11 if is true\n");
              monitor->ns.fallbackRefreshRate = getFallbackRefreshRate(displays[i]);
++        } else {
++            fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11 if is false\n");
++        }
 +        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 12\n");
          CGDisplayModeRelease(mode);
 +        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 13\n");

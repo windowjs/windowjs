@@ -64,13 +64,6 @@ jobs:
           source libraries/setup_build_env.sh
           libraries/build_v8.sh
 
-      - name: Release build
-        run: |
-          source libraries/setup_build_env.sh
-          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
-          cmake --build out
-          strip out/src/windowjs
-
       - name: Debug build
         run: |
           source libraries/setup_build_env.sh
@@ -85,6 +78,13 @@ jobs:
         run: |
           # Note: run tests in Debug to have more assertions.
           out-debug/src/windowjs tests/run_tests.js
+
+      - name: Release build
+        run: |
+          source libraries/setup_build_env.sh
+          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake --build out
+          strip out/src/windowjs
 
       - name: Binary size
         run: |
