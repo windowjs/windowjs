@@ -70,14 +70,14 @@ jobs:
         run: |
           source libraries/setup_build_env.sh
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
-          cmake --build out
+          cmake --build out -t windowjs -t windowjs-p5
           strip out/src/windowjs
 
 #      - name: Debug build
 #        run: |
 #          source libraries/setup_build_env.sh
 #          cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
-#          cmake --build out-debug
+#          cmake --build out-debug -t windowjs -t windowjs-p5
 #
 #      - name: Tests
 #        run: |
@@ -96,4 +96,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: windowjs
-          path: out/src/windowjs
+          path: |
+            out/src/windowjs
+            out/src/windowjs-p5

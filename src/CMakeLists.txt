@@ -148,7 +148,7 @@ add_executable(windowjs
     generated_default.cc
 )
 
-add_executable(windowjs-p5
+add_executable(windowjs-p5 EXCLUDE_FROM_ALL
     config_windowjs_p5.cc
     generated_p5.cc
 )

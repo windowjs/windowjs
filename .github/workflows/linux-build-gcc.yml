@@ -82,7 +82,7 @@ jobs:
           export CC=gcc
           export CXX=g++
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
-          cmake --build out
+          cmake --build out -t windowjs -t windowjs-p5
 
       - name: Binary size
         run: |

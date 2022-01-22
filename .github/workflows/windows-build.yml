@@ -77,14 +77,14 @@ jobs:
           libraries/setup_build_env.ps1
           # Note: not passing LLVM_DIR; this config builds with MSVC.
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
-          cmake --build out
+          cmake --build out -t windowjs -t windowjs-p5
 
 #      - name: Debug build
 #        run: |
 #          libraries/setup_build_env.ps1
 #          # Note: not passing LLVM_DIR; this config builds with MSVC.
 #          cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
-#          cmake --build out-debug
+#          cmake --build out-debug -t windowjs -t windowjs-p5
 #
 #      - name: Tests
 #        run: |
@@ -106,4 +106,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: windowjs.exe
-          path: out/src/windowjs.exe
+          path: |
+            out/src/windowjs.exe
+            out/src/windowjs-p5.exe
