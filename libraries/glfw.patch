@@ -100,7 +100,7 @@ index 209639e2..12889c9c 100644
  
      } // autoreleasepool
 diff --git a/src/cocoa_monitor.m b/src/cocoa_monitor.m
-index f64d78d7..ec57d756 100644
+index f64d78d7..15229caf 100644
 --- a/src/cocoa_monitor.m
 +++ b/src/cocoa_monitor.m
 @@ -226,67 +226,96 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
@@ -117,7 +117,7 @@ index f64d78d7..ec57d756 100644
 -    if (IOServiceGetMatchingServices(kIOMainPortDefault,
 -                                     IOServiceMatching("IOFramebuffer"),
 -                                     &it) != 0)
-+    CFMutableDictionaryRef framebuffer = IOServiceMatching("IOFramebuffer"),
++    CFMutableDictionaryRef framebuffer = IOServiceMatching("IOFramebuffer");
 +
 +    fprintf(stderr, "-- getFallbackRefreshRate 2 framebuffer is %p\n", framebuffer);
 +
