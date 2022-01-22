@@ -55,11 +55,11 @@ endif()
 
 add_subdirectory(tools)
 
-# Generate embedded blobs.
+# Generate the embedded console source.
 add_custom_command(
-    OUTPUT generated_blobs.cc
-    COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_blobs.cc kEmbeddedConsoleSource ./src/console.js kEmbeddedWelcomeSource ./src/welcome.js
-    DEPENDS embed console.js welcome.js
+    OUTPUT generated_console.cc
+    COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_console.cc kEmbeddedConsoleSource ./src/console.js
+    DEPENDS embed console.js
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
@@ -72,9 +72,26 @@ if("${GIT_TAG}" MATCHES "NOTFOUND")
 endif()
 configure_file(version.cc.in generated_version.cc)
 
-add_executable(windowjs
+# Generate the embedded default (welcome) source.
+add_custom_command(
+    OUTPUT generated_default.cc
+    COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_default.cc kEmbeddedDefaultSource ./src/default.js
+    DEPENDS embed default.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
+# Generate the embedded p5 source.
+add_custom_command(
+    OUTPUT generated_p5.cc
+    COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_p5.cc kEmbeddedDefaultSource ./src/p5.js
+    DEPENDS embed p5.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
+add_library(windowjs-library STATIC
     args.cc
     args.h
+    config.h
     console.cc
     console.h
     css.cc
@@ -83,7 +100,7 @@ add_executable(windowjs
     fail.h
     file.cc
     file.h
-    generated_blobs.cc
+    generated_console.cc
     generated_version.cc
     js.cc
     js.h
@@ -126,12 +143,27 @@ add_executable(windowjs
     zip.h
 )
 
-target_include_directories(windowjs PRIVATE ../libraries/v8/third_party/zlib)
-target_link_libraries(windowjs PRIVATE glad glfw skia uv_a v8)
+add_executable(windowjs
+    config_windowjs.cc
+    generated_default.cc
+)
+
+add_executable(windowjs-p5
+    config_windowjs_p5.cc
+    generated_p5.cc
+)
+
+target_include_directories(windowjs-library PRIVATE ../libraries/v8/third_party/zlib)
+
+target_link_libraries(windowjs-library PRIVATE glad glfw skia uv_a v8)
+
+target_link_libraries(windowjs PRIVATE windowjs-library)
+target_link_libraries(windowjs-p5 PRIVATE windowjs-library)
 
 if(MSVC)
   if(CMAKE_BUILD_TYPE STREQUAL Release)
     # Configure the target to be a windows instead of a console application.
     set_target_properties(windowjs PROPERTIES LINK_FLAGS "/entry:mainCRTStartup /subsystem:windows")
+    set_target_properties(windowjs-p5 PROPERTIES LINK_FLAGS "/entry:mainCRTStartup /subsystem:windows")
   endif()
 endif()
