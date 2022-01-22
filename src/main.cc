@@ -36,11 +36,21 @@ int main(int argc, char* argv[]) {
   main->RunUntilClosed();
   main.reset();
 
+#if !defined(WINDOWJS_RELEASE_BUILD)
+  const bool log_shutdown = !Args().is_child_process;
+#endif
+
   uv_library_shutdown();
   Window::Shutdown();
   Js::Shutdown();
   ShutdownArgs();
   ShutdownLog();
+
+#if !defined(WINDOWJS_RELEASE_BUILD)
+  if (log_shutdown) {
+    std::cerr << "Shutdown complete, clean exit.\n";
+  }
+#endif
 
   return 0;
 }
@@ -268,11 +278,8 @@ void Main::ShowConsole() {
     ASSERT(error.empty());
     std::vector<std::string> args{Basename(exe).string(), "--child",
                                   "--console"};
-    if (Args().child_log) {
-      args.emplace_back("--log");
-    }
     console_ = Pipe::Spawn(
-        std::move(exe), std::move(args), Args().child_log,
+        std::move(exe), std::move(args), Args().log,
         [this](uint32_t type, std::string message) {
           // Called on the Pipe's background thread.
           task_queue_.Post([this, message = std::move(message)] {
@@ -577,8 +584,7 @@ void Main::OnResize(int width, int height) {
   //
   // This makes resizes smoother (i.e. black borders aren't visible).
   bool has_resize_callbacks = events_.HasListeners(JsEventType::RESIZE);
-  bool has_raf_callbacks =
-      api_->has_animation_frame_callbacks() && main_module_loaded_;
+  bool has_raf_callbacks = api_->has_animation_frame_callbacks();
 
   if (has_resize_callbacks || has_raf_callbacks) {
     v8::Locker locker(js_->isolate());
@@ -609,8 +615,8 @@ void Main::OnResize(int width, int height) {
       }
     }
 
-    if (has_raf_callbacks) {
-      // This is only called after main_module_loaded_ has finished.
+    // The 'resize' event might have scheduled a requestAnimationFrame.
+    if (main_module_loaded_) {
       api_->CallAnimationFrameCallbacks(scope);
       ASSERT(!try_catch.HasCaught());
     }

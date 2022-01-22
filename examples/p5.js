@@ -16,12 +16,12 @@ const loadListeners = [];
 
 const debugProxyHandler = {
   get : function(target, prop, receiver) {
-    const name = typeof(prop) == 'symbol' ? prop.toString() : prop;
+    const name = typeof (prop) == 'symbol' ? prop.toString() : prop;
     console.log('PROXY get on ' + target._debugName + ': ' + name);
     return Reflect.get(...arguments);
   },
   set : function(target, prop, value) {
-    const name = typeof(prop) == 'symbol' ? prop.toString() : prop;
+    const name = typeof (prop) == 'symbol' ? prop.toString() : prop;
     console.log('PROXY set on ' + target._debugName + ': ' + name + ' = ' +
                 value);
     return Reflect.set(...arguments);
@@ -266,7 +266,7 @@ class Document {
 
   getElementsByTagName(tag) {
     if (tag == 'main') {
-      return [this._main];
+      return [ this._main ];
     } else if (tag == 'canvas') {
       return this._canvasList;
     } else {
@@ -346,15 +346,16 @@ function setupEnvironment() {
   };
   globalThis.screen = _window.screen;
   globalThis.location = {
-    href: '',
-    search: '',
-    pathname: '',
+    href : '',
+    search : '',
+    pathname : '',
   };
 
   defineGetter(globalThis, 'innerWidth', () => _window.width);
   defineGetter(globalThis, 'innerHeight', () => _window.height);
 
-  globalThis.addEventListener = function(event, listener) {
+  globalThis.addEventListener =
+      function(event, listener) {
     if (event === 'load') {
       loadListeners.push(listener);
     } else {
@@ -362,7 +363,8 @@ function setupEnvironment() {
     }
   }
 
-  globalThis.removeEventListener = _window.removeEventListener.bind(_window);
+      globalThis.removeEventListener =
+          _window.removeEventListener.bind(_window);
 
   // CanvasRenderingContext2D.drawImage takes a <canvas> argument in HTML5,
   // but another CanvasRenderingContext2D directly in Window.js.

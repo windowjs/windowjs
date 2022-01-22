@@ -3,8 +3,6 @@
 
 #include <memory>
 
-#include <glad/glad.h>
-
 #include "js.h"
 #include "render_canvas.h"
 
@@ -21,7 +19,7 @@ class Stats {
 
   int width() const;
   int height() const;
-  GLuint texture() { return canvas_->GetTextureForDraw(); }
+  RenderCanvas* canvas() { return canvas_.get(); }
 
   void SetEnabled(bool enabled);
   void SetPrintFrameTimes(bool print) { print_frame_times_ = print; }

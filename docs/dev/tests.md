@@ -10,7 +10,7 @@ The automated tests are in the `tests/` directory and are executed with
 Window.js itself:
 
 ```shell
-$ windowjs.exe tests/run_tests.js --log
+$ windowjs.exe tests/run_tests.js
 ```
 
 
@@ -30,7 +30,7 @@ For example, if test `functionName` in `test_file.js` is failing, then these
 flags can be used to run that single test:
 
 ```shell
-$ windowjs.exe tests/run_tests.js --log -- test_file.js functionName
+$ windowjs.exe tests/run_tests.js -- test_file.js functionName
 ```
 
 

@@ -144,12 +144,12 @@ The `event` object passed to the listeners is either a `JSON` object or a
 
 The list of arguments passed to the process, via the command line or
 [Process.spawn](#Process.spawn). Does not include the executable name nor
-arguments processed by Window.js internally, like `--log`.
+arguments processed by Window.js internally.
 
 This command line:
 
 ```shell
-./windowjs main.js --log -- hello world
+./windowjs main.js --disable-dev-keys -- hello world
 ```
 
 With this Javascript content in `main.js`:

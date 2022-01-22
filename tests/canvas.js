@@ -37,15 +37,15 @@ export async function fillRect() {
   canvas.fillStyle = 'white';
   canvas.fillRect(0, 0, canvas.width, canvas.height);
   canvas.fillStyle = 'red';
-  canvas.fillRect(0, 0, 50, 100);
+  canvas.fillRect(0, 0, 100, 200);
   canvas.fillStyle = 'green';
-  canvas.fillRect(50, 0, 50, 100);
+  canvas.fillRect(100, 0, 100, 200);
   canvas.fillStyle = 'blue';
-  canvas.fillRect(100, 0, 50, 100);
+  canvas.fillRect(200, 0, 100, 200);
   canvas.fillStyle = '#4080c080';
-  canvas.fillRect(150, 0, 50, 100);
+  canvas.fillRect(300, 0, 100, 200);
   canvas.fillStyle = '#00000080';
-  canvas.fillRect(0, 50, 200, 50);
+  canvas.fillRect(0, 100, 400, 100);
   await diffCanvasToFile('data/fill_rect.png');
 }
 
@@ -79,7 +79,7 @@ export async function arcs() {
   canvas.strokeStyle = 'magenta';
   canvas.stroke();
 
-  await diffCanvasToFile('data/arcs.png', 520);
+  await diffCanvasToFile('data/arcs.png', 540);
 }
 
 export async function bezierCurves() {
@@ -97,21 +97,21 @@ export async function bezierCurves() {
   canvas.quadraticCurveTo(280, 30, 100, 100);
   canvas.stroke();
 
-  await diffCanvasToFile('data/bezier_curves.png', 830);
+  await diffCanvasToFile('data/bezier_curves.png', 1000);
 }
 
 export async function clip() {
   const canvas = window.canvas;
 
   canvas.save();
-  canvas.rect(50, 50, 50, 50);
+  canvas.rect(100, 100, 100, 100);
   canvas.clip();
   canvas.fillStyle = 'red';
-  canvas.fillRect(0, 0, 200, 100);
+  canvas.fillRect(0, 0, 400, 200);
 
   canvas.restore();
   canvas.fillStyle = 'blue';
-  canvas.fillRect(0, 0, 200, 50);
+  canvas.fillRect(0, 0, 400, 100);
 
   await diffCanvasToFile('data/clip.png');
 }
@@ -121,7 +121,7 @@ export async function drawImageBitmap() {
   const image = await File.readImageBitmap(__dirname + '/data/image.png');
   canvas.drawImage(image, 0, 0);
   canvas.drawImage(image, 100, 0, 100, 50);
-  await diffCanvasToFile('data/draw_image_bitmap.png', 2400);
+  await diffCanvasToFile('data/draw_image_bitmap.png', 4020);
 }
 
 export async function drawImageBitmapWithSmoothing() {
@@ -130,7 +130,7 @@ export async function drawImageBitmapWithSmoothing() {
   const image = await File.readImageBitmap(__dirname + '/data/image.png');
   canvas.drawImage(image, 0, 0);
   canvas.drawImage(image, 100, 0, 100, 50);
-  await diffCanvasToFile('data/draw_image_bitmap_smooth.png', 3000);
+  await diffCanvasToFile('data/draw_image_bitmap_smooth.png', 4400);
 }
 
 export async function ellipses() {
@@ -153,7 +153,7 @@ export async function ellipses() {
   canvas.ellipse(240, 75, 50, 30, Math.PI * .25, 0, Math.PI, true);
   canvas.fill();
 
-  await diffCanvasToFile('data/ellipses.png', 410);
+  await diffCanvasToFile('data/ellipses.png', 480);
 }
 
 export async function fillText() {
@@ -165,11 +165,11 @@ export async function fillText() {
 
   canvas.font = '48px "Times New Roman"';
   canvas.fillStyle = 'white';
-  canvas.fillText('Left', 0, 50);
+  canvas.fillText('Left', 0, 100);
   canvas.textAlign = 'right';
-  canvas.fillText('Right', 200, 50);
+  canvas.fillText('Right', 400, 100);
   canvas.textAlign = 'center';
-  canvas.fillText('Center', 100, 100);
+  canvas.fillText('Center', 200, 200);
 
   await diffCanvasToFile('data/fill_text.png', 2350);
 }

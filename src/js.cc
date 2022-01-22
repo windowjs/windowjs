@@ -24,7 +24,7 @@
 #include "zip.h"
 
 extern const std::string_view kEmbeddedConsoleSource;
-extern const std::string_view kEmbeddedWelcomeSource;
+extern const std::string_view kEmbeddedDefaultSource;
 
 namespace {
 
@@ -456,8 +456,8 @@ v8::Local<v8::String> Js::LoadModuleSource(
   std::string content;
   if (path == "--console") {
     content = GzipUncompress(kEmbeddedConsoleSource);
-  } else if (path == "--welcome") {
-    content = GzipUncompress(kEmbeddedWelcomeSource);
+  } else if (path == "--default") {
+    content = GzipUncompress(kEmbeddedDefaultSource);
   } else if (path.string().substr(0, 2) == "--") {
     ThrowError("Invalid module name: " + path.string());
     return {};

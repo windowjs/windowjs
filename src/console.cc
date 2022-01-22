@@ -176,12 +176,11 @@ void InitLog() {
 #if defined(WINDOWJS_WIN) && defined(WINDOWJS_RELEASE_BUILD)
   // Window.js is not a console application (see the /subsystem:windows flag
   // in src/CMakeLists.txt). This code redirects stdin/stdout/stderr to the
-  // parent process console, if it's available, so that --log prints to the
+  // parent process console, if it's available, so that logging prints to the
   // windows terminal instead.
   // TODO: this works but doesn't update the cursor position. It is left at
   // its starting position when the process terminates, which is annoying.
-
-  if (!Args().is_child_process && (Args().log || Args().version)) {
+  if (!Args().is_child_process && Args().log) {
     if (_get_osfhandle(0) < 0) {
       _close(0);
     }
@@ -285,15 +284,11 @@ int ConsoleOverlay::height() const {
   return 144 * window_->device_pixel_ratio();
 }
 
-GLuint ConsoleOverlay::texture() {
-  return canvas_->GetTextureForDraw();
-}
-
 void ConsoleOverlay::SetEnabled(bool enabled) {
   if (enabled) {
     if (!canvas_) {
-      canvas_.reset(
-          new RenderCanvas(window_->shared_context(), width(), height()));
+      canvas_.reset(new RenderCanvas(window_->shared_context(), width(),
+                                     height(), RenderCanvas::TEXTURE));
       redraw_ = true;
     }
   } else {
@@ -350,7 +345,6 @@ void ConsoleOverlay::Draw() {
     return;
   }
 
-  canvas_->SetCurrentContext();
   SkCanvas* canvas = canvas_->canvas();
   canvas->clear(SkColorSetARGB(0x80, 0x00, 0x00, 0x00));
 

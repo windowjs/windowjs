@@ -40,8 +40,8 @@ function exceptionToString(e) {
 async function resetForNewTest(testName, tmpDirForTest) {
   lib.setTmpDirForTests(tmpDirForTest + '/' + testName);
 
-  window.width = 200;
-  window.height = 100;
+  window.width = 400;
+  window.height = 200;
   window.resizable = false;
 
   const canvas = window.canvas;
@@ -270,8 +270,8 @@ async function runAllTests(pathPattern, testPattern) {
 
 async function main() {
   window.visible = false;
-  window.width = 200;
-  window.height = 100;
+  window.width = 400;
+  window.height = 200;
 
   const start = performance.now();
 

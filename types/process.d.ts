@@ -71,7 +71,7 @@ declare var Process: {
     /**
      * The list of arguments passed to the process, via the command line or
      * {@link Process.spawn}. Does not include the executable name nor
-     * arguments processed by Window.js internally, like `--log`.
+     * arguments processed by Window.js internally.
      */
     readonly args: string[];
 

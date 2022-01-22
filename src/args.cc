@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "config.h"
 #include "fail.h"
 
 static CommandLineArgs* args = nullptr;
@@ -11,12 +12,8 @@ void InitArgs(int argc, char* argv[]) {
   args = new CommandLineArgs;
 
   for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "--log") == 0) {
-      args->log = true;
-      continue;
-    }
-    if (strcmp(argv[i], "--child-log") == 0) {
-      args->child_log = true;
+    if (strcmp(argv[i], "--no-log") == 0) {
+      args->log = false;
       continue;
     }
     if (strcmp(argv[i], "--profile-startup") == 0) {
@@ -54,15 +51,19 @@ void InitArgs(int argc, char* argv[]) {
       ErrorQuit("Unknown flag: %s\n", argv[i]);
     }
 
-    if (!args->initial_module.empty()) {
-      ErrorQuit("Only one initial module is supported.\n");
-    }
+    if (!args->is_child_process && windowjs_config_pass_args_to_loader) {
+      args->args.emplace_back(argv[i]);
+    } else {
+      if (!args->initial_module.empty()) {
+        ErrorQuit("Only one initial module is supported.\n");
+      }
 
-    args->initial_module = argv[i];
+      args->initial_module = argv[i];
+    }
   }
 
   if (args->initial_module.empty()) {
-    args->initial_module = "--welcome";
+    args->initial_module = "--default";
   }
 }
 
