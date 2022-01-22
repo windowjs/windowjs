@@ -100,7 +100,7 @@ index 209639e2..12889c9c 100644
  
      } // autoreleasepool
 diff --git a/src/cocoa_monitor.m b/src/cocoa_monitor.m
-index f64d78d7..544656b2 100644
+index f64d78d7..6b7335d2 100644
 --- a/src/cocoa_monitor.m
 +++ b/src/cocoa_monitor.m
 @@ -226,67 +226,91 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
@@ -277,7 +277,7 @@ index f64d78d7..544656b2 100644
          CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displays[i]);
 -        if (CGDisplayModeGetRefreshRate(mode) == 0.0)
 +        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11\n");
-+        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11 mode is null? %d mode %p\n", mode == NULL, mode)
++        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11 mode is null? %d mode %p\n", mode == NULL, mode);
 +        fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11 CGDisplayModeGetRefreshRate %f\n", CGDisplayModeGetRefreshRate(mode));
 +        if (CGDisplayModeGetRefreshRate(mode) == 0.0) {
 +            fprintf(stderr, "-- _glfwPollMonitorsNS loop step 11 if is true\n");
