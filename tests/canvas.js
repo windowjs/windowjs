@@ -9,7 +9,9 @@
 // that test.
 
 import {
+  createCanvas,
   diffCanvasToFile,
+  unwrapCanvas,
 } from './lib/lib.js';
 
 export async function initialCanvasIsOpaqueBlack() {
@@ -172,4 +174,70 @@ export async function fillText() {
   canvas.fillText('Center', 200, 200);
 
   await diffCanvasToFile('data/fill_text.png', 2350);
+}
+
+export async function createPatternRepeat() {
+  const canvas = window.canvas;
+  const image = await File.readImageBitmap(__dirname + '/data/pattern.png');
+  const pattern = canvas.createPattern(image, 'repeat');
+  canvas.fillStyle = pattern;
+  canvas.fillRect(0, 0, 400, 200);
+  await diffCanvasToFile('data/create_pattern_repeat.png');
+}
+
+export async function createPatternRepeatX() {
+  const canvas = window.canvas;
+  const image = await File.readImageBitmap(__dirname + '/data/pattern.png');
+  const pattern = canvas.createPattern(image, 'repeat-x');
+  canvas.fillStyle = pattern;
+  canvas.fillRect(0, 0, 400, 200);
+  await diffCanvasToFile('data/create_pattern_repeat_x.png');
+}
+
+export async function createPatternRepeatY() {
+  const canvas = window.canvas;
+  const image = await File.readImageBitmap(__dirname + '/data/pattern.png');
+  const pattern = canvas.createPattern(image, 'repeat-y');
+  canvas.fillStyle = pattern;
+  canvas.fillRect(0, 0, 400, 200);
+  await diffCanvasToFile('data/create_pattern_repeat_y.png');
+}
+
+export async function createPatternRepeatNoRepeat() {
+  const canvas = window.canvas;
+  const image = await File.readImageBitmap(__dirname + '/data/pattern.png');
+  const pattern = canvas.createPattern(image, 'no-repeat');
+  canvas.fillStyle = pattern;
+  canvas.fillRect(0, 0, 400, 200);
+  await diffCanvasToFile('data/create_pattern_no_repeat.png');
+}
+
+export async function createPatternFromCanvas() {
+  const canvas = window.canvas;
+
+  const off = createCanvas(60, 60);
+  off.fillStyle = 'white';
+  off.fillRect(0, 0, 60, 60);
+  off.fillStyle = 'black';
+  off.fillRect(20, 0, 20, 20);
+  off.fillRect(40, 20, 20, 20);
+  off.fillRect(0, 40, 20, 20);
+  off.fillRect(20, 40, 20, 20);
+  off.fillRect(40, 40, 20, 20);
+
+  const pattern = canvas.createPattern(unwrapCanvas(off), 'repeat');
+  canvas.fillStyle = pattern;
+  canvas.fillRect(0, 0, 400, 200);
+  await diffCanvasToFile('data/create_pattern_canvas.png');
+}
+
+export async function createPatternAndReset() {
+  const canvas = window.canvas;
+  const image = await File.readImageBitmap(__dirname + '/data/pattern.png');
+  const pattern = canvas.createPattern(image, 'repeat');
+  canvas.fillStyle = pattern;
+  canvas.fillRect(0, 0, 200, 200);
+  canvas.fillStyle = 'red';
+  canvas.fillRect(200, 0, 200, 200);
+  await diffCanvasToFile('data/create_pattern_reset.png');
 }

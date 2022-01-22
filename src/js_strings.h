@@ -48,6 +48,7 @@ enum class StringId {
   cancelAnimationFrame,
   canvas,
   CanvasGradient,
+  CanvasPattern,
   CanvasRenderingContext2D,
   CapsLock,
   center,

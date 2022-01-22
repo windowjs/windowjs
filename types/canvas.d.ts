@@ -191,6 +191,22 @@ interface CanvasFillStrokeStyles {
     createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradient;
 
     /**
+     * Creates a {@link CanvasPattern} from the given {@link ImageBitmap} or
+     * from another {@link CanvasRenderingContext2D} instance.
+     *
+     * To be applied to a shape, the pattern must first be assigned to the
+     * {@link CanvasFillStrokeStyles.fillStyle fillStyle} or
+     * {@link CanvasFillStrokeStyles.strokeStyle strokeStyle} properties.
+     *
+     * See also [createPattern](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createPattern)
+     * at MDN.
+     *
+     * @param image       The image pattern to use.
+     * @param repetition  How the pattern gets repeated.
+     */
+    createPattern(image: ImageBitmap | CanvasRenderingContext2D, repetition: CanvasPatternRepetition): CanvasPattern;
+
+    /**
      * Creates a radial {@link CanvasGradient} using the size and
      * coordinates of two circles.
      * 
@@ -241,6 +257,34 @@ interface CanvasGradient {
 
 declare var CanvasGradient: {
     prototype: CanvasGradient;
+};
+
+/**
+ * `CanvasPattern` objects are created via
+ * {@link CanvasRenderingContext2D.createPattern createPattern} and can be
+ * assigned to the {@link CanvasFillStrokeStyles.fillStyle fillStyle} and
+ * {@link CanvasFillStrokeStyles.strokeStyle strokeStyle} properties.
+ *
+ * They can be used to customize the canvas drawing operations using a
+ * repeatable pattern.
+ *
+ * The pattern object can be further customized using
+ * {@link CanvasPattern.setTransform setTransform}.
+ *
+ * See also the [CanvasPattern](https://developer.mozilla.org/en-US/docs/Web/API/CanvasPattern)
+ * documentation at MDN.
+ */
+interface CanvasPattern {
+    /**
+     * Applies a matrix transformation to the pattern.
+     *
+     * See also [setTransform](https://developer.mozilla.org/en-US/docs/Web/API/CanvasPattern/setTransform) at MDN.
+     */
+    setTransform(a: number, b: number, c: number, d: number, e: number, f: number);
+}
+
+declare var CanvasPattern: {
+    prototype: CanvasPattern;
 };
 
 interface CanvasImageData {
@@ -1132,6 +1176,7 @@ type CanvasFontStretch = "condensed" | "expanded" | "extra-condensed" | "extra-e
 type CanvasFontVariantCaps = "all-petite-caps" | "all-small-caps" | "normal" | "petite-caps" | "small-caps" | "titling-caps" | "unicase";
 type CanvasLineCap = "butt" | "round" | "square";
 type CanvasLineJoin = "bevel" | "miter" | "round";
+type CanvasPatternRepetition = "repeat" | "repeat-x" | "repeat-y" | "no-repeat";
 type CanvasTextAlign = "center" | "end" | "left" | "right" | "start";
 type CanvasTextBaseline = "alphabetic" | "bottom" | "hanging" | "ideographic" | "middle" | "top";
 type CanvasTextRendering = "auto" | "geometricPrecision" | "optimizeLegibility" | "optimizeSpeed";

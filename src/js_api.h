@@ -17,6 +17,7 @@
 
 class CanvasApi;
 class CanvasGradientApi;
+class CanvasPatternApi;
 class ImageBitmapApi;
 class ImageDataApi;
 class ProcessApi;
@@ -116,6 +117,15 @@ class JsApi final : public v8::PersistentHandleVisitor {
   CanvasGradientApi* GetCanvasGradientApi(v8::Local<v8::Value> thiz) {
     return GetWrappedInstanceOrThrow<CanvasGradientApi>(
         thiz, GetCanvasGradientConstructor());
+  }
+
+  v8::Local<v8::Function> GetCanvasPatternConstructor() {
+    return canvas_pattern_constructor_.Get(js_->isolate());
+  }
+
+  CanvasPatternApi* GetCanvasPatternApi(v8::Local<v8::Value> thiz) {
+    return GetWrappedInstanceOrThrow<CanvasPatternApi>(
+        thiz, GetCanvasPatternConstructor());
   }
 
   v8::Local<v8::Function> GetImageDataConstructor() {
@@ -218,6 +228,7 @@ class JsApi final : public v8::PersistentHandleVisitor {
 
   v8::Global<v8::Function> canvas_rendering_context_2d_constructor_;
   v8::Global<v8::Function> canvas_gradient_constructor_;
+  v8::Global<v8::Function> canvas_pattern_constructor_;
   v8::Global<v8::Function> image_data_constructor_;
   v8::Global<v8::Function> image_bitmap_constructor_;
   v8::Global<v8::Function> process_constructor_;
