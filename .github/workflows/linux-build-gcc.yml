@@ -87,16 +87,16 @@ jobs:
       - name: Binary size
         run: |
           echo "Size after build:"
-          du -b out/src/windowjs
-          strip out/src/windowjs
+          du -b out/windowjs
+          strip out/windowjs
           echo "Size after strip:"
-          du -b out/src/windowjs
-          upx -9 out/src/windowjs
+          du -b out/windowjs
+          upx -9 out/windowjs
           echo "Size after upx:"
-          du -b out/src/windowjs
+          du -b out/windowjs
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: windowjs
-          path: out/src/windowjs
+          path: out/windowjs

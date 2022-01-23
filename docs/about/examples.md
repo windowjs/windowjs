@@ -23,7 +23,7 @@ Use the left and right arrows to move and space to start, or use the mouse and
 click to start.
 
 ```shell
-$ out/src/windowjs.exe examples/breakout.js
+$ out/windowjs.exe examples/breakout.js
 ```
 
 Press `F2` to see the FPS and memory usage counters and `F5` to reload.
@@ -39,7 +39,7 @@ Sokoban
 A simple [Sokoban](https://en.wikipedia.org/wiki/Sokoban) clone.
 
 ```shell
-$ out/src/windowjs.exe examples/sokoban.js
+$ out/windowjs.exe examples/sokoban.js
 ```
 
 <p align="center"><img src="sokoban.png" /></p>
@@ -51,7 +51,7 @@ Tetris
 A simple [Tetris](https://en.wikipedia.org/wiki/Tetris) clone.
 
 ```shell
-$ out/src/windowjs.exe examples/tetris.js
+$ out/windowjs.exe examples/tetris.js
 ```
 
 <p align="center"><img src="tetris.png" /></p>
@@ -66,7 +66,7 @@ Window.js can run [p5.js scripts](/about/processing). The
 directory in the checkout:
 
 ```shell
-$ out/src/windowjs.exe examples/p5.js -- examples/p5/simulate-recursive-tree.js
+$ out/windowjs.exe examples/p5.js -- examples/p5/simulate-recursive-tree.js
 ```
 
 <p align="center"><img src="processing.png" /></p>

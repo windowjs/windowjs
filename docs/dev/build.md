@@ -76,5 +76,5 @@ Running Window.js
 Try running some of the examples once the build is finished:
 
 ```shell
-$ out/src/windowjs examples/breakout.js
+$ out/windowjs examples/breakout.js
 ```

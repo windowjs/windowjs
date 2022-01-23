@@ -684,6 +684,11 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   canvas_gradient_constructor_.Reset(scope.isolate, canvas_gradient);
   scope.Set(global, StringId::CanvasGradient, canvas_gradient);
 
+  v8::Local<v8::Function> canvas_pattern =
+      CanvasPatternApi::GetConstructor(this, scope);
+  canvas_pattern_constructor_.Reset(scope.isolate, canvas_pattern);
+  scope.Set(global, StringId::CanvasPattern, canvas_pattern);
+
   v8::Local<v8::Function> canvas_context =
       CanvasApi::GetConstructor(this, scope);
   canvas_rendering_context_2d_constructor_.Reset(scope.isolate, canvas_context);

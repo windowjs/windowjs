@@ -96,6 +96,15 @@ lib.setDiffCallback(function(path) {
   };
 });
 
+lib.setCreateCanvasBrowserOverride(function(width, height) {
+  const canvas = document.createElement('canvas');
+  canvas.style.display = 'none';
+  document.body.appendChild(canvas);
+  canvas.width = width;
+  canvas.height = height;
+  return canvas.getContext('2d');
+});
+
 const hiddenImg = document.createElement('img');
 hiddenImg.style.display = 'none';
 document.body.appendChild(hiddenImg);
@@ -138,6 +147,8 @@ for (const f in mod) {
   } catch (e) {
     label.innerText += ' - uncaught exception!';
     label.style.color = 'red';
+    console.error('Test ' + f + ' threw an exception:');
+    console.dir(e);
   }
 }
 

@@ -79,6 +79,10 @@ jobs:
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
           cmake --build out -t windowjs -t windowjs-p5
 
+# Tests are disabled in the Windows workflow because the Windows runners
+# don't have GL drivers:
+# https://github.com/windowjs/windowjs/issues/64
+#
 #      - name: Debug build
 #        run: |
 #          libraries/setup_build_env.ps1
@@ -92,20 +96,20 @@ jobs:
 #          # Note: run tests in Debug on Windows because Release builds
 #          # don't have a console, and so their exit code is always 0;
 #          # that would prevent test failures from making the workflow fail.
-#          out-debug/src/windowjs.exe tests/run_tests.js
+#          out-debug/windowjs.exe tests/run_tests.js
 
       - name: Binary size
         run: |
           Write-Host "Size after build:"
-          Write-Host((Get-Item out/src/windowjs.exe).length)
-          upx -9 out/src/windowjs.exe
+          Write-Host((Get-Item out/windowjs.exe).length)
+          upx -9 out/windowjs.exe
           Write-Host "Size after upx:"
-          Write-Host((Get-Item out/src/windowjs.exe).length)
+          Write-Host((Get-Item out/windowjs.exe).length)
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: windowjs.exe
           path: |
-            out/src/windowjs.exe
-            out/src/windowjs-p5.exe
+            out/windowjs.exe
+            out/windowjs-p5.exe

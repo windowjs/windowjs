@@ -53,6 +53,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(cancelAnimationFrame);
   SET_STRING(canvas);
   SET_STRING(CanvasGradient);
+  SET_STRING(CanvasPattern);
   SET_STRING(CanvasRenderingContext2D);
   SET_STRING(CapsLock);
   SET_STRING(center);
