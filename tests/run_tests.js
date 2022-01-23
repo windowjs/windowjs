@@ -1,6 +1,6 @@
 // This is the main test runner:
 //
-// $ out/src/windowjs.exe tests/run_tests.js
+// $ out/windowjs.exe tests/run_tests.js
 //
 // The other sources under tests/ get executed in a subprocess to run their
 // tests, and send their tests results to the parent process (this file).
@@ -8,7 +8,7 @@
 // This file is also the entry point for child processes, when invoked with
 // a path to a test script:
 //
-// $ out/src/windowjs.exe tests/run_tests.js -- tests/hello.js
+// $ out/windowjs.exe tests/run_tests.js -- tests/hello.js
 
 import * as lib from './lib/lib.js';
 

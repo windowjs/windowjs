@@ -71,8 +71,11 @@ jobs:
           source libraries/setup_build_env.sh
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
           cmake --build out -t windowjs -t windowjs-p5
-          strip out/src/windowjs
+          strip out/windowjs
 
+# Tests are disabled in the macOS workflow because GLFW fails to initialize:
+# https://github.com/windowjs/windowjs/issues/64
+#
 #      - name: Debug build
 #        run: |
 #          source libraries/setup_build_env.sh
@@ -82,20 +85,20 @@ jobs:
 #      - name: Tests
 #        run: |
 #          # Note: run tests in Debug to have more assertions.
-#          out-debug/src/windowjs tests/run_tests.js
+#          out-debug/windowjs tests/run_tests.js
 
       - name: Binary size
         run: |
           echo "Binary size after build:"
-          stat -f%z out/src/windowjs
-          upx -9 out/src/windowjs
+          stat -f%z out/windowjs
+          upx -9 out/windowjs
           echo "Binary size after upx:"
-          stat -f%z out/src/windowjs
+          stat -f%z out/windowjs
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: windowjs
           path: |
-            out/src/windowjs
-            out/src/windowjs-p5
+            out/windowjs
+            out/windowjs-p5
