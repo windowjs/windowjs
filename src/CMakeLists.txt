@@ -53,6 +53,7 @@ if(CMAKE_BUILD_TYPE STREQUAL Release)
   add_compile_options(-DWINDOWJS_RELEASE_BUILD)
 endif()
 
+add_subdirectory(p5)
 add_subdirectory(tools)
 
 # Generate the embedded console source.
@@ -60,6 +61,14 @@ add_custom_command(
     OUTPUT generated_console.cc
     COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_console.cc kEmbeddedConsoleSource ./src/console.js
     DEPENDS embed console.js
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
+# Generate the embedded default (welcome) source.
+add_custom_command(
+    OUTPUT generated_default.cc
+    COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_default.cc kEmbeddedDefaultSource ./src/default.js
+    DEPENDS embed default.js
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
@@ -71,30 +80,6 @@ if("${GIT_TAG}" MATCHES "NOTFOUND")
   set(GIT_TAG "")
 endif()
 configure_file(version.cc.in generated_version.cc)
-
-# Generate the embedded default (welcome) source.
-add_custom_command(
-    OUTPUT generated_default.cc
-    COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_default.cc kEmbeddedDefaultSource ./src/default.js
-    DEPENDS embed default.js
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
-)
-
-# Merge the p5.js loader and the p5.js library.
-add_custom_command(
-    OUTPUT merged_p5.js
-    COMMAND merge-p5 ${CMAKE_CURRENT_BINARY_DIR}/merged_p5.js ./src/p5.js ./libraries/p5.min.js
-    DEPENDS merge-p5 p5.js ../libraries/p5.min.js
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
-)
-
-# Generate the embedded p5 source.
-add_custom_command(
-    OUTPUT generated_p5.cc
-    COMMAND embed ${CMAKE_CURRENT_BINARY_DIR}/generated_p5.cc kEmbeddedDefaultSource ${CMAKE_CURRENT_BINARY_DIR}/merged_p5.js
-    DEPENDS embed merged_p5.js
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/..
-)
 
 add_library(windowjs-library STATIC
     args.cc
@@ -154,26 +139,17 @@ add_library(windowjs-library STATIC
 )
 
 add_executable(windowjs
-    config_windowjs.cc
+    config.cc
     generated_default.cc
 )
 
-add_executable(windowjs-p5 EXCLUDE_FROM_ALL
-    config_windowjs_p5.cc
-    generated_p5.cc
-)
-
 target_include_directories(windowjs-library PRIVATE ../libraries/v8/third_party/zlib)
-
 target_link_libraries(windowjs-library PRIVATE glad glfw skia uv_a v8)
-
 target_link_libraries(windowjs PRIVATE windowjs-library)
-target_link_libraries(windowjs-p5 PRIVATE windowjs-library)
 
 if(MSVC)
   if(CMAKE_BUILD_TYPE STREQUAL Release)
     # Configure the target to be a windows instead of a console application.
     set_target_properties(windowjs PROPERTIES LINK_FLAGS "/entry:mainCRTStartup /subsystem:windows")
-    set_target_properties(windowjs-p5 PROPERTIES LINK_FLAGS "/entry:mainCRTStartup /subsystem:windows")
   endif()
 endif()
