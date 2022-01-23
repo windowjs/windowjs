@@ -36,6 +36,7 @@ object-methods:
   - clearRect
   - createImageData
   - createLinearGradient
+  - createPattern
   - createRadialGradient
   - drawImage
   - ellipse
@@ -75,7 +76,7 @@ The [window.canvas](/doc/window#window.canvas) object is the 2D canvas that
 draws to the main window.
 
 It implements the
-[Canvas2DRenderingContext](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)
+[CanvasRenderingContext2D](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)
 API from HTML5, and its
 [documentation at MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)
 applies to the Window.js implementation as well. The
@@ -614,6 +615,30 @@ To be applied to a shape, the gradient must first be assigned to the
 
 See also
 [createLinearGradient](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createLinearGradient)
+at MDN.
+
+
+{% include method object="canvas" name="createPattern"
+   type="(ImageBitmap | CanvasRenderingContext2D, string) => CanvasPattern"
+%}
+
+Creates a [CanvasPattern](/doc/canvaspattern) from the given
+[ImageBitmap](/doc/imagebitmap) or from another
+[CanvasRenderingContext2D](#CanvasRenderingContext2D) instance.
+
+To be applied to a shape, the pattern must first be assigned to the
+[fillStyle](#canvas.fillStyle) or [strokeStyle](#canvas.strokeStyle) properties.
+
+The second parameter specifies how the pattern repeats:
+
+{: .strings}
+| `"repeat"` | Repeats the pattern in both directions. |
+| `"repeat-x"` | Repeats the pattern horizontally. |
+| `"repeat-y"` | Repeats the pattern vertically. |
+| `"no-repeat"` | The pattern is not repeated. |
+
+See also
+[createPattern](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createPattern)
 at MDN.
 
 

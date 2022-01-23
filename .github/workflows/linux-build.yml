@@ -85,23 +85,23 @@ jobs:
           # Note: run tests in Debug to have more assertions.
           export LIBGL_ALWAYS_SOFTWARE=true
           export GALLIUM_DRIVER=llvmpipe
-          xvfb-run -a out-debug/src/windowjs tests/run_tests.js
+          xvfb-run -a out-debug/windowjs tests/run_tests.js
 
       - name: Binary size
         run: |
           echo "Size after build:"
-          du -b out/src/windowjs
-          strip out/src/windowjs
+          du -b out/windowjs
+          strip out/windowjs
           echo "Size after strip:"
-          du -b out/src/windowjs
-          upx -9 out/src/windowjs
+          du -b out/windowjs
+          upx -9 out/windowjs
           echo "Size after upx:"
-          du -b out/src/windowjs
+          du -b out/windowjs
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: windowjs
           path: |
-            out/src/windowjs
-            out/src/windowjs-p5
+            out/windowjs
+            out/windowjs-p5

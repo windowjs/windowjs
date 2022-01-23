@@ -16,6 +16,7 @@
 #include "render_canvas.h"
 
 class CanvasGradientApi;
+class CanvasPatternApi;
 
 class CanvasApi final : public JsApiWrapper, public JsApiTracker<CanvasApi> {
  public:
@@ -26,6 +27,7 @@ class CanvasApi final : public JsApiWrapper, public JsApiTracker<CanvasApi> {
   SkCanvas* skia_canvas() const { return canvas_->canvas(); }
 
   void OnGradientUpdated(CanvasGradientApi* gradient);
+  void OnPatternUpdated(CanvasPatternApi* pattern);
 
   static v8::Local<v8::Function> GetConstructor(JsApi* api,
                                                 const JsScope& scope);
@@ -184,6 +186,7 @@ class CanvasApi final : public JsApiWrapper, public JsApiTracker<CanvasApi> {
       const v8::FunctionCallbackInfo<v8::Value>& info);
   static void CreateRadialGradient(
       const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void CreatePattern(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void CreateImageData(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void GetImageData(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void PutImageData(const v8::FunctionCallbackInfo<v8::Value>& info);
@@ -199,9 +202,11 @@ class CanvasApi final : public JsApiWrapper, public JsApiTracker<CanvasApi> {
     SkPaint fill_paint;
     SkColor fill_color;
     CanvasGradientApi* fill_gradient = nullptr;
+    CanvasPatternApi* fill_pattern = nullptr;
     SkPaint stroke_paint;
     SkColor stroke_color;
     CanvasGradientApi* stroke_gradient = nullptr;
+    CanvasPatternApi* stroke_pattern = nullptr;
     float global_alpha;
     SkBlendMode global_composite_op;
     SkFont font;
@@ -218,6 +223,9 @@ class CanvasApi final : public JsApiWrapper, public JsApiTracker<CanvasApi> {
         SkSamplingOptions(SkCubicResampler::Mitchell());
     bool image_smoothing = true;
     int image_smoothing_quality = 2;
+
+    void ResetFillStyle();
+    void ResetStrokeStyle();
   };
 
   State state_;
@@ -246,6 +254,28 @@ class CanvasGradientApi final : public JsApiWrapper {
   std::vector<float> params_;
   std::vector<SkColor> colors_;
   std::vector<SkScalar> positions_;
+  int ref_count_;
+};
+
+class CanvasPatternApi final : public JsApiWrapper {
+ public:
+  CanvasPatternApi(JsApi* api, v8::Local<v8::Object> thiz,
+                   const v8::FunctionCallbackInfo<v8::Value>& info);
+  ~CanvasPatternApi() override;
+
+  void Ref() { ref_count_++; }
+  void Unref() { ref_count_--; }
+
+  sk_sp<SkShader> GetShader();
+
+  static v8::Local<v8::Function> GetConstructor(JsApi* api,
+                                                const JsScope& scope);
+
+ private:
+  static void SetTransform(const v8::FunctionCallbackInfo<v8::Value>& info);
+
+  sk_sp<SkShader> shader_;
+  sk_sp<SkImage> pattern_;
   int ref_count_;
 };
 

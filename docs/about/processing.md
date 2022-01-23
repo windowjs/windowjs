@@ -9,7 +9,7 @@ Processing with p5.js
 Window.js can run Processing sources written for [p5.js](https://p5js.org).
 
 ```shell
-$ out/src/windowjs.exe examples/p5.js -- examples/p5/simulate-recursive-tree.js
+$ out/windowjs.exe examples/p5.js -- examples/p5/simulate-recursive-tree.js
 ```
 
 Support for p5.js sources is **highly experimental**.

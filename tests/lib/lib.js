@@ -9,6 +9,7 @@ function checkNotPromise(x) {
 
 let tmpDirForTests = null;
 let diffCallback = null;
+let createCanvasBrowserOverride = null;
 
 export function setTmpDirForTests(tmp) {
   tmpDirForTests = tmp;
@@ -16,6 +17,10 @@ export function setTmpDirForTests(tmp) {
 
 export function setDiffCallback(callback) {
   diffCallback = callback;
+}
+
+export function setCreateCanvasBrowserOverride(override) {
+    createCanvasBrowserOverride = override;
 }
 
 export async function getTmpDir() {
@@ -49,6 +54,22 @@ export function resolveOnNextEvent(eventType) {
     };
     window.addEventListener(eventType, listener);
   });
+}
+
+export function createCanvas(width, height) {
+  if (createCanvasBrowserOverride) {
+    return createCanvasBrowserOverride(width, height);
+  } else {
+    return new CanvasRenderingContext2D(width, height);
+  }
+}
+
+export function unwrapCanvas(canvas) {
+  if (createCanvasBrowserOverride) {
+    return canvas.canvas;
+  } else {
+    return canvas;
+  }
 }
 
 export async function diffCanvasToFile(path, tolerance) {

@@ -468,8 +468,7 @@ function drawWelcomeScreen() {
   canvas.fillText('With p5.js, it can run Processing scripts on the desktop.',
                   12, 192 * devicePixelRatio);
 
-  canvas.fillText('See the ',
-                  12, 240 * devicePixelRatio);
+  canvas.fillText('See the ', 12, 240 * devicePixelRatio);
   dx = canvas.measureText('See the ').width;
 
   const link = 'online documentation';
@@ -543,5 +542,5 @@ await run();
 // for ease of development and debugging.
 
 async function loadP5() {
-  await import('../libraries/p5.js');
+  await import('../../libraries/p5.js');
 }

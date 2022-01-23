@@ -42,6 +42,16 @@ void CanvasGradient(const v8::FunctionCallbackInfo<v8::Value>& info) {
   new CanvasGradientApi(api, thiz, info);
 }
 
+void CanvasPattern(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (!info.IsConstructCall()) {
+    info.GetIsolate()->ThrowError("CanvasPattern is a constructor");
+    return;
+  }
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  v8::Local<v8::Object> thiz = info.This();
+  new CanvasPatternApi(api, thiz, info);
+}
+
 void ImageData(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (!info.IsConstructCall()) {
     info.GetIsolate()->ThrowError("ImageData is a constructor");
@@ -251,6 +261,38 @@ sk_sp<SkData> PrepareToDecode(JsApi* api,
   }
 }
 
+bool ParseDOMMatrix(const v8::FunctionCallbackInfo<v8::Value>& info,
+                    SkMatrix* matrix) {
+  float v[6];
+
+  if (info.Length() >= 1 && info[0]->IsArray()) {
+    v8::Local<v8::Array> array = info[0].As<v8::Array>();
+    if (array->Length() < 6) {
+      return false;
+    }
+    v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
+    for (int i = 0; i < 6; i++) {
+      v8::Local<v8::Value> value = array->Get(context, i).ToLocalChecked();
+      if (!value->IsNumber()) {
+        return false;
+      }
+      v[i] = value.As<v8::Number>()->Value();
+    }
+  } else if (info.Length() >= 6 && info[0]->IsNumber() && info[1]->IsNumber() &&
+             info[2]->IsNumber() && info[3]->IsNumber() &&
+             info[4]->IsNumber() && info[5]->IsNumber()) {
+    for (int i = 0; i < 6; i++) {
+      v[i] = info[i].As<v8::Number>()->Value();
+    }
+  } else {
+    return false;
+  }
+
+  *matrix = SkMatrix::MakeAll(v[0], v[2], v[4], v[1], v[3], v[5], 0, 0, 1);
+
+  return true;
+}
+
 }  // namespace
 
 CanvasApi::CanvasApi(JsApi* api, v8::Local<v8::Object> thiz, int width,
@@ -291,6 +333,12 @@ CanvasApi::CanvasApi(JsApi* api, v8::Local<v8::Object> thiz, int width,
 }
 
 CanvasApi::~CanvasApi() {
+  state_.ResetFillStyle();
+  state_.ResetStrokeStyle();
+  for (State& state : saved_state_) {
+    state.ResetFillStyle();
+    state.ResetStrokeStyle();
+  }
   api()->isolate()->AdjustAmountOfExternalAllocatedMemory(-allocated_in_bytes_);
 }
 
@@ -374,6 +422,7 @@ v8::Local<v8::Function> CanvasApi::GetConstructor(JsApi* api,
   scope.Set(prototype, StringId::restore, Restore);
   scope.Set(prototype, StringId::createLinearGradient, CreateLinearGradient);
   scope.Set(prototype, StringId::createRadialGradient, CreateRadialGradient);
+  scope.Set(prototype, StringId::createPattern, CreatePattern);
   scope.Set(prototype, StringId::createImageData, CreateImageData);
   scope.Set(prototype, StringId::getImageData, GetImageData);
   scope.Set(prototype, StringId::putImageData, PutImageData);
@@ -472,6 +521,7 @@ void CanvasApi::SetFillStyle(v8::Local<v8::String> property,
     SkColor color;
     if (CSSColorToSkColor(s, &color)) {
       State& state = api->state_;
+      state.ResetFillStyle();
       state.fill_color = color;
       state.fill_paint.setColor(color);
       if (state.global_alpha < 1.0f) {
@@ -484,11 +534,17 @@ void CanvasApi::SetFillStyle(v8::Local<v8::String> property,
     CanvasGradientApi* gradient = api->api()->GetCanvasGradientApi(value);
     gradient->Ref();
     State& state = api->state_;
-    if (state.fill_gradient) {
-      state.fill_gradient->Unref();
-    }
+    state.ResetFillStyle();
     state.fill_gradient = gradient;
     state.fill_paint.setShader(gradient->GetShader());
+  } else if (api->api()->IsInstanceOf(
+                 value, api->api()->GetCanvasPatternConstructor())) {
+    CanvasPatternApi* pattern = api->api()->GetCanvasPatternApi(value);
+    pattern->Ref();
+    State& state = api->state_;
+    state.ResetFillStyle();
+    state.fill_pattern = pattern;
+    state.fill_paint.setShader(pattern->GetShader());
   }
 }
 
@@ -517,6 +573,7 @@ void CanvasApi::SetStrokeStyle(v8::Local<v8::String> property,
     SkColor color;
     if (CSSColorToSkColor(s, &color)) {
       State& state = api->state_;
+      state.ResetStrokeStyle();
       state.stroke_color = color;
       state.stroke_paint.setColor(color);
       if (state.global_alpha < 1.0f) {
@@ -529,11 +586,17 @@ void CanvasApi::SetStrokeStyle(v8::Local<v8::String> property,
     CanvasGradientApi* gradient = api->api()->GetCanvasGradientApi(value);
     gradient->Ref();
     State& state = api->state_;
-    if (state.stroke_gradient) {
-      state.stroke_gradient->Unref();
-    }
+    state.ResetStrokeStyle();
     state.stroke_gradient = gradient;
     state.stroke_paint.setShader(gradient->GetShader());
+  } else if (api->api()->IsInstanceOf(
+                 value, api->api()->GetCanvasPatternConstructor())) {
+    CanvasPatternApi* pattern = api->api()->GetCanvasPatternApi(value);
+    pattern->Ref();
+    State& state = api->state_;
+    state.ResetStrokeStyle();
+    state.stroke_pattern = pattern;
+    state.stroke_paint.setShader(pattern->GetShader());
   }
 }
 
@@ -1663,37 +1726,11 @@ void CanvasApi::GetTransform(const v8::FunctionCallbackInfo<v8::Value>& info) {
 // static
 void CanvasApi::SetTransform(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api) {
+  SkMatrix matrix;
+  if (!api || !ParseDOMMatrix(info, &matrix)) {
     return;
   }
-
-  float v[6];
-
-  if (info.Length() >= 1 && info[0]->IsArray()) {
-    v8::Local<v8::Array> array = info[0].As<v8::Array>();
-    if (array->Length() < 6) {
-      return;
-    }
-    v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
-    for (int i = 0; i < 6; i++) {
-      v8::Local<v8::Value> value = array->Get(context, i).ToLocalChecked();
-      if (!value->IsNumber()) {
-        return;
-      }
-      v[i] = value.As<v8::Number>()->Value();
-    }
-  } else if (info.Length() >= 6 && info[0]->IsNumber() && info[1]->IsNumber() &&
-             info[2]->IsNumber() && info[3]->IsNumber() &&
-             info[4]->IsNumber() && info[5]->IsNumber()) {
-    for (int i = 0; i < 6; i++) {
-      v[i] = info[i].As<v8::Number>()->Value();
-    }
-  } else {
-    return;
-  }
-
-  SkMatrix m = SkMatrix::MakeAll(v[0], v[2], v[4], v[1], v[3], v[5], 0, 0, 1);
-  api->skia_canvas()->setMatrix(m);
+  api->skia_canvas()->setMatrix(matrix);
 }
 
 // static
@@ -1766,6 +1803,37 @@ void CanvasApi::CreateLinearGradient(
 void CanvasApi::CreateRadialGradient(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   CreateGradient(info, 6, "createRadialGradient");
+}
+
+// static
+void CanvasApi::CreatePattern(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (!api) {
+    return;
+  }
+  if (info.Length() < 1 ||
+      (info.Length() >= 2 && !(info[1]->IsString() || info[1]->IsNull())) ||
+      (!api->api()->IsInstanceOf(info[0],
+                                 api->api()->GetImageBitmapConstructor()) &&
+       !api->api()->IsInstanceOf(
+           info[0], api->api()->GetCanvasRenderingContext2DConstructor()))) {
+    api->js()->ThrowInvalidArgument();
+    return;
+  }
+  std::vector<v8::Local<v8::Value>> args;
+  int size = info.Length() >= 2 ? 2 : 1;
+  args.resize(size);
+  args[0] = info[0];
+  if (size == 2) {
+    args[1] = info[1];
+  }
+  v8::Local<v8::Object> pattern =
+      api->api()
+          ->GetCanvasPatternConstructor()
+          ->NewInstance(info.GetIsolate()->GetCurrentContext(), size,
+                        args.data())
+          .ToLocalChecked();
+  info.GetReturnValue().Set(pattern);
 }
 
 // static
@@ -2061,20 +2129,43 @@ void CanvasApi::DrawImage(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 }
 
+void CanvasApi::State::ResetFillStyle() {
+  if (fill_gradient) {
+    fill_gradient->Unref();
+    fill_gradient = nullptr;
+  } else if (fill_pattern) {
+    fill_pattern->Unref();
+    fill_pattern = nullptr;
+  }
+  fill_paint.setShader(nullptr);
+}
+
+void CanvasApi::State::ResetStrokeStyle() {
+  if (stroke_gradient) {
+    stroke_gradient->Unref();
+    stroke_gradient = nullptr;
+  }
+  if (stroke_pattern) {
+    stroke_pattern->Unref();
+    stroke_pattern = nullptr;
+  }
+  stroke_paint.setShader(nullptr);
+}
+
 CanvasGradientApi::CanvasGradientApi(
     JsApi* api, v8::Local<v8::Object> thiz,
-    const v8::FunctionCallbackInfo<v8::Value>& info)
-    : JsApiWrapper(info.GetIsolate(), thiz), ref_count_(0) {
-  if (info.Length() == 4) {
+    const v8::FunctionCallbackInfo<v8::Value>& args)
+    : JsApiWrapper(args.GetIsolate(), thiz), ref_count_(0) {
+  if (args.Length() == 4) {
     type_ = SkShader::kLinear_GradientType;
-  } else if (info.Length() == 6) {
+  } else if (args.Length() == 6) {
     type_ = SkShader::kRadial_GradientType;
   } else {
     api->js()->ThrowIllegalConstructor();
   }
-  params_.resize(info.Length());
+  params_.resize(args.Length());
   for (unsigned i = 0; i < params_.size(); i++) {
-    params_[i] = info[i].As<v8::Number>()->Value();
+    params_[i] = args[i].As<v8::Number>()->Value();
   }
 }
 
@@ -2151,6 +2242,23 @@ void CanvasApi::OnGradientUpdated(CanvasGradientApi* gradient) {
   }
 }
 
+void CanvasApi::OnPatternUpdated(CanvasPatternApi* pattern) {
+  if (state_.fill_pattern == pattern) {
+    state_.fill_paint.setShader(pattern->GetShader());
+  }
+  if (state_.stroke_pattern == pattern) {
+    state_.stroke_paint.setShader(pattern->GetShader());
+  }
+  for (State& state : saved_state_) {
+    if (state.fill_pattern == pattern) {
+      state.fill_paint.setShader(pattern->GetShader());
+    }
+    if (state.stroke_pattern == pattern) {
+      state.stroke_paint.setShader(pattern->GetShader());
+    }
+  }
+}
+
 // static
 void CanvasGradientApi::AddColorStop(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -2190,6 +2298,93 @@ void CanvasGradientApi::AddColorStop(
     // Update their SkPaint instances to reflect the new color stop.
     JsApiTracker<CanvasApi>::ForEach([gradient](CanvasApi* canvas_api) {
       canvas_api->OnGradientUpdated(gradient);
+    });
+  }
+}
+
+CanvasPatternApi::CanvasPatternApi(
+    JsApi* api, v8::Local<v8::Object> thiz,
+    const v8::FunctionCallbackInfo<v8::Value>& args)
+    : JsApiWrapper(args.GetIsolate(), thiz), ref_count_(0) {
+  SkTileMode tile_x = SkTileMode::kDecal;
+  SkTileMode tile_y = SkTileMode::kDecal;
+  if (args.Length() == 2) {
+    if (args[1]->IsNull()) {
+      tile_x = SkTileMode::kRepeat;
+      tile_y = SkTileMode::kRepeat;
+    } else {
+      std::string repeat = js()->ToString(args[1].As<v8::String>());
+      if (repeat == "repeat" || repeat == "") {
+        tile_x = SkTileMode::kRepeat;
+        tile_y = SkTileMode::kRepeat;
+      } else if (repeat == "repeat-x") {
+        tile_x = SkTileMode::kRepeat;
+      } else if (repeat == "repeat-y") {
+        tile_y = SkTileMode::kRepeat;
+      } else if (repeat == "no-repeat") {
+        // Default.
+      } else {
+        api->js()->ThrowIllegalConstructor();
+        return;
+      }
+    }
+  }
+
+  if (api->IsInstanceOf(args[0], api->GetImageBitmapConstructor())) {
+    pattern_ = api->GetImageBitmapApi(args[0])->texture();
+  } else if (api->IsInstanceOf(args[0],
+                               api->GetCanvasRenderingContext2DConstructor())) {
+    pattern_ = api->GetCanvasApi(args[0])->canvas()->MakeImageSnapshot();
+  } else {
+    ASSERT(false);
+  }
+
+  SkSamplingOptions sampling_options;
+  shader_ = pattern_->makeShader(tile_x, tile_y, sampling_options);
+}
+
+CanvasPatternApi::~CanvasPatternApi() {}
+
+sk_sp<SkShader> CanvasPatternApi::GetShader() {
+  ASSERT(ref_count_ > 0);
+  return shader_;
+}
+
+// static
+v8::Local<v8::Function> CanvasPatternApi::GetConstructor(JsApi* api,
+                                                         const JsScope& scope) {
+  v8::Local<v8::FunctionTemplate> canvas_pattern =
+      v8::FunctionTemplate::New(scope.isolate, CanvasPattern);
+  canvas_pattern->SetClassName(
+      scope.GetConstantString(StringId::CanvasPattern));
+
+  v8::Local<v8::ObjectTemplate> instance = canvas_pattern->InstanceTemplate();
+  // Used in JsApiWrapper to track this.
+  instance->SetInternalFieldCount(1);
+
+  v8::Local<v8::ObjectTemplate> prototype = canvas_pattern->PrototypeTemplate();
+  scope.Set(prototype, StringId::setTransform, SetTransform);
+
+  return canvas_pattern->GetFunction(scope.context).ToLocalChecked();
+}
+
+// static
+void CanvasPatternApi::SetTransform(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  CanvasPatternApi* pattern =
+      JsApi::Get(info.GetIsolate())->GetCanvasPatternApi(info.This());
+  SkMatrix matrix;
+  if (!pattern || !ParseDOMMatrix(info, &matrix)) {
+    return;
+  }
+
+  pattern->shader_ = pattern->shader_->makeWithLocalMatrix(matrix);
+
+  if (pattern->ref_count_ > 0) {
+    // This pattern is the fillStyle or strokeStyle of an existing canvas.
+    // Update their SkPaint instances to reflect the new transform.
+    JsApiTracker<CanvasApi>::ForEach([pattern](CanvasApi* canvas_api) {
+      canvas_api->OnPatternUpdated(pattern);
     });
   }
 }
