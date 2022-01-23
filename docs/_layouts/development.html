@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 {% include head.html %}
+
 <body>
     {% include top.html %}
     <div id="documentation-container">
@@ -9,22 +10,22 @@
                 <div class="col-md-2 d-none d-md-block">
                     <div id="sidebar-left-container" class="flex1 flex-right">
                         <div id="sidebar-left">
-                            {% include link name="Development" path="/dev/" %}
+                            <div>{% include link name="Development" path="/dev/" %}</div>
                             <hr>
-                            {% include link name="Checkout" path="/dev/checkout" %}
-                            {% include link name="Build" path="/dev/build" %}
-                            {% include link name="Troubleshooting" path="/dev/trouble" %}
+                            <div>{% include link name="Checkout" path="/dev/checkout" %}</div>
+                            <div>{% include link name="Build" path="/dev/build" %}</div>
+                            <div>{% include link name="Troubleshooting" path="/dev/trouble" %}</div>
                             <hr>
-                            {% include link name="Build config" path="/dev/config" %}
-                            {% include link name="Dependencies" path="/dev/dependencies" %}
-                            {% include link name="Documentation" path="/dev/documentation" %}
-                            {% include link name="Tests" path="/dev/tests" %}
+                            <div>{% include link name="Build config" path="/dev/config" %}</div>
+                            <div>{% include link name="Dependencies" path="/dev/dependencies" %}</div>
+                            <div>{% include link name="Documentation" path="/dev/documentation" %}</div>
+                            <div>{% include link name="Tests" path="/dev/tests" %}</div>
                             <hr>
-                            {% include link name="Releases" path="/dev/release" %}
-                            {% include link name="Maintenance" path="/dev/maintenance" %}
+                            <div>{% include link name="Releases" path="/dev/release" %}</div>
+                            <div>{% include link name="Maintenance" path="/dev/maintenance" %}</div>
                             <hr>
-                            {% include link name="Plans" path="/dev/plans" %}
-                            {% include link name="Contributing" path="/dev/contributing" %}
+                            <div>{% include link name="Plans" path="/dev/plans" %}</div>
+                            <div>{% include link name="Contributing" path="/dev/contributing" %}</div>
                         </div>
                     </div>
                 </div>
@@ -99,10 +100,29 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col d-block d-md-none bottom-nav">
+                    <ul class="nav justify-content-center">
+                        <li class="nav-item">{% include link name="Development" path="/dev/" %}</li>
+                        <li class="nav-item">{% include link name="Checkout" path="/dev/checkout" %}</li>
+                        <li class="nav-item">{% include link name="Build" path="/dev/build" %}</li>
+                        <li class="nav-item">{% include link name="Troubleshooting" path="/dev/trouble" %}</li>
+                        <li class="nav-item">{% include link name="Build config" path="/dev/config" %}</li>
+                        <li class="nav-item">{% include link name="Dependencies" path="/dev/dependencies" %}</li>
+                        <li class="nav-item">{% include link name="Documentation" path="/dev/documentation" %}</li>
+                        <li class="nav-item">{% include link name="Tests" path="/dev/tests" %}</li>
+                        <li class="nav-item">{% include link name="Releases" path="/dev/release" %}</li>
+                        <li class="nav-item">{% include link name="Maintenance" path="/dev/maintenance" %}</li>
+                        <li class="nav-item">{% include link name="Plans" path="/dev/plans" %}</li>
+                        <li class="nav-item">{% include link name="Contributing" path="/dev/contributing" %}</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
 </body>
+
 </html>
