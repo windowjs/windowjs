@@ -241,3 +241,51 @@ export async function createPatternAndReset() {
   canvas.fillRect(200, 0, 200, 200);
   await diffCanvasToFile('data/create_pattern_reset.png');
 }
+
+export async function fillPath() {
+  const canvas = window.canvas;
+  let region = new Path2D();
+  region.moveTo(30, 90);
+  region.lineTo(110, 20);
+  region.lineTo(240, 130);
+  region.lineTo(60, 130);
+  region.lineTo(190, 20);
+  region.lineTo(270, 90);
+  region.closePath();
+  canvas.fillStyle = 'green';
+  canvas.fill(region, 'evenodd');
+  await diffCanvasToFile('data/fill_path.png', 550);
+}
+
+export async function clipPath() {
+  const canvas = window.canvas;
+  const circlePath = new Path2D();
+  circlePath.arc(150, 75, 75, 0, 2 * Math.PI);
+  const squarePath = new Path2D();
+  squarePath.rect(85, 10, 130, 130);
+  canvas.clip(circlePath);
+  canvas.clip(squarePath);
+  canvas.fillStyle = 'blue';
+  canvas.fillRect(0, 0, canvas.width, canvas.height);
+  await diffCanvasToFile('data/clip_path.png', 200);
+}
+
+export async function copyPath() {
+  const canvas = window.canvas;
+  const path1 = new Path2D();
+  path1.rect(10, 10, 100, 100);
+  const path2 = new Path2D(path1);
+  path2.moveTo(220, 60);
+  path2.arc(170, 60, 50, 0, 2 * Math.PI);
+  canvas.strokeStyle = 'white';
+  canvas.stroke(path2);
+  await diffCanvasToFile('data/copy_path.png', 800);
+}
+
+export async function svgPath() {
+  const canvas = window.canvas;
+  const p = new Path2D('M10 10 h 80 v 80 h -80 Z');
+  canvas.fillStyle = 'white';
+  canvas.fill(p);
+  await diffCanvasToFile('data/svg_path.png', 200);
+}

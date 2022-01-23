@@ -7,6 +7,7 @@
 #include <skia/include/effects/SkDashPathEffect.h>
 #include <skia/include/effects/SkGradientShader.h>
 #include <skia/include/effects/SkImageFilters.h>
+#include <skia/include/utils/SkParsePath.h>
 
 #include "console.h"
 #include "css.h"
@@ -203,6 +204,34 @@ void ImageBitmap(const v8::FunctionCallbackInfo<v8::Value>& info) {
   new ImageBitmapApi(api, thiz, texture);
 }
 
+void Path2D(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (!info.IsConstructCall()) {
+    info.GetIsolate()->ThrowError("Path2D is a constructor");
+    return;
+  }
+
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  SkPath path;
+
+  if (info.Length() >= 1) {
+    if (info[0]->IsString()) {
+      std::string s = api->js()->ToString(info[0]);
+      if (!SkParsePath::FromSVGString(s.c_str(), &path)) {
+        api->js()->ThrowInvalidArgument();
+        return;
+      }
+    } else if (api->IsInstanceOf(info[0], api->GetPath2DConstructor())) {
+      path = api->GetPath2DApi(info[0])->path();
+    } else {
+      api->js()->ThrowInvalidArgument();
+      return;
+    }
+  }
+
+  v8::Local<v8::Object> thiz = info.This();
+  new Path2DApi(api, thiz, path);
+}
+
 void UnrefData(void* ptr, size_t length, void* data) {
   static_cast<SkData*>(data)->unref();
 }
@@ -263,6 +292,8 @@ sk_sp<SkData> PrepareToDecode(JsApi* api,
 
 bool ParseDOMMatrix(const v8::FunctionCallbackInfo<v8::Value>& info,
                     SkMatrix* matrix) {
+  // TODO: support DOMMatrix values.
+
   float v[6];
 
   if (info.Length() >= 1 && info[0]->IsArray()) {
@@ -1382,40 +1413,54 @@ void CanvasApi::ClosePath(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 }
 
-// static
-void CanvasApi::MoveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api || info.Length() < 2 || !info[0]->IsNumber() ||
-      !info[1]->IsNumber()) {
+static void MoveTo(const v8::FunctionCallbackInfo<v8::Value>& info,
+                   SkPath* path) {
+  if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsNumber()) {
+    JsApi::Get(info.GetIsolate())->js()->ThrowInvalidArgument();
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
   float y = info[1].As<v8::Number>()->Value();
-  api->path_.moveTo(x, y);
+  path->moveTo(x, y);
+}
+
+// static
+void CanvasApi::MoveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    ::MoveTo(info, &api->path_);
+  }
+}
+
+static void LineTo(const v8::FunctionCallbackInfo<v8::Value>& info,
+                   SkPath* path) {
+  if (info.Length() < 2 || !info[0]->IsNumber() || !info[1]->IsNumber()) {
+    JsApi::Get(info.GetIsolate())->js()->ThrowInvalidArgument();
+    return;
+  }
+  float x = info[0].As<v8::Number>()->Value();
+  float y = info[1].As<v8::Number>()->Value();
+  if (path->isEmpty() || path->isLastContourClosed()) {
+    path->moveTo(x, y);
+  } else {
+    path->lineTo(x, y);
+  }
 }
 
 // static
 void CanvasApi::LineTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api || info.Length() < 2 || !info[0]->IsNumber() ||
-      !info[1]->IsNumber()) {
-    return;
-  }
-  float x = info[0].As<v8::Number>()->Value();
-  float y = info[1].As<v8::Number>()->Value();
-  if (api->path_.isEmpty() || api->path_.isLastContourClosed()) {
-    api->path_.moveTo(x, y);
-  } else {
-    api->path_.lineTo(x, y);
+  if (api) {
+    ::LineTo(info, &api->path_);
   }
 }
 
-// static
-void CanvasApi::BezierCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api || info.Length() < 6 || !info[0]->IsNumber() ||
-      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber() ||
-      !info[4]->IsNumber() || !info[5]->IsNumber()) {
+static void BezierCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info,
+                          SkPath* path) {
+  if (info.Length() < 6 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
+      !info[2]->IsNumber() || !info[3]->IsNumber() || !info[4]->IsNumber() ||
+      !info[5]->IsNumber()) {
+    JsApi::Get(info.GetIsolate())->js()->ThrowInvalidArgument();
     return;
   }
   float c1x = info[0].As<v8::Number>()->Value();
@@ -1424,22 +1469,38 @@ void CanvasApi::BezierCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
   float c2y = info[3].As<v8::Number>()->Value();
   float ex = info[4].As<v8::Number>()->Value();
   float ey = info[5].As<v8::Number>()->Value();
-  api->path_.cubicTo(c1x, c1y, c2x, c2y, ex, ey);
+  path->cubicTo(c1x, c1y, c2x, c2y, ex, ey);
 }
 
 // static
-void CanvasApi::QuadraticCurveTo(
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
+void CanvasApi::BezierCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api || info.Length() < 4 || !info[0]->IsNumber() ||
-      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber()) {
+  if (api) {
+    ::BezierCurveTo(info, &api->path_);
+  }
+}
+
+static void QuadraticCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info,
+                             SkPath* path) {
+  if (info.Length() < 4 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
+      !info[2]->IsNumber() || !info[3]->IsNumber()) {
+    JsApi::Get(info.GetIsolate())->js()->ThrowInvalidArgument();
     return;
   }
   float cx = info[0].As<v8::Number>()->Value();
   float cy = info[1].As<v8::Number>()->Value();
   float ex = info[2].As<v8::Number>()->Value();
   float ey = info[3].As<v8::Number>()->Value();
-  api->path_.quadTo(cx, cy, ex, ey);
+  path->quadTo(cx, cy, ex, ey);
+}
+
+// static
+void CanvasApi::QuadraticCurveTo(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    ::QuadraticCurveTo(info, &api->path_);
+  }
 }
 
 constexpr double PI = 3.14159265358979323846;
@@ -1462,12 +1523,10 @@ static float AdjustEndAngle(float start, float end, bool ccw) {
   }
 }
 
-// static
-void CanvasApi::Arc(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api || info.Length() < 5 || !info[0]->IsNumber() ||
-      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber() ||
-      !info[4]->IsNumber()) {
+static void Arc(const v8::FunctionCallbackInfo<v8::Value>& info, SkPath* path) {
+  if (info.Length() < 5 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
+      !info[2]->IsNumber() || !info[3]->IsNumber() || !info[4]->IsNumber()) {
+    JsApi::Get(info.GetIsolate())->js()->ThrowInvalidArgument();
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
@@ -1480,15 +1539,22 @@ void CanvasApi::Arc(const v8::FunctionCallbackInfo<v8::Value>& info) {
   end = AdjustEndAngle(start, end, ccw);
   float sweep = end - start;
   SkRect oval = SkRect::MakeLTRB(x - r, y - r, x + r, y + r);
-  api->path_.addArc(oval, RadiansToDegrees(start), RadiansToDegrees(sweep));
+  path->addArc(oval, RadiansToDegrees(start), RadiansToDegrees(sweep));
 }
 
 // static
-void CanvasApi::ArcTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
+void CanvasApi::Arc(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api || info.Length() < 5 || !info[0]->IsNumber() ||
-      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber() ||
-      !info[4]->IsNumber()) {
+  if (api) {
+    ::Arc(info, &api->path_);
+  }
+}
+
+static void ArcTo(const v8::FunctionCallbackInfo<v8::Value>& info,
+                  SkPath* path) {
+  if (info.Length() < 5 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
+      !info[2]->IsNumber() || !info[3]->IsNumber() || !info[4]->IsNumber()) {
+    JsApi::Get(info.GetIsolate())->js()->ThrowInvalidArgument();
     return;
   }
   float x1 = info[0].As<v8::Number>()->Value();
@@ -1496,15 +1562,23 @@ void CanvasApi::ArcTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
   float x2 = info[2].As<v8::Number>()->Value();
   float y2 = info[3].As<v8::Number>()->Value();
   float r = info[4].As<v8::Number>()->Value();
-  api->path_.arcTo(x1, y1, x2, y2, r);
+  path->arcTo(x1, y1, x2, y2, r);
 }
 
 // static
-void CanvasApi::Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info) {
+void CanvasApi::ArcTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api || info.Length() < 7 || !info[0]->IsNumber() ||
-      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber() ||
-      !info[4]->IsNumber() || !info[5]->IsNumber() || !info[6]->IsNumber()) {
+  if (api) {
+    ::ArcTo(info, &api->path_);
+  }
+}
+
+static void Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info,
+                    SkPath* path) {
+  if (info.Length() < 7 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
+      !info[2]->IsNumber() || !info[3]->IsNumber() || !info[4]->IsNumber() ||
+      !info[5]->IsNumber() || !info[6]->IsNumber()) {
+    JsApi::Get(info.GetIsolate())->js()->ThrowInvalidArgument();
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
@@ -1521,79 +1595,116 @@ void CanvasApi::Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info) {
   SkMatrix transform;
   transform.postRotate(RadiansToDegrees(rotation));
   transform.postTranslate(x, y);
-  api->path_.transform(transform);
+  path->transform(transform);
 
   float sweep = end - start;
-  api->path_.addArc(SkRect::MakeLTRB(-rx, -ry, rx, ry), RadiansToDegrees(start),
-                    RadiansToDegrees(sweep));
+  path->addArc(SkRect::MakeLTRB(-rx, -ry, rx, ry), RadiansToDegrees(start),
+               RadiansToDegrees(sweep));
 
   SkMatrix inverse;
   ASSERT(transform.invert(&inverse));
-  api->path_.transform(transform);
+  path->transform(transform);
 }
 
 // static
-void CanvasApi::Rect(const v8::FunctionCallbackInfo<v8::Value>& info) {
+void CanvasApi::Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api || info.Length() < 4 || !info[0]->IsNumber() ||
-      !info[1]->IsNumber() || !info[2]->IsNumber() || !info[3]->IsNumber()) {
+  if (api) {
+    ::Ellipse(info, &api->path_);
+  }
+}
+
+static void Rect(const v8::FunctionCallbackInfo<v8::Value>& info,
+                 SkPath* path) {
+  if (info.Length() < 4 || !info[0]->IsNumber() || !info[1]->IsNumber() ||
+      !info[2]->IsNumber() || !info[3]->IsNumber()) {
+    JsApi::Get(info.GetIsolate())->js()->ThrowInvalidArgument();
     return;
   }
   float x = info[0].As<v8::Number>()->Value();
   float y = info[1].As<v8::Number>()->Value();
   float w = info[2].As<v8::Number>()->Value();
   float h = info[3].As<v8::Number>()->Value();
-  api->path_.addRect(SkRect::MakeXYWH(x, y, w, h), SkPathDirection::kCW, 0);
+  path->addRect(SkRect::MakeXYWH(x, y, w, h), SkPathDirection::kCW, 0);
+}
+
+// static
+void CanvasApi::Rect(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  if (api) {
+    ::Rect(info, &api->path_);
+  }
+}
+
+bool CanvasApi::ParseFillParameters(
+    const v8::FunctionCallbackInfo<v8::Value>& info, SkPath* path) {
+  *path = path_;
+
+  if (info.Length() >= 1) {
+    int index = 0;
+
+    if (api()->IsInstanceOf(info[0], api()->GetPath2DConstructor())) {
+      *path = api()->GetPath2DApi(info[0])->path();
+      index = 1;
+    }
+
+    if (info.Length() > index) {
+      if (!info[index]->IsString()) {
+        js()->ThrowInvalidArgument();
+        return false;
+      }
+
+      std::string fill_type = js()->ToString(info[index]);
+      if (fill_type == "evenodd") {
+        path->setFillType(SkPathFillType::kEvenOdd);
+      } else {
+        path->setFillType(SkPathFillType::kWinding);
+      }
+    }
+  }
+
+  return true;
 }
 
 // static
 void CanvasApi::Fill(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api) {
+  CanvasApi* canvas = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  SkPath path;
+  if (!canvas || !canvas->ParseFillParameters(info, &path)) {
     return;
   }
-  if (info.Length() >= 1 && info[0]->IsString()) {
-    std::string fill_type = api->js()->ToString(info[0]);
-    if (fill_type == "evenodd") {
-      api->path_.setFillType(SkPathFillType::kEvenOdd);
-    } else {
-      api->path_.setFillType(SkPathFillType::kWinding);
-    }
-  }
-  api->skia_canvas()->drawPath(api->path_, api->state_.fill_paint);
-
-  api->path_.setFillType(SkPathFillType::kWinding);
+  canvas->skia_canvas()->drawPath(path, canvas->state_.fill_paint);
 }
 
 // static
 void CanvasApi::Stroke(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (api) {
-    api->skia_canvas()->drawPath(api->path_, api->state_.stroke_paint);
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  CanvasApi* canvas = api->GetCanvasApi(info.This());
+  if (!canvas) {
+    return;
   }
+
+  SkPath path = canvas->path_;
+
+  if (info.Length() >= 1) {
+    if (!api->IsInstanceOf(info[0], api->GetPath2DConstructor())) {
+      api->js()->ThrowInvalidArgument();
+      return;
+    }
+    path = api->GetPath2DApi(info[0])->path();
+  }
+
+  canvas->skia_canvas()->drawPath(path, canvas->state_.stroke_paint);
 }
 
 // static
 void CanvasApi::Clip(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CanvasApi* api = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
-  if (!api) {
+  CanvasApi* canvas = JsApi::Get(info.GetIsolate())->GetCanvasApi(info.This());
+  SkPath path;
+  if (!canvas || !canvas->ParseFillParameters(info, &path)) {
     return;
   }
-
-  SkPathFillType fill_type = SkPathFillType::kWinding;
-  if (info.Length() >= 1 && info[0]->IsString()) {
-    std::string fill_rule = api->js()->ToString(info[0]);
-    if (fill_rule == "evenodd") {
-      fill_type = SkPathFillType::kEvenOdd;
-    }
-  }
-
-  SkPathFillType before = api->path_.getFillType();
-  api->path_.setFillType(fill_type);
-
-  api->skia_canvas()->clipPath(api->path_);
-
-  api->path_.setFillType(before);
+  canvas->skia_canvas()->clipPath(path);
 }
 
 // static
@@ -2670,4 +2781,128 @@ void ImageBitmapApi::Decode(const v8::FunctionCallbackInfo<v8::Value>& info) {
           IGNORE_RESULT(resolver->Resolve(scope.context, object));
         };
       }));
+}
+
+Path2DApi::Path2DApi(JsApi* api, v8::Local<v8::Object> thiz, const SkPath& path)
+    : JsApiWrapper(api->isolate(), thiz), path_(path) {}
+
+Path2DApi::~Path2DApi() {}
+
+// static
+v8::Local<v8::Function> Path2DApi::GetConstructor(JsApi* api,
+                                                  const JsScope& scope) {
+  v8::Local<v8::FunctionTemplate> path2d =
+      v8::FunctionTemplate::New(scope.isolate, Path2D);
+  path2d->SetClassName(scope.GetConstantString(StringId::Path2D));
+
+  v8::Local<v8::ObjectTemplate> instance = path2d->InstanceTemplate();
+  // Used in JsApiWrapper to track this.
+  instance->SetInternalFieldCount(1);
+
+  v8::Local<v8::ObjectTemplate> prototype = path2d->PrototypeTemplate();
+
+  scope.Set(prototype, StringId::addPath, AddPath);
+  scope.Set(prototype, StringId::closePath, ClosePath);
+  scope.Set(prototype, StringId::moveTo, MoveTo);
+  scope.Set(prototype, StringId::lineTo, LineTo);
+  scope.Set(prototype, StringId::bezierCurveTo, BezierCurveTo);
+  scope.Set(prototype, StringId::quadraticCurveTo, QuadraticCurveTo);
+  scope.Set(prototype, StringId::arc, Arc);
+  scope.Set(prototype, StringId::arcTo, ArcTo);
+  scope.Set(prototype, StringId::ellipse, Ellipse);
+  scope.Set(prototype, StringId::rect, Rect);
+
+  return path2d->GetFunction(scope.context).ToLocalChecked();
+}
+
+// static
+void Path2DApi::AddPath(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  // TODO: support DOMMatrix as the second argument.
+
+  JsApi* api = JsApi::Get(info.GetIsolate());
+  if (info.Length() < 1 ||
+      !api->IsInstanceOf(info[0], api->GetPath2DConstructor())) {
+    api->js()->ThrowInvalidArgument();
+    return;
+  }
+
+  Path2DApi* thiz = api->GetPath2DApi(info.This());
+  if (!thiz) {
+    return;
+  }
+
+  thiz->path_.addPath(api->GetPath2DApi(info[0])->path());
+}
+
+// static
+void Path2DApi::ClosePath(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Path2DApi* thiz = JsApi::Get(info.GetIsolate())->GetPath2DApi(info.This());
+  if (thiz) {
+    thiz->path_.close();
+  }
+}
+
+// static
+void Path2DApi::MoveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Path2DApi* thiz = JsApi::Get(info.GetIsolate())->GetPath2DApi(info.This());
+  if (thiz) {
+    ::MoveTo(info, &thiz->path_);
+  }
+}
+
+// static
+void Path2DApi::LineTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Path2DApi* thiz = JsApi::Get(info.GetIsolate())->GetPath2DApi(info.This());
+  if (thiz) {
+    ::LineTo(info, &thiz->path_);
+  }
+}
+
+// static
+void Path2DApi::BezierCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Path2DApi* thiz = JsApi::Get(info.GetIsolate())->GetPath2DApi(info.This());
+  if (thiz) {
+    ::BezierCurveTo(info, &thiz->path_);
+  }
+}
+
+// static
+void Path2DApi::QuadraticCurveTo(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Path2DApi* thiz = JsApi::Get(info.GetIsolate())->GetPath2DApi(info.This());
+  if (thiz) {
+    ::QuadraticCurveTo(info, &thiz->path_);
+  }
+}
+
+// static
+void Path2DApi::Arc(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Path2DApi* thiz = JsApi::Get(info.GetIsolate())->GetPath2DApi(info.This());
+  if (thiz) {
+    ::Arc(info, &thiz->path_);
+  }
+}
+
+// static
+void Path2DApi::ArcTo(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Path2DApi* thiz = JsApi::Get(info.GetIsolate())->GetPath2DApi(info.This());
+  if (thiz) {
+    ::ArcTo(info, &thiz->path_);
+  }
+}
+
+// static
+void Path2DApi::Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Path2DApi* thiz = JsApi::Get(info.GetIsolate())->GetPath2DApi(info.This());
+  if (thiz) {
+    ::Ellipse(info, &thiz->path_);
+  }
+}
+
+// static
+void Path2DApi::Rect(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  Path2DApi* thiz = JsApi::Get(info.GetIsolate())->GetPath2DApi(info.This());
+  if (thiz) {
+    ::Rect(info, &thiz->path_);
+  }
 }
