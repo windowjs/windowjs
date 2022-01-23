@@ -694,6 +694,10 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   canvas_rendering_context_2d_constructor_.Reset(scope.isolate, canvas_context);
   scope.Set(global, StringId::CanvasRenderingContext2D, canvas_context);
 
+  v8::Local<v8::Function> path2d = Path2DApi::GetConstructor(this, scope);
+  path2d_constructor_.Reset(scope.isolate, path2d);
+  scope.Set(global, StringId::Path2D, path2d);
+
   v8::Local<v8::Value> args[2] = {
       v8::Number::New(scope.isolate, window_->width()),
       v8::Number::New(scope.isolate, window_->height()),
