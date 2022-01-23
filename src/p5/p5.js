@@ -542,5 +542,5 @@ await run();
 // for ease of development and debugging.
 
 async function loadP5() {
-  await import('../libraries/p5.js');
+  await import('../../libraries/p5.js');
 }
