@@ -165,6 +165,8 @@ class CanvasApi final : public JsApiWrapper, public JsApiTracker<CanvasApi> {
   static void ArcTo(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void Rect(const v8::FunctionCallbackInfo<v8::Value>& info);
+  bool ParseFillParameters(const v8::FunctionCallbackInfo<v8::Value>& info,
+                           SkPath* path);
   static void Fill(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void Stroke(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void Clip(const v8::FunctionCallbackInfo<v8::Value>& info);
@@ -349,6 +351,31 @@ class ImageBitmapApi final : public JsApiWrapper {
   static void Decode(const v8::FunctionCallbackInfo<v8::Value>& info);
 
   sk_sp<SkImage> texture_;
+};
+
+class Path2DApi final : public JsApiWrapper {
+ public:
+  Path2DApi(JsApi* api, v8::Local<v8::Object> thiz, const SkPath& path);
+  ~Path2DApi() override;
+
+  const SkPath& path() const { return path_; }
+
+  static v8::Local<v8::Function> GetConstructor(JsApi* api,
+                                                const JsScope& scope);
+
+ private:
+  static void AddPath(const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void ClosePath(const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void MoveTo(const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void LineTo(const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void BezierCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void QuadraticCurveTo(const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void Arc(const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void ArcTo(const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void Ellipse(const v8::FunctionCallbackInfo<v8::Value>& info);
+  static void Rect(const v8::FunctionCallbackInfo<v8::Value>& info);
+
+  SkPath path_;
 };
 
 #endif  // WINDOWJS_JS_API_CANVAS_H

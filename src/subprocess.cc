@@ -9,6 +9,14 @@
 #include "file.h"
 #include "thread.h"
 
+#if defined(WINDOWJS_LINUX) || defined(WINDOWJS_MAC)
+#include <sys/wait.h>
+#elif defined(WINDOWJS_WIN)
+#include <windows.h>
+#else
+#error "Unsupported platform."
+#endif
+
 // static
 std::unique_ptr<Pipe> Pipe::Spawn(std::string exe_path,
                                   std::vector<std::string> args, bool log,
@@ -99,19 +107,55 @@ Pipe::~Pipe() {
 
   thread_.join();
 
+  if (child_) {
+    // Tell the child process to exit, if it's still running.
+    uv_process_kill(child_.get(), SIGINT);
+  }
+
   if (!is_child_process() && !uv_is_closing((const uv_handle_t*) &pipe_)) {
-    // Don't close the pipe on child processes, so that they can reload.
-    // The pipe is closed anyway once they exit.
+    // Don't close the pipe on child processes, so that they can reload and
+    // attach to the parent FD again. The pipe is closed anyway once they exit.
     uv_close((uv_handle_t*) &pipe_, nullptr);
   }
 
   uv_close((uv_handle_t*) &async_quit_, nullptr);
   uv_close((uv_handle_t*) &async_send_, nullptr);
+
+  uv_pid_t pid = 0;
   if (child_) {
+    pid = child_->pid;
     uv_close((uv_handle_t*) child_.get(), nullptr);
   }
 
-  uv_loop_close(&loop_);
+  if (!is_child_process()) {
+    // Spin the loop until all the internal handles are closed.
+    // This is skipped for child processes because the handle to
+    // the parent is kept open.
+    for (;;) {
+      int err = uv_run(&loop_, UV_RUN_NOWAIT);
+      if (err == 0) {
+        break;
+      }
+    }
+  }
+
+#if defined(WINDOWJS_LINUX) || defined(WINDOWJS_MAC)
+  if (pid > 0) {
+    // waitpid() to avoid leaving zombie processes around.
+    int status = 0;
+    waitpid(pid, &status, 0);
+  }
+#elif defined(WINDOWJS_WIN)
+  IGNORE_RESULT(pid);
+#else
+#error "Unsupported platform."
+#endif
+
+  int err = uv_loop_close(&loop_);
+  if (!is_child_process()) {
+    // See note about about child processes leaving the parent handle open.
+    ASSERT(err == 0);
+  }
 }
 
 // static

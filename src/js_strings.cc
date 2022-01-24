@@ -18,6 +18,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(actualBoundingBoxRight);
   SET_STRING(addColorStop);
   SET_STRING(addEventListener);
+  SET_STRING(addPath);
   SET_STRING(alphabetic);
   SET_STRING(Alt);
   SET_STRING(altKey);
@@ -293,6 +294,7 @@ JsStrings::JsStrings(v8::Isolate* isolate) {
   SET_STRING(PageDown);
   SET_STRING(PageUp);
   SET_STRING(parent);
+  SET_STRING(Path2D);
   SET_STRING(Pause);
   SET_STRING(performance);
   SET_STRING(Period);
