@@ -9,17 +9,6 @@
   --large4: 36px;
 }
 
-/* @media screen and (max-width: 1200px) {
-  :root {
-  --normal-2: 22px;
-  --normal: 24px;
-  --normal2: 26px;
-  --normal4: 28px;
-  --large: 48px;
-  --large4: 48px;
-  }
-} */
-
 :root {
   --dark: #023047;
   --blue: #007ab8;
@@ -32,29 +21,12 @@
 }
 
 body {
-  /* margin: 0; */
-  /* padding-top: 0; */
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: var(--normal);
-  /* display: flex; */
-  /* flex-direction: column; */
-  /* min-height: 100vh; */
-  /* overflow: hidden; */
 }
 
 .navbar-dark {
   background-color: var(--dark);
-  /* padding-top: 16px; */
-  /* padding-bottom: 16px; */
-  /* font-size: var(--normal4); */
-  /* display: flex; */
-  /* flex-direction: row; */
-  /* align-items: center; */
-  /* position: fixed; */
-  /* top: 0; */
-  /* left: 0; */
-  /* width: 100vw; */
-  /* height: 50px; */
 }
 
 .navbar-dark .navbar-nav a.nav-link {
@@ -78,39 +50,8 @@ body {
   color: var(--magenta);
 }
 
-#top-left a {
-  /* padding-left: 32px; */
-}
-
-#top-right a {
-  /* padding-right: 16px; */
-}
-
-#top-center {
-  /* width: 720px; */
-}
-
-#documentation-container {
-  /* margin-top: 82px; */
-  /* display: flex; */
-  /* flex-direction: row; */
-  /* justify-content: center; */
-  /* overflow-y: auto; */
-  /* max-height: calc(100vh - 50px - 32px); */
-}
-
-#content {
-  /* width: 720px; */
-  /* padding-top: 32px; */
-  /* padding-bottom: 32px; */
-}
-
 .title {
   font-size: var(--large);
-}
-
-#content.main {
-  /* width: 640px; */
 }
 
 #sidebar-left {
@@ -161,32 +102,6 @@ body {
   font-size: var(--normal2);
 }
 
-#top a {
-  /* text-decoration: none; */
-  /* color: white; */
-  /* padding-right: 16px; */
-}
-
-#top a:hover {
-  /* animation: light-highlight 0.1s; */
-  /* animation-fill-mode: both; */
-}
-
-a.top-selected {
-  /* color: var(--magenta); */
-  /* animation: none; */
-}
-
-/* @keyframes light-highlight {
-  0% {
-    color: white
-  }
-
-  100% {
-    color: var(--magenta);
-  }
-} */
-
 a {
   text-decoration: none;
 }
@@ -201,8 +116,6 @@ a {
 
 #documentation-container a:hover {
   color: var(--magenta);
-  /* animation: link-highlight 0.1s; */
-  /* animation-fill-mode: both; */
 }
 
 #documentation-container a.link-selected,
@@ -211,42 +124,9 @@ a {
   animation: none;
 }
 
-/* @keyframes link-highlight {
-  0% {
-    color: var(--blue);
-  }
-
-  100% {
-    color: var(--magenta);
-  }
-} */
-
-hr {
-  /* border: none;
-  border-top: 1.5px solid var(--dark); */
-}
-
-.flex1 {
-  /* flex: 1; */
-}
-
-.flex-right {
-  /* display: flex;
-  justify-content: flex-end; */
-}
-
-.hidden {
-  /* visibility: hidden; */
-}
-
 .windowjs {
   font-family: 'Oleo Script Swash Caps', cursive;
   font-size: var(--large4);
-}
-
-#top a.github-icon {
-  /* padding-top: 0; */
-  /* padding-bottom: 0; */
 }
 
 .github-icon img {
@@ -315,10 +195,13 @@ h1, h2 {
 }
 
 .api:target, h2:target {
-  background-color: #FFFFC7;
   border-radius: 2px;
-  padding-top: 4px;
+  padding-top: 82px;
   padding-bottom: 4px;
+}
+
+.api:target span, h2:target span{
+  background-color: #FFFFC7;
 }
 
 pre.highlight {
@@ -428,70 +311,3 @@ pre.highlight .c1 {
   color: white;
   background-color: var(--red);
 }
-
-/* @media screen and (max-width: 1200px) {
-  body {
-    overflow: auto;
-    min-height: 100vh;
-  }
-
-  #documentation-container {
-    flex: 1;
-    flex-direction: column-reverse;
-    max-height: none;
-  }
-
-  #sidebar-left-container {
-    justify-content: flex-start;
-    flex: none;
-  }
-
-  #sidebar-right-container {
-    display: none;
-  }
-
-  #content {
-    flex: 1;
-    align-self: center;
-    padding-left: 32px;
-    padding-right: 32px;
-    padding-top: 0px;
-    width: auto;
-  }
-
-  #content.main {
-    width: auto;
-  }
-
-  #sidebar-left {
-    display: flex;
-    flex-flow: row wrap;
-    width: 100vw;
-    background-color: var(--dark);
-    position: static;
-    padding: 16px;
-  }
-
-  #sidebar-left a {
-    color: white;
-    padding: 16px;
-    width: 30vw;
-    box-sizing: border-box;
-  }
-
-  #sidebar-left>br, hr {
-    display: none;
-  }
-
-  #sidebar-left>h1.hidden {
-    display: none;
-  }
-
-  pre {
-    white-space: break-spaces;
-  }
-
-  pre.highlight code {
-    font-size: 16px;
-  }
-} */
