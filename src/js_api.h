@@ -20,6 +20,7 @@ class CanvasGradientApi;
 class CanvasPatternApi;
 class ImageBitmapApi;
 class ImageDataApi;
+class Path2DApi;
 class ProcessApi;
 class SkTypeface;
 
@@ -146,6 +147,14 @@ class JsApi final : public v8::PersistentHandleVisitor {
         thiz, GetImageBitmapConstructor());
   }
 
+  v8::Local<v8::Function> GetPath2DConstructor() {
+    return path2d_constructor_.Get(js_->isolate());
+  }
+
+  Path2DApi* GetPath2DApi(v8::Local<v8::Value> thiz) {
+    return GetWrappedInstanceOrThrow<Path2DApi>(thiz, GetPath2DConstructor());
+  }
+
   v8::Local<v8::Function> GetProcessConstructor() {
     return process_constructor_.Get(js_->isolate());
   }
@@ -231,6 +240,7 @@ class JsApi final : public v8::PersistentHandleVisitor {
   v8::Global<v8::Function> canvas_pattern_constructor_;
   v8::Global<v8::Function> image_data_constructor_;
   v8::Global<v8::Function> image_bitmap_constructor_;
+  v8::Global<v8::Function> path2d_constructor_;
   v8::Global<v8::Function> process_constructor_;
 
   v8::Global<v8::Array> window_icon_;

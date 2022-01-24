@@ -495,7 +495,7 @@ at MDN.
    type="(number, number, number, number, number, number) => void"
 %}
 
-Adds a cubic BÃ©zier curve to the current sub-path. Requires three points: two
+Adds a cubic Bézier curve to the current sub-path. Requires three points: two
 control points, and a final end point. The starting point is the latest point
 in the current path (which can be changed using [moveTo](#canvas.moveTo) before
 creating the curve).
@@ -513,13 +513,15 @@ See also
 at MDN.
 
 
-{% include method object="canvas" name="clip" type="(string?) => void" %}
+{% include method object="canvas" name="clip"
+   type="(Path2D?, string?) => void" %}
 
-Turns the current path into the current clipping region. The previous clipping
-region, if any, is intersected with the current path to create the new clipping
-region.
+Turns the current path or the given [Path2D](/doc/path2d) into the current
+clipping region. The previous clipping region, if any, is intersected with the
+current path to create the new clipping region.
 
 {: .parameters}
+| path     | Path2D? | An optional [Path2D](/doc/path2d) object, indicating the path to clip to. If this parameter is skipped then the path in the canvas itself is used. |
 | fillRule | string? | The algorithm to determine if a point is inside or outside of the clipping region. Can be the `"nonzero"` winding rule (default), or the `"evenodd"` winding rule. |
 
 See also
@@ -746,11 +748,14 @@ it as bytes in an `ArrayBuffer`.
 | quality | number? | The encoding quality for the `"jpeg"` codec. |
 
 
-{% include method object="canvas" name="fill" type="(string?) => void" %}
+{% include method object="canvas" name="fill"
+   type="(Path2D?, string?) => void" %}
 
-Fills the current path with the current [fillStyle](#canvas.fillStyle).
+Fills the current path or the given [Path2D](/doc/path2d) with the current
+[fillStyle](#canvas.fillStyle).
 
 {: .parameters}
+| path     | Path2D? | An optional [Path2D](/doc/path2d) object, indicating the path to be filled. If this parameter is skipped then the path in the canvas itself is used. |
 | fillRule | string? | An optional `string` indicating the winding rule used to determine if a point is inside or outside of the filling region. Valid values are `"nonzero"` (default) and `"evenodd"`. |
 
 See also
@@ -1092,14 +1097,17 @@ See also
 at MDN.
 
 
-{% include method object="canvas" name="stroke" type="() => void" %}
+{% include method object="canvas" name="stroke" type="(Path2D?) => void" %}
 
-Strokes the outline of the current path, using the current
-[strokeStyle](#canvas.strokeStyle).
+Strokes the outline of the current path or of the given [Path2D](/doc/path2d),
+using the current [strokeStyle](#canvas.strokeStyle).
 
 Strokes are aligned to the center of a path: half of the stroke is drawn on the
 inner side, and half on the outer side. The stroke is drawn using the non-zero
 winding rule.
+
+{: .parameters}
+| path     | Path2D? | An optional [Path2D](/doc/path2d) object, indicating the path to be stroked. If this parameter is skipped then the path in the canvas itself is used. |
 
 See also
 [stroke](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/stroke)

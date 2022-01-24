@@ -348,6 +348,7 @@ void ProcessApi::HandleChildProcessExit(int64_t status, std::string error) {
   if (try_catch.HasCaught()) {
     api()->js()->ReportException(try_catch.Message());
   }
+  pipe_.reset();
 }
 
 void ProcessApi::HandleMessageFromParentProcess(uint32_t type,

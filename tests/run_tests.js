@@ -45,6 +45,7 @@ async function resetForNewTest(testName, tmpDirForTest) {
   window.resizable = false;
 
   const canvas = window.canvas;
+  canvas.restore();
   canvas.resetTransform();
   canvas.antialias = true;
   canvas.fillStyle = '#000';
@@ -64,6 +65,7 @@ async function resetForNewTest(testName, tmpDirForTest) {
   canvas.clearRect(0, 0, canvas.width, canvas.height);
   canvas.fillRect(0, 0, canvas.width, canvas.height);
   canvas.beginPath();
+  canvas.save();
 }
 
 async function runTestsInModule(path, tmpDirForTest, testPattern) {

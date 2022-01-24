@@ -75,9 +75,11 @@ interface CanvasDrawPath {
      * See also
      * [clip](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clip)
      * at MDN.
+     *
+     * @param path  An optional {@link Path2D} object, indicating the path to clip to. If this parameter is skipped then the path in the canvas itself is used.
      * @param fillRule  The algorithm to determine if a point is inside or outside of the clipping region. Can be the `"nonzero"` winding rule (default), or the `"evenodd"` winding rule.
      */
-    clip(fillRule?: CanvasFillRule): void;
+    clip(path?: Path2D, fillRule?: CanvasFillRule): void;
 
     /**
      * Fills the current path with the current {@link CanvasFillStrokeStyles.fillStyle fillStyle}.
@@ -85,9 +87,11 @@ interface CanvasDrawPath {
      * See also
      * [fill](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fill)
      * at MDN.
+     *
+     * @param path  An optional {@link Path2D} object, indicating the path to be filled. If this parameter is skipped then the path in the canvas itself is used.
      * @param fillRule  The algorithm to determine if a point is inside or outside of the clipping region. Can be the `"nonzero"` winding rule (default), or the `"evenodd"` winding rule.
      */
-    fill(fillRule?: CanvasFillRule): void;
+    fill(path?: Path2D, fillRule?: CanvasFillRule): void;
 
     /**
      * Returns whether the specified point is contained in the current path.
@@ -124,8 +128,10 @@ interface CanvasDrawPath {
      * See also
      * [stroke](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/stroke)
      * at MDN.
+     *
+     * @param path  An optional {@link Path2D} object, indicating the path to be stroked. If this parameter is skipped then the path in the canvas itself is used.
      */
-    stroke(): void;
+    stroke(path?: Path2D): void;
 }
 
 interface CanvasFillStrokeStyles {
@@ -418,7 +424,7 @@ interface CanvasPath {
     arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): void;
 
     /**
-     * Adds a cubic BÃ©zier curve to the current sub-path. Requires three points: two
+     * Adds a cubic Bézier curve to the current sub-path. Requires three points: two
      * control points, and a final end point. The starting point is the latest point
      * in the current path (which can be changed using {@link CanvasPath.moveTo moveTo} before
      * creating the curve).
@@ -515,6 +521,39 @@ interface CanvasPath {
      */
     rect(x: number, y: number, w: number, h: number): void;
 }
+
+/**
+ * `Path2D` objects represent paths that can be drawn into a
+ * {@link CanvasRenderingContext2D}, using
+ * {@link CanvasDrawPath.fill} and {@link CanvasDrawPath.stroke}.
+ *
+ * The constructor has 3 variants.
+ * The first takes no parameters and builds an empty path.
+ * The second takes another `Path2D` instance and makes a copy.
+ * The third takes an
+ * [SVG path](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths)
+ * as a `string` parameter, and builds the corresponding path.
+ *
+ * See also the
+ * [Path2D](https://developer.mozilla.org/en-US/docs/Web/API/Path2D)
+ * documentation at MDN.
+ */
+interface Path2D extends CanvasPath {
+    /**
+     * Adds the path of an existing `Path2D` object to this one.
+     *
+     * See also
+     * [addPath](https://developer.mozilla.org/en-US/docs/Web/API/Path2D/addPath)
+     * at MDN.
+     *
+     * @param path  The path to add to this one.
+     */
+    addPath(path: Path2D);
+}
+
+declare var Path2D: {
+    prototype: Path2D;
+};
 
 interface CanvasPathDrawingStyles {
     /**
