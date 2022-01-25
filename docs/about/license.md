@@ -11,7 +11,7 @@ Window.js is licensed under the MIT License.
 License
 -------
 
-Copyright 2021 Joao da Silva
+Copyright 2022 Joao da Silva
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
