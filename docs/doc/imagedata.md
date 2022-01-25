@@ -120,5 +120,6 @@ The width of this `ImageData`.
 Encodes this `ImageData` in a given image format and returns the bytes
 representing that encoding.
 
+{: .parameters}
 | codec   | string? | The image codec to use for the encoding. Valid values are `"jpeg"`, `"png"` and `"webp"`. |
 | quality | number? | For the `"jpeg"` codec, the `quality` parameter is a number from 0 to 100 indicating the quality of the output image. 0 is smaller but lower quality, 100 is the highest quality but also a larger encoding. |"

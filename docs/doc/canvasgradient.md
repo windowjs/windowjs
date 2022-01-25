@@ -31,6 +31,7 @@ documentation at MDN.
 
 Adds a new color stop, defined by an offset and a color.
 
+{: .parameters}
 | offset | number | A number between 0 and 1 (inclusive), representing the position of the color stop. |
 | color  | string | A CSS color representing the color of the stop.            |
 

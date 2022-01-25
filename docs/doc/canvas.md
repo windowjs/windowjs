@@ -897,6 +897,7 @@ at MDN.
 
 Returns an object with the text metrics about the given text string.
 
+{: .parameters}
 | text | string | The text string to measure.                                  |
 
 The object returned contains this data:
@@ -1172,6 +1173,7 @@ at MDN.
 
 Adds a translation transformation to the current matrix.
 
+{: .parameters}
 | x | number | The distance to move in the horizontal direction.               |
 | y | number | The distance to move in the vertical direction.                 |
 
