@@ -102,20 +102,34 @@
             </div>
             <div id="bottom-container" class="row">
                 <div class="col d-block d-md-none bottom-nav">
-                    <ul class="nav justify-content-center">
-                        <li class="nav-item">{% include link name="Development" path="/dev/" %}</li>
-                        <li class="nav-item">{% include link name="Checkout" path="/dev/checkout" %}</li>
-                        <li class="nav-item">{% include link name="Build" path="/dev/build" %}</li>
-                        <li class="nav-item">{% include link name="Troubleshooting" path="/dev/trouble" %}</li>
-                        <li class="nav-item">{% include link name="Build config" path="/dev/config" %}</li>
-                        <li class="nav-item">{% include link name="Dependencies" path="/dev/dependencies" %}</li>
-                        <li class="nav-item">{% include link name="Documentation" path="/dev/documentation" %}</li>
-                        <li class="nav-item">{% include link name="Tests" path="/dev/tests" %}</li>
-                        <li class="nav-item">{% include link name="Releases" path="/dev/release" %}</li>
-                        <li class="nav-item">{% include link name="Maintenance" path="/dev/maintenance" %}</li>
-                        <li class="nav-item">{% include link name="Plans" path="/dev/plans" %}</li>
-                        <li class="nav-item">{% include link name="Contributing" path="/dev/contributing" %}</li>
-                    </ul>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td class="nav-item">{% include link name="Development" path="/dev/" %}</td>
+                                <td class="nav-item">{% include link name="Checkout" path="/dev/checkout" %}</td>
+                            </tr>
+                            <tr>
+                                <td class="nav-item">{% include link name="Build" path="/dev/build" %}</td>
+                                <td class="nav-item">{% include link name="Troubleshooting" path="/dev/trouble" %}</td>
+                            </tr>
+                            <tr>
+                                <td class="nav-item">{% include link name="Build config" path="/dev/config" %}</td>
+                                <td class="nav-item">{% include link name="Dependencies" path="/dev/dependencies" %}</td>
+                            </tr>
+                            <tr>
+                                <td class="nav-item">{% include link name="Documentation" path="/dev/documentation" %}</td>
+                                <td class="nav-item">{% include link name="Tests" path="/dev/tests" %}</td>
+                            </tr>
+                            <tr>
+                                <td class="nav-item">{% include link name="Releases" path="/dev/release" %}</td>
+                                <td class="nav-item">{% include link name="Maintenance" path="/dev/maintenance" %}</td>
+                            </tr>
+                            <tr>
+                                <td class="nav-item">{% include link name="Plans" path="/dev/plans" %}</td>
+                                <td class="nav-item">{% include link name="Contributing" path="/dev/contributing" %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
