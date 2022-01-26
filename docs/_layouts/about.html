@@ -41,16 +41,26 @@
             </div>
             <div id="bottom-container" class="row">
                 <div class="col d-block d-md-none bottom-nav">
-                    <ul class="nav justify-content-center">
-                        <li class="nav-item">{% include link name="Introduction" path="/about/" %}</li>
-                        <li class="nav-item">{% include link name="Examples" path="/about/examples" %}</li>
-                        <li class="nav-item">{% include link name="Download" path="/download" %}</li>
-                        <li class="nav-item">{% include link name="Processing with p5.js" path="/about/processing" %}</li>
-                        <li class="nav-item">{% include link name="FAQ" path="/about/faq" %}</li>
-                        <li class="nav-item">{% include link name="License" path="/about/license" %}</li>
-                        <li class="nav-item">{% include link name="Issues" path="/about/issues" %}</li>
-                        <li class="nav-item">{% include link name="Contact" path="/about/contact" %}</li>
-                    </ul>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td class="nav-item">{% include link name="Introduction" path="/about/" %}</td>
+                                <td class="nav-item">{% include link name="Examples" path="/about/examples" %}</td>
+                            </tr>
+                            <tr>
+                                <td class="nav-item">{% include link name="Download" path="/download" %}</td>
+                                <td class="nav-item">{% include link name="Processing with p5.js" path="/about/processing" %}</td>
+                            </tr>
+                            <tr>
+                                <td class="nav-item">{% include link name="FAQ" path="/about/faq" %}</td>
+                                <td class="nav-item">{% include link name="License" path="/about/license" %}</td>
+                            </tr>
+                            <tr>
+                                <td class="nav-item">{% include link name="Issues" path="/about/issues" %}</td>
+                                <td class="nav-item">{% include link name="Contact" path="/about/contact" %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -91,6 +91,11 @@ body {
   background: var(--blue);
 }
 
+#sidebar-right p {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .row div.bottom-nav {
   background-color: var(--dark);
   padding-top: 1rem;
@@ -112,6 +117,10 @@ a {
 
 #bottom-container a {
   color: var(--lighter);
+}
+
+#bottom-container table {
+  border-color: var(--dark);
 }
 
 #documentation-container a:hover {
@@ -247,6 +256,10 @@ pre.highlight .c1 {
   border-spacing: 2px;
   width: 100%;
   color: #393a34;
+}
+
+#content table + p {
+  margin-top: 1rem;
 }
 
 #content table.parameters td {
