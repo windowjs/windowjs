@@ -48,7 +48,7 @@ jobs:
             !libraries/v8/out
             libraries/v8/out/Release/obj/v8_monolith.lib
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-linux.gn', 'libraries/build_v8.sh', 'libraries/v8-args-linux.gn') }}
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-linux.gn', 'libraries/build_v8.sh', 'libraries/v8-args-linux.gn', 'libraries/glfw.patch') }}
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'

@@ -412,3 +412,190 @@ index b87a2609..6aed705e 100644
      if (ctxconfig.client != GLFW_NO_API)
      {
          if (!_glfwRefreshContextAttribs(window, &ctxconfig))
+diff --git a/src/x11_init.c b/src/x11_init.c
+index 87b3eb78..58239cf8 100644
+--- a/src/x11_init.c
++++ b/src/x11_init.c
+@@ -36,6 +36,7 @@
+ #include <limits.h>
+ #include <stdio.h>
+ #include <locale.h>
++#include <fcntl.h>
+ 
+ 
+ // Translate the X11 KeySyms for a key to a GLFW key code
+@@ -963,6 +964,35 @@ static int errorHandler(Display *display, XErrorEvent* event)
+     return 0;
+ }
+ 
++static inline GLFWbool selfPipe(int fds[2])
++{
++    if (pipe(fds) != 0)
++        return GLFW_FALSE;
++
++    int i;
++    for (i = 0; i < 2; i++)
++    {
++        int flags = fcntl(fds[i], F_GETFD);
++        if (flags == -1)
++            break;
++        if (fcntl(fds[i], F_SETFD, flags | FD_CLOEXEC) == -1)
++            break;
++        flags = fcntl(fds[i], F_GETFL);
++        if (flags == -1)
++            break;
++        if (fcntl(fds[i], F_SETFL, flags | O_NONBLOCK) == -1)
++            break;
++    }
++
++    if (i == 2)
++        return GLFW_TRUE;
++
++    close(fds[0]);
++    close(fds[1]);
++
++    return GLFW_FALSE;
++}
++
+ 
+ //////////////////////////////////////////////////////////////////////////
+ //////                       GLFW internal API                      //////
+@@ -1102,6 +1132,13 @@ int _glfwPlatformInit(void)
+     _glfwInitTimerPOSIX();
+ 
+     _glfwPollMonitorsX11();
++
++    if (!selfPipe(_glfw.x11.eventLoopData.pipe))
++    {
++        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: failed to create pipe");
++        return GLFW_FALSE;
++    }
++
+     return GLFW_TRUE;
+ }
+ 
+@@ -1182,6 +1219,18 @@ void _glfwPlatformTerminate(void)
+         _glfw.x11.xi.handle = NULL;
+     }
+ 
++    if (_glfw.x11.eventLoopData.pipe[0] > 0)
++    {
++        close(_glfw.x11.eventLoopData.pipe[0]);
++        _glfw.x11.eventLoopData.pipe[0] = -1;
++    }
++
++    if (_glfw.x11.eventLoopData.pipe[1] > 0)
++    {
++        close(_glfw.x11.eventLoopData.pipe[1]);
++        _glfw.x11.eventLoopData.pipe[1] = -1;
++    }
++
+     // NOTE: These need to be unloaded after XCloseDisplay, as they register
+     //       cleanup callbacks that get called by that function
+     _glfwTerminateEGL();
+diff --git a/src/x11_platform.h b/src/x11_platform.h
+index 37946a29..369d6d05 100644
+--- a/src/x11_platform.h
++++ b/src/x11_platform.h
+@@ -404,6 +404,10 @@ typedef struct _GLFWlibraryX11
+         PFN_XRenderQueryVersion QueryVersion;
+         PFN_XRenderFindVisualFormat FindVisualFormat;
+     } xrender;
++
++    struct {
++        int pipe[2];
++    } eventLoopData;
+ } _GLFWlibraryX11;
+ 
+ // X11-specific per-monitor data
+diff --git a/src/x11_window.c b/src/x11_window.c
+index e6b7e1b9..9f8dfbc3 100644
+--- a/src/x11_window.c
++++ b/src/x11_window.c
+@@ -57,6 +57,16 @@
+ #define _GLFW_XDND_VERSION 5
+ 
+ 
++static inline void drainPipe(int fd)
++{
++    static char buf[256];
++    ssize_t len;
++    do
++    {
++        len = read(fd, buf, sizeof(buf));
++    } while (len > 0 || (len < 0 && errno == EINTR));
++}
++
+ // Wait for data to arrive using select
+ // This avoids blocking other threads via the per-display Xlib lock that also
+ // covers GLX functions
+@@ -65,16 +75,19 @@ static GLFWbool waitForEvent(double* timeout)
+ {
+     fd_set fds;
+     const int fd = ConnectionNumber(_glfw.x11.display);
+-    int count = fd + 1;
++    const int pipe = _glfw.x11.eventLoopData.pipe[0];
++    int max = fd > pipe ? fd : pipe;
+ 
+ #if defined(__linux__)
+-    if (_glfw.linjs.inotify > fd)
+-        count = _glfw.linjs.inotify + 1;
++    if (_glfw.linjs.inotify > max)
++        max = _glfw.linjs.inotify;
+ #endif
++
+     for (;;)
+     {
+         FD_ZERO(&fds);
+         FD_SET(fd, &fds);
++        FD_SET(pipe, &fds);
+ #if defined(__linux__)
+         if (_glfw.linjs.inotify > 0)
+             FD_SET(_glfw.linjs.inotify, &fds);
+@@ -87,9 +100,12 @@ static GLFWbool waitForEvent(double* timeout)
+             struct timeval tv = { seconds, microseconds };
+             const uint64_t base = _glfwPlatformGetTimerValue();
+ 
+-            const int result = select(count, &fds, NULL, NULL, &tv);
++            const int result = select(max + 1, &fds, NULL, NULL, &tv);
+             const int error = errno;
+ 
++            if (FD_ISSET(pipe, &fds))
++                drainPipe(pipe);
++
+             *timeout -= (_glfwPlatformGetTimerValue() - base) /
+                 (double) _glfwPlatformGetTimerFrequency();
+ 
+@@ -98,8 +114,17 @@ static GLFWbool waitForEvent(double* timeout)
+             if ((result == -1 && error == EINTR) || *timeout <= 0.0)
+                 return GLFW_FALSE;
+         }
+-        else if (select(count, &fds, NULL, NULL, NULL) != -1 || errno != EINTR)
+-            return GLFW_TRUE;
++        else
++        {
++          const int result = select(max + 1, &fds, NULL, NULL, NULL);
++          const int error = errno;
++
++          if (FD_ISSET(pipe, &fds))
++              drainPipe(pipe);
++
++          if (result != -1 || error != EINTR)
++              return GLFW_TRUE;
++        }
+     }
+ }
+ 
+@@ -2833,6 +2858,12 @@ void _glfwPlatformPostEmptyEvent(void)
+ 
+     XSendEvent(_glfw.x11.display, _glfw.x11.helperWindowHandle, False, 0, &event);
+     XFlush(_glfw.x11.display);
++
++    int result;
++    do
++    {
++        result = write(_glfw.x11.eventLoopData.pipe[1], "x", 1);
++    } while (result < 0 && errno == EINTR);
+ }
+ 
+ void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
