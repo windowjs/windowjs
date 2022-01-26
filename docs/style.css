@@ -154,6 +154,10 @@ h1, h2 {
   padding-top: 16px;
 }
 
+h3, h4, h5, h6 {
+  padding-top: 16px;
+}
+
 .code-object {
   color: var(--dark);
 }
@@ -192,6 +196,14 @@ h1, h2 {
   align-items: center;
 }
 
+html {
+scroll-padding-top: max(128px, 30vh);
+}
+
+.api:target, h2:target {
+  background-color: #FFFFC7;
+}
+
 .api-left {
   font-weight: bold;
 }
@@ -201,16 +213,6 @@ h1, h2 {
   margin-left: 8px;
   font-size: var(--normal);
   max-width: 360px;
-}
-
-.api:target, h2:target {
-  border-radius: 2px;
-  padding-top: 82px;
-  padding-bottom: 4px;
-}
-
-.api:target span, h2:target span{
-  background-color: #FFFFC7;
 }
 
 pre.highlight {
