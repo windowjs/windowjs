@@ -68,6 +68,163 @@ index 9503dd0d..4aece364 100644
   *  @sa @ref window_size
   *  @sa @ref glfwSetWindowSizeCallback
   *
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index b6dd86c5..0704559a 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -89,6 +89,8 @@ if (CMAKE_VERSION VERSION_LESS "3.16" AND APPLE)
+ endif()
+ 
+ add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
++target_compile_definitions(glfw PRIVATE KHRONOS_STATIC)
++target_include_directories(glfw PRIVATE ../../angle/include)
+ set_target_properties(glfw PROPERTIES
+                       OUTPUT_NAME ${GLFW_LIB_NAME}
+                       VERSION ${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}
+diff --git a/src/egl_context.c b/src/egl_context.c
+index 6b34f724..5403fe62 100644
+--- a/src/egl_context.c
++++ b/src/egl_context.c
+@@ -27,6 +27,7 @@
+ // Please use C89 style variable declarations in this file because VS 2010
+ //========================================================================
+ 
++#include <EGL/egl.h>
+ #include "internal.h"
+ 
+ #include <stdio.h>
+@@ -302,6 +303,7 @@ static void destroyContextEGL(_GLFWwindow* window)
+ //
+ GLFWbool _glfwInitEGL(void)
+ {
++#if 0
+     int i;
+     const char* sonames[] =
+     {
+@@ -319,10 +321,14 @@ GLFWbool _glfwInitEGL(void)
+ #endif
+         NULL
+     };
++#endif
+ 
+     if (_glfw.egl.handle)
+         return GLFW_TRUE;
+ 
++    _glfw.egl.handle = (void*) 1;
++
++#if 0
+     for (i = 0;  sonames[i];  i++)
+     {
+         _glfw.egl.handle = _glfw_dlopen(sonames[i]);
+@@ -335,9 +341,12 @@ GLFWbool _glfwInitEGL(void)
+         _glfwInputError(GLFW_API_UNAVAILABLE, "EGL: Library not found");
+         return GLFW_FALSE;
+     }
++#endif
+ 
+-    _glfw.egl.prefix = (strncmp(sonames[i], "lib", 3) == 0);
++    //_glfw.egl.prefix = (strncmp(sonames[i], "lib", 3) == 0);
++    _glfw.egl.prefix = 0;
+ 
++#if 0
+     _glfw.egl.GetConfigAttrib = (PFN_eglGetConfigAttrib)
+         _glfw_dlsym(_glfw.egl.handle, "eglGetConfigAttrib");
+     _glfw.egl.GetConfigs = (PFN_eglGetConfigs)
+@@ -370,6 +379,24 @@ GLFWbool _glfwInitEGL(void)
+         _glfw_dlsym(_glfw.egl.handle, "eglQueryString");
+     _glfw.egl.GetProcAddress = (PFN_eglGetProcAddress)
+         _glfw_dlsym(_glfw.egl.handle, "eglGetProcAddress");
++#else
++    _glfw.egl.GetConfigAttrib = eglGetConfigAttrib;
++    _glfw.egl.GetConfigs = eglGetConfigs;
++    _glfw.egl.GetDisplay = eglGetDisplay;
++    _glfw.egl.GetError = eglGetError;
++    _glfw.egl.Initialize = eglInitialize;
++    _glfw.egl.Terminate = eglTerminate;
++    _glfw.egl.BindAPI = eglBindAPI;
++    _glfw.egl.CreateContext = eglCreateContext;
++    _glfw.egl.DestroySurface = eglDestroySurface;
++    _glfw.egl.DestroyContext = eglDestroyContext;
++    _glfw.egl.CreateWindowSurface = eglCreateWindowSurface;
++    _glfw.egl.MakeCurrent = eglMakeCurrent;
++    _glfw.egl.SwapBuffers = eglSwapBuffers;
++    _glfw.egl.SwapInterval = eglSwapInterval;
++    _glfw.egl.QueryString = eglQueryString;
++    _glfw.egl.GetProcAddress = eglGetProcAddress;
++#endif
+ 
+     if (!_glfw.egl.GetConfigAttrib ||
+         !_glfw.egl.GetConfigs ||
+@@ -442,7 +469,7 @@ void _glfwTerminateEGL(void)
+ 
+     if (_glfw.egl.handle)
+     {
+-        _glfw_dlclose(_glfw.egl.handle);
++        // _glfw_dlclose(_glfw.egl.handle);
+         _glfw.egl.handle = NULL;
+     }
+ }
+diff --git a/src/egl_context.h b/src/egl_context.h
+index c8446dad..cf42c240 100644
+--- a/src/egl_context.h
++++ b/src/egl_context.h
+@@ -25,6 +25,9 @@
+ //
+ //========================================================================
+ 
++#include <EGL/egl.h>
++
++#if 0
+ #if defined(_GLFW_USE_EGLPLATFORM_H)
+  #include <EGL/eglplatform.h>
+ #elif defined(_GLFW_WIN32)
+@@ -90,6 +93,8 @@ typedef struct wl_egl_window* EGLNativeWindowType;
+ #define EGL_NO_CONTEXT ((EGLContext) 0)
+ #define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType) 0)
+ 
++#endif
++
+ #define EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR 0x00000002
+ #define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR 0x00000001
+ #define EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR 0x00000002
+@@ -109,6 +114,8 @@ typedef struct wl_egl_window* EGLNativeWindowType;
+ #define EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR 0
+ #define EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x2098
+ 
++#if 0
++
+ typedef int EGLint;
+ typedef unsigned int EGLBoolean;
+ typedef unsigned int EGLenum;
+@@ -116,6 +123,7 @@ typedef void* EGLConfig;
+ typedef void* EGLContext;
+ typedef void* EGLDisplay;
+ typedef void* EGLSurface;
++#endif
+ 
+ // EGL function pointer typedefs
+ typedef EGLBoolean (EGLAPIENTRY * PFN_eglGetConfigAttrib)(EGLDisplay,EGLConfig,EGLint,EGLint*);
+@@ -134,6 +142,7 @@ typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
+ typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapInterval)(EGLDisplay,EGLint);
+ typedef const char* (EGLAPIENTRY * PFN_eglQueryString)(EGLDisplay,EGLint);
+ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
++#if 0
+ #define eglGetConfigAttrib _glfw.egl.GetConfigAttrib
+ #define eglGetConfigs _glfw.egl.GetConfigs
+ #define eglGetDisplay _glfw.egl.GetDisplay
+@@ -150,6 +159,7 @@ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
+ #define eglSwapInterval _glfw.egl.SwapInterval
+ #define eglQueryString _glfw.egl.QueryString
+ #define eglGetProcAddress _glfw.egl.GetProcAddress
++#endif
+ 
+ #define _GLFW_EGL_CONTEXT_STATE            _GLFWcontextEGL egl
+ #define _GLFW_EGL_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
+@@ -212,4 +222,3 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
+                               const _GLFWfbconfig* fbconfig,
+                               Visual** visual, int* depth);
+ #endif /*_GLFW_X11*/
+-
 diff --git a/src/init.c b/src/init.c
 index aebbece4..19857e49 100644
 --- a/src/init.c
@@ -242,10 +399,20 @@ index 40eb795f..cb9a06c9 100644
      SystemParametersInfoW(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
                            UIntToPtr(_glfw.win32.foregroundLockTimeout),
 diff --git a/src/win32_platform.h b/src/win32_platform.h
-index b964e135..a7aaef10 100644
+index b964e135..4a663796 100644
 --- a/src/win32_platform.h
 +++ b/src/win32_platform.h
-@@ -324,6 +324,11 @@ typedef struct _GLFWwindowWin32
+@@ -70,6 +70,9 @@
+ #include <xinput.h>
+ #include <dbt.h>
+ 
++#undef APIENTRY
++#define APIENTRY
++
+ // HACK: Define macros that some windows.h variants don't
+ #ifndef WM_MOUSEHWHEEL
+  #define WM_MOUSEHWHEEL 0x020E
+@@ -324,6 +327,11 @@ typedef struct _GLFWwindowWin32
      int                 lastCursorPosX, lastCursorPosY;
      // The last recevied high surrogate when decoding pairs of UTF-16 messages
      WCHAR               highSurrogate;
@@ -257,7 +424,7 @@ index b964e135..a7aaef10 100644
  } _GLFWwindowWin32;
  
  // Win32-specific global data
-@@ -345,6 +350,8 @@ typedef struct _GLFWlibraryWin32
+@@ -345,6 +353,8 @@ typedef struct _GLFWlibraryWin32
      RAWINPUT*           rawInput;
      int                 rawInputSize;
      UINT                mouseTrailSize;
@@ -266,7 +433,7 @@ index b964e135..a7aaef10 100644
  
      struct {
          HINSTANCE                       instance;
-@@ -450,3 +457,4 @@ void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+@@ -450,3 +460,4 @@ void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
  void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor);
  void _glfwGetMonitorContentScaleWin32(HMONITOR handle, float* xscale, float* yscale);
  
@@ -413,7 +580,7 @@ index b87a2609..6aed705e 100644
      {
          if (!_glfwRefreshContextAttribs(window, &ctxconfig))
 diff --git a/src/x11_init.c b/src/x11_init.c
-index 87b3eb78..58239cf8 100644
+index 87b3eb78..4aa335a7 100644
 --- a/src/x11_init.c
 +++ b/src/x11_init.c
 @@ -36,6 +36,7 @@
@@ -460,7 +627,7 @@ index 87b3eb78..58239cf8 100644
  
  //////////////////////////////////////////////////////////////////////////
  //////                       GLFW internal API                      //////
-@@ -1102,6 +1132,13 @@ int _glfwPlatformInit(void)
+@@ -1102,11 +1132,21 @@ int _glfwPlatformInit(void)
      _glfwInitTimerPOSIX();
  
      _glfwPollMonitorsX11();
@@ -474,7 +641,15 @@ index 87b3eb78..58239cf8 100644
      return GLFW_TRUE;
  }
  
-@@ -1182,6 +1219,18 @@ void _glfwPlatformTerminate(void)
+ void _glfwPlatformTerminate(void)
+ {
++    // This needs to be called before XCloseDisplay for ANGLE.
++    _glfwTerminateEGL();
++
+     if (_glfw.x11.helperWindowHandle)
+     {
+         if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) ==
+@@ -1182,9 +1222,20 @@ void _glfwPlatformTerminate(void)
          _glfw.x11.xi.handle = NULL;
      }
  
@@ -492,7 +667,10 @@ index 87b3eb78..58239cf8 100644
 +
      // NOTE: These need to be unloaded after XCloseDisplay, as they register
      //       cleanup callbacks that get called by that function
-     _glfwTerminateEGL();
+-    _glfwTerminateEGL();
+     _glfwTerminateGLX();
+ 
+ #if defined(__linux__)
 diff --git a/src/x11_platform.h b/src/x11_platform.h
 index 37946a29..369d6d05 100644
 --- a/src/x11_platform.h

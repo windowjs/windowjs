@@ -17,6 +17,7 @@ Roll the main [dependencies](/dev/dependencies) about once per month:
 {: .strings}
 | GLFW |
 | libuv |
+| ANGLE |
 | Skia |
 | v8 |
 

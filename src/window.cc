@@ -4,6 +4,10 @@
 #include "fail.h"
 #include "platform.h"
 
+// Forward declared because <EGL/egl.h> includes X11 headers on Linux,
+// which have a Window struct that clashes with our Window class.
+extern "C" unsigned int eglWaitClient();
+
 // static
 void Window::Init() {
   // See Main::OnResize. This hint makes GLFW pump the main event loop during
@@ -32,11 +36,10 @@ Window::Window(Delegate* delegate, int width, int height)
       canvas_(nullptr),
       console_overlay_(new ConsoleOverlay(this)),
       stats_(new Stats(this)) {
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+  glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
   glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -101,26 +104,13 @@ Window::Window(Delegate* delegate, int width, int height)
   // Enable waiting for vsync.
   glfwSwapInterval(1);
 
-  static bool loaded_gl_loader = false;
-  if (!loaded_gl_loader) {
-    if (Args().profile_startup) {
-      $(DEV) << "[profile-startup] GL loader start: " << glfwGetTime();
-    }
-    ASSERT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress));
-    loaded_gl_loader = true;
-    if (Args().profile_startup) {
-      $(DEV) << "[profile-startup] GL loader end: " << glfwGetTime();
-    }
-  }
-
   int window_width;
   glfwGetFramebufferSize(window_, &width_, &height_);
   glfwGetWindowSize(window_, &window_width, nullptr);
   retina_scale_ = (float) width_ / window_width;
 
-  glEnable(GL_BLEND);
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glViewport(0, 0, width_, height_);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   ASSERT_NO_GL_ERROR();
 
@@ -205,6 +195,11 @@ void Window::RenderAndSwapBuffers() {
   shared_context_->Flush();
 
   glfwSwapBuffers(window_);
+
+  // TODO: this fixes the glitches on Windows.
+  // TODO: it still glitches on middle-click; released version doesn't.
+  // NOTE: ResizeCallback is getting called in sync from glfwSetWindowSize.
+  glFinish();
 
   if (block_visibility_for_n_frames_ > 0) {
     if (Args().profile_startup) {
@@ -461,7 +456,6 @@ void Window::SetY(int y) {
 void Window::OnResize(int width, int height) {
   width_ = width;
   height_ = height;
-  glViewport(0, 0, width, height);
   ASSERT_NO_GL_ERROR();
   if (canvas_ && (width != canvas_->width() || height != canvas_->height())) {
     canvas_->Resize(width, height);
@@ -527,9 +521,15 @@ void Window::ResizeCallback(GLFWwindow* window, int width, int height) {
   if (width == 0 && height == 0 && w->minimized()) {
     return;
   }
+
   if (width != w->width_ || height != w->height_) {
     w->OnResize(width, height);
+
     if (!w->loading_) {
+      // This call makes the Javascript callbacks see the updated sizes.
+      w->shared_context_->Flush();
+      eglWaitClient();
+
       w->delegate_->OnResize(width, height);
     }
   }

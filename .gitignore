@@ -3,8 +3,8 @@
 .gclient_entries
 doc/.jekyll-cache
 doc/_site
+libraries/angle
 libraries/depot_tools
-libraries/glad
 libraries/glfw
 libraries/gn
 libraries/libuv

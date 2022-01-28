@@ -93,10 +93,12 @@ window.addEventListener('focus', logEvent);
 window.addEventListener('blur', logEvent);
 window.addEventListener('mousedown', logEvent);
 window.addEventListener('mouseup', logEvent);
-window.addEventListener('wheel', logEvent);
+window.addEventListener('click', logEvent);
 
-window.addEventListener('click', function(event) {
-  console.log('Event: click: ' + event.x + ', ' + event.y);
+window.addEventListener('wheel', function(event) {
+  logEvent(event);
+  window.keepAspectRatio = false;
+  window.width = window.width == 1000 ? 2000 : 1000;
 });
 
 window.addEventListener('drop', function(event) {

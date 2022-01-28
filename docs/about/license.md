@@ -55,12 +55,12 @@ Its license can be found at
 `libraries/glfw/LICENSE.md` in the Window.js checkout.
 
 
-GLAD
-----
+ANGLE
+-----
 
-Window.js builds with the [GLAD library](https://glad.dav1d.de/).
+Window.js builds with the [ANGLE library](https://github.com/google/angle).
 Its license can be found at
-`libraries/glad/LICENSE` in the Window.js checkout.
+`libraries/angle/LICENSE` in the Window.js checkout.
 
 
 libuv

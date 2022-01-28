@@ -9,16 +9,33 @@ Build
 Window.js can be built after [checking out the sources](/dev/checkout) and
 setting up the build environment.
 
-The build involves four steps:
+The build involves five steps:
 
-1.  Building Skia
-2.  Building v8
-3.  Configuring the Window.js build
-4.  Building Window.js
+1.  Building ANGLE
+2.  Building Skia
+3.  Building v8
+4.  Configuring the Window.js build
+5.  Building Window.js
 
 
-1 Building Skia
--------------
+1 Building ANGLE
+----------------
+
+**Windows**
+
+```
+$ libraries\build_angle.bat
+```
+
+**Linux and macOS**
+
+```
+$ ./libraries/build_angle.sh
+```
+
+
+2 Building Skia
+---------------
 
 **Windows**
 
@@ -33,8 +50,8 @@ $ ./libraries/build_skia.sh
 ```
 
 
-2 Building v8
------------
+3 Building v8
+-------------
 
 **Windows**
 
@@ -49,8 +66,8 @@ $ ./libraries/build_v8.sh
 ```
 
 
-3 Configuring Window.js
----------------------
+4 Configuring Window.js
+-----------------------
 
 Run this once to set up the build directory, *`out`*:
 
@@ -59,8 +76,8 @@ $ cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
 ```
 
 
-4 Building Window.js
-------------------
+5 Building Window.js
+--------------------
 
 This is the main build command, to build Window.js and rebuild again after code
 modifications:

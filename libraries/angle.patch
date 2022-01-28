@@ -1,0 +1,13 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index f5364875a..a0656e4d6 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1319,6 +1319,8 @@ angle_shared_library("libEGL") {
+ }
+ 
+ angle_static_library("libEGL_static") {
++  complete_static_lib = true
++  suppressed_configs += [ "//build/config/compiler:thin_archive" ]
+   sources = libegl_sources
+   configs += [
+     ":debug_annotations_config",

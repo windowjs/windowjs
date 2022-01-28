@@ -1,0 +1,23 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index aa0df7f451..d7f92573ee 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -850,6 +850,7 @@ optional("gpu") {
+   public_defines = []
+   public_configs = []
+   public_deps = []
++  public_include_dirs = []
+ 
+   sources = skia_gpu_sources + skia_sksl_gpu_sources
+   if (!skia_enable_skgpu_v1) {
+@@ -876,7 +877,9 @@ optional("gpu") {
+         "src/gpu/gl/egl/GrGLMakeEGLInterface.cpp",
+         "src/gpu/gl/egl/GrGLMakeNativeInterface_egl.cpp",
+       ]
+-      libs += [ "EGL" ]
++      # libs += [ "EGL" ]
++      public_include_dirs += [ "../angle/include" ]
++      public_defines += [ "KHRONOS_STATIC" ]
+     } else if (skia_use_webgl) {
+       sources += [ "src/gpu/gl/webgl/GrGLMakeNativeInterface_webgl.cpp" ]
+     } else if (is_linux && skia_use_x11) {
