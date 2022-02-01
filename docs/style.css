@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@600&display=swap');
 
 :root {
   --normal-2: 12px;
@@ -7,21 +7,23 @@
   --normal4: 18px;
   --large: 32px;
   --large4: 36px;
-}
 
-:root {
-  --dark: #023047;
+  --dark: #111827;
   --blue: #007ab8;
   --light: #8ECAE6;
   --lighter: #f6f8fa;
   --yellow: #FFB703;
   --orange: #FB8500;
   --red: #e63946;
-  --magenta: #eb005a;
+  --magenta-light: #EC4899;
+  --magenta-dark: #DB2777;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-brand: "Rubik", var(--font-sans);
 }
 
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: var(--font-sans);
   font-size: var(--normal);
 }
 
@@ -34,20 +36,43 @@ body {
   color: var(--lighter);
 }
 
+.navbar-brand {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  margin-right: .5rem;
+}
+
+.navbar-brand span {
+  color: #FFF;
+  font-family: var(--font-brand);
+  transition: color .15s ease-in-out;
+}
+
+.navbar-brand:hover span {
+  color: var(--magenta-light);
+}
+
 .navbar-dark .navbar-brand,
 .navbar-dark .navbar-brand:focus,
 .navbar-dark .navbar-brand:hover,
 .navbar-dark .navbar-nav a.nav-link.top-selected {
-  color: var(--magenta);
+  color: var(--magenta-light);
 }
 
 .navbar-nav {
   padding-left: 3rem;
 }
 
+@media (max-width: 768px) {
+  .navbar-nav {
+    padding-left: 0;
+  }
+}
+
 .navbar-dark .navbar-nav .nav-link:focus,
 .navbar-dark .navbar-nav .nav-link:hover {
-  color: var(--magenta);
+  color: var(--magenta-light);
 }
 
 .title {
@@ -124,18 +149,13 @@ a {
 }
 
 #documentation-container a:hover {
-  color: var(--magenta);
+  color: var(--magenta-dark);
 }
 
 #documentation-container a.link-selected,
 #bottom-container a.link-selected {
-  color: var(--magenta);
+  color: var(--magenta-dark);
   animation: none;
-}
-
-.windowjs {
-  font-family: 'Oleo Script Swash Caps', cursive;
-  font-size: var(--large4);
 }
 
 .github-icon img {
@@ -171,7 +191,7 @@ h3, h4, h5, h6 {
 }
 
 .code-event {
-  color: var(--magenta);
+  color: var(--magenta-dark);
 }
 
 .code-type {
@@ -179,11 +199,11 @@ h3, h4, h5, h6 {
 }
 
 .code-object:hover, .code-class:hover, .code-name:hover, .code-event:hover, .code-type:hover {
-  color: var(--magenta);
+  color: var(--magenta-dark);
 }
 
 .magenta {
-  color: var(--magenta);
+  color: var(--magenta-dark);
 }
 
 .api {
