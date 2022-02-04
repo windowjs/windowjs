@@ -113,10 +113,11 @@ void RenderCanvas::Resize(int width, int height) {
       // Copy the old contents into the new texture,
       // to preserve the pixels on resizes in applications that don't redraw.
       surface_->draw(surface->getCanvas(), 0, 0);
-
-      // TODO: this causes examples/p5/image-copy-method.js to blit a corrupted
-      // image. Why?
-      // surface_->flush();
+      // Nothing gets drawn before the texture is deleted without this flush:
+      surface_->flush();
+      // Workaround for examples/p5/image-copy-method.js; it blits a corrupted
+      // image without this reset. Why?
+      shared_context_->skia_context()->resetContext(kView_GrGLBackendState);
 
       surface_.reset();
       shared_context_->skia_context()->deleteBackendTexture(texture_);
