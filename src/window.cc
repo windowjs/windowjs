@@ -220,7 +220,6 @@ void Window::RenderAndSwapBuffers() {
     if (post_resize_count_ == 0) {
       glfwSwapInterval(vsync_ ? 1 : 0);
     }
-    //eglWaitClient();
   }
 }
 
@@ -530,20 +529,18 @@ void Window::ResizeCallback(GLFWwindow* window, int width, int height) {
   }
 
   if (!w->loading_) {
-    //glfwSwapInterval(0);
-    // 10 still glitches occasionally.
-    // 100 seems good.
-    //w->post_resize_count_ = 3;
+    // Workarounds for ANGLE glitches during resizes.
+    glfwSwapInterval(0);
+    w->post_resize_count_ = 2;
   }
 
   if (width != w->width_ || height != w->height_) {
     w->OnResize(width, height);
 
     if (!w->loading_) {
-      // This call makes the Javascript callbacks see the updated sizes.
+      // These calls make the Javascript callbacks see the updated sizes.
       w->shared_context_->Flush();
       eglWaitClient();
-
       w->delegate_->OnResize(width, height);
     }
   }

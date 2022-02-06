@@ -267,7 +267,7 @@ void Main::GcThread() {
     }
     v8::Locker locker(js_->isolate());
     js_->isolate()->IdleNotificationDeadline(Js::MonotonicallyIncreasingTime() +
-                                             0.01);
+                                             0.001);
   }
 }
 
@@ -627,6 +627,10 @@ void Main::OnResize(int width, int height) {
     // if the initial code does window.width = 1024, for example; we should
     // only show the first frame after the entire initial loading has finished.
     window_.RenderAndSwapBuffers();
+
+    // This avoids frames that may swap out of sync during resizing gestures
+    // on Windows.
+    glFinish();
   }
 }
 
