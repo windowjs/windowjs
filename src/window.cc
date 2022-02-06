@@ -33,6 +33,7 @@ Window::Window(Delegate* delegate, int width, int height)
       loading_(true),
       reloading_(false),
       block_visibility_for_n_frames_(1),
+      post_resize_count_(0),
       canvas_(nullptr),
       console_overlay_(new ConsoleOverlay(this)),
       stats_(new Stats(this)) {
@@ -196,11 +197,6 @@ void Window::RenderAndSwapBuffers() {
 
   glfwSwapBuffers(window_);
 
-  // TODO: this fixes the glitches on Windows.
-  // TODO: it still glitches on middle-click; released version doesn't.
-  // NOTE: ResizeCallback is getting called in sync from glfwSetWindowSize.
-  glFinish();
-
   if (block_visibility_for_n_frames_ > 0) {
     if (Args().profile_startup) {
       $(DEV) << "[profile-startup] swap buffers: " << glfwGetTime();
@@ -218,6 +214,14 @@ void Window::RenderAndSwapBuffers() {
   }
 
   stats_->OnFrameFinished();
+
+  if (post_resize_count_ > 0) {
+    post_resize_count_--;
+    if (post_resize_count_ == 0) {
+      glfwSwapInterval(vsync_ ? 1 : 0);
+    }
+    //eglWaitClient();
+  }
 }
 
 void Window::SetVisible(bool visible) {
@@ -517,9 +521,19 @@ void Window::CursorEnterCallback(GLFWwindow* window, int entered) {
 
 // static
 void Window::ResizeCallback(GLFWwindow* window, int width, int height) {
+  // Note: this is the callback for _framebuffer_ resizes.
+  // The width and height are already scaled appropriately.
+
   Window* w = Get(window);
   if (width == 0 && height == 0 && w->minimized()) {
     return;
+  }
+
+  if (!w->loading_) {
+    //glfwSwapInterval(0);
+    // 10 still glitches occasionally.
+    // 100 seems good.
+    //w->post_resize_count_ = 3;
   }
 
   if (width != w->width_ || height != w->height_) {

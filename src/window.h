@@ -160,6 +160,7 @@ class Window final {
   bool loading_;
   bool reloading_;
   int block_visibility_for_n_frames_;
+  int post_resize_count_;
 
   std::unique_ptr<RenderCanvasSharedContext> shared_context_;
 
