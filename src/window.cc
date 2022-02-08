@@ -33,7 +33,6 @@ Window::Window(Delegate* delegate, int width, int height)
       loading_(true),
       reloading_(false),
       block_visibility_for_n_frames_(1),
-      post_resize_count_(0),
       canvas_(nullptr),
       console_overlay_(new ConsoleOverlay(this)),
       stats_(new Stats(this)) {
@@ -214,13 +213,6 @@ void Window::RenderAndSwapBuffers() {
   }
 
   stats_->OnFrameFinished();
-
-  if (post_resize_count_ > 0) {
-    post_resize_count_--;
-    if (post_resize_count_ == 0) {
-      glfwSwapInterval(vsync_ ? 1 : 0);
-    }
-  }
 }
 
 void Window::SetVisible(bool visible) {
@@ -528,17 +520,11 @@ void Window::ResizeCallback(GLFWwindow* window, int width, int height) {
     return;
   }
 
-  if (!w->loading_) {
-    // Workarounds for ANGLE glitches during resizes.
-    glfwSwapInterval(0);
-    w->post_resize_count_ = 2;
-  }
-
   if (width != w->width_ || height != w->height_) {
     w->OnResize(width, height);
 
     if (!w->loading_) {
-      // These calls make the Javascript callbacks see the updated sizes.
+      // Flush the size updates and notify ANGLE before drawing again.
       w->shared_context_->Flush();
       eglWaitClient();
       w->delegate_->OnResize(width, height);

@@ -11,3 +11,17 @@ index f5364875a..a0656e4d6 100644
    sources = libegl_sources
    configs += [
      ":debug_annotations_config",
+diff --git a/src/libANGLE/renderer/d3d/d3d11/SwapChain11.cpp b/src/libANGLE/renderer/d3d/d3d11/SwapChain11.cpp
+index b02026820..f514f46d4 100644
+--- a/src/libANGLE/renderer/d3d/d3d11/SwapChain11.cpp
++++ b/src/libANGLE/renderer/d3d/d3d11/SwapChain11.cpp
+@@ -365,7 +365,8 @@ EGLint SwapChain11::resetOffscreenColorBuffer(DisplayD3D *displayD3D,
+ 
+         if (mSwapChain)
+         {
+-            swapRect(displayD3D, 0, 0, backbufferWidth, backbufferHeight);
++            // This causes invalid draws during resizes:
++            // swapRect(displayD3D, 0, 0, backbufferWidth, backbufferHeight);
+         }
+     }
+ 

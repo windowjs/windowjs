@@ -32,8 +32,7 @@ RenderCanvasSharedContext::RenderCanvasSharedContext(Window* window)
 RenderCanvasSharedContext::~RenderCanvasSharedContext() {}
 
 void RenderCanvasSharedContext::Flush() {
-  gr_context_->flushAndSubmit();
-  glFlush();
+  gr_context_->flush();
 }
 
 RenderCanvas::RenderCanvas(RenderCanvasSharedContext* shared_context, int width,
