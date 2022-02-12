@@ -8,8 +8,7 @@
 // which have a Window struct that clashes with our Window class.
 extern "C" unsigned int eglWaitClient();
 
-// TODO unrelated bug:
-// Removing keepAspectRatio from squares.js and sokoban.js messes up the size!
+// TODO: size is messed up in p5!
 
 // TODO: some red banding during resizes. Also slow resizes close to max resolution.
 // File bug on github.
@@ -164,7 +163,7 @@ void Window::OnLoadingFinished() {
   width *= retina_scale_;
   height *= retina_scale_;
   if (width != width_ || height != height_) {
-    glfwSetWindowSize(window_, width_, height_);
+    glfwSetWindowSize(window_, width_ / retina_scale_, height_ / retina_scale_);
   }
   // Makes sure that ANGLE sees the current dimensions for the first paint.
   eglWaitClient();
