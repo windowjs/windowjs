@@ -13,7 +13,7 @@ The cmake build must be configured before building.
 See [here](/dev/build#configuring-windowjs).
 
 
-###### CMake Error at libraries/CMakeLists.txt:9 (add_subdirectory): add_subdirectory given source "glad" which is not an existing directory.
+###### CMake Error at libraries/CMakeLists.txt:9 (add_subdirectory): add_subdirectory given source "angle" which is not an existing directory.
 
 The Window.js dependencies must be fetched before the build.
 See [here](/dev/checkout#4-fetching-the-dependencies).
