@@ -37,18 +37,20 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            libraries/angle
+            !libraries/angle/out
+            libraries/angle/out/Release/libEGL_static.a
             libraries/depot_tools
             libraries/gn
-            libraries/glad
             libraries/glfw
             libraries/skia
             !libraries/skia/out
-            libraries/skia/out/Release/skia.lib
+            libraries/skia/out/Release/libskia.a
             libraries/v8
             !libraries/v8/out
-            libraries/v8/out/Release/obj/v8_monolith.lib
+            libraries/v8/out/Release/obj/libv8_monolith.a
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-linux.gn', 'libraries/build_v8.sh', 'libraries/v8-args-linux.gn', 'libraries/glfw.patch') }}
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-linux.gn', 'libraries/skia.patch', 'libraries/build_v8.sh', 'libraries/v8-args-linux.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.sh', 'libraries/angle-args-linux.gn', 'libraries/angle.patch') }}
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'
@@ -61,6 +63,12 @@ jobs:
         run: |
           source libraries/setup_build_env.sh
           libraries/build_skia.sh
+
+      - name: Build ANGLE
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          source libraries/setup_build_env.sh
+          libraries/build_angle.sh
 
       - name: Build v8
         if: steps.cache-libraries.outputs.cache-hit != 'true'
