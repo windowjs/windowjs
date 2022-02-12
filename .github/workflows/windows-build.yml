@@ -7,7 +7,6 @@ on:
       - '.github/**'
       - 'docs/**'
       - 'examples/**'
-      - 'tests/**'
       - 'types/**'
   pull_request:
     branches: [ main ]
@@ -15,7 +14,6 @@ on:
       - '.github/**'
       - 'docs/**'
       - 'examples/**'
-      - 'tests/**'
       - 'types/**'
   release:
     types: [published]
@@ -85,24 +83,20 @@ jobs:
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
           cmake --build out -t windowjs -t windowjs-p5
 
-# Tests are disabled in the Windows workflow because the Windows runners
-# don't have GL drivers:
-# https://github.com/windowjs/windowjs/issues/64
-#
-#      - name: Debug build
-#        run: |
-#          libraries/setup_build_env.ps1
-#          # Note: not passing LLVM_DIR; this config builds with MSVC.
-#          cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
-#          cmake --build out-debug -t windowjs -t windowjs-p5
-#
-#      - name: Tests
-#        run: |
-#          # Note: run tests in Debug to have more assertions.
-#          # Note: run tests in Debug on Windows because Release builds
-#          # don't have a console, and so their exit code is always 0;
-#          # that would prevent test failures from making the workflow fail.
-#          out-debug/windowjs.exe tests/run_tests.js
+      - name: Debug build
+        run: |
+          libraries/setup_build_env.ps1
+          # Note: not passing LLVM_DIR; this config builds with MSVC.
+          cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
+          cmake --build out-debug -t windowjs -t windowjs-p5
+
+      - name: Tests
+        run: |
+          # Note: run tests in Debug to have more assertions.
+          # Note: run tests in Debug on Windows because Release builds
+          # don't have a console, and so their exit code is always 0;
+          # that would prevent test failures from making the workflow fail.
+          out-debug/windowjs.exe tests/run_tests.js
 
       - name: Binary size
         run: |
