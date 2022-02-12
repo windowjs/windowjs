@@ -8,13 +8,7 @@
 // which have a Window struct that clashes with our Window class.
 extern "C" unsigned int eglWaitClient();
 
-// TODO: size is messed up in p5!
-
-// TODO: some red banding during resizes. Also slow resizes close to max resolution.
-// File bug on github.
-
 // TODO: test eglWaitClient from OnLoadingFinished in other platforms.
-// TODO: test offscreen rendering on macOS.
 
 // static
 void Window::Init() {
