@@ -81,21 +81,6 @@ index b6dd86c5..0704559a 100644
  set_target_properties(glfw PROPERTIES
                        OUTPUT_NAME ${GLFW_LIB_NAME}
                        VERSION ${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}
-diff --git a/src/cocoa_monitor.m b/src/cocoa_monitor.m
-index f64d78d7..6e3116cf 100644
---- a/src/cocoa_monitor.m
-+++ b/src/cocoa_monitor.m
-@@ -319,8 +319,10 @@ void _glfwPollMonitorsNS(void)
- 
-     for (uint32_t i = 0;  i < displayCount;  i++)
-     {
-+#if 0
-         if (CGDisplayIsAsleep(displays[i]))
-             continue;
-+#endif
- 
-         const uint32_t unitNumber = CGDisplayUnitNumber(displays[i]);
-         NSScreen* screen = nil;
 diff --git a/src/egl_context.c b/src/egl_context.c
 index 6b34f724..5403fe62 100644
 --- a/src/egl_context.c
