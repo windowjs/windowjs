@@ -52,7 +52,6 @@ jobs:
             libraries/skia
             libraries/v8
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.bat', 'libraries/skia-args-windows.gn', 'libraries/build_v8.bat', 'libraries/v8-args-windows.gn', 'libraries/glfw.patch') }}
           key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.bat', 'libraries/skia-args-windows.gn', 'libraries/skia.patch', 'libraries/build_v8.bat', 'libraries/v8-args-windows.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.bat', 'libraries/angle-args-windows.gn', 'libraries/angle.patch') }}
 
       - name: Sync
