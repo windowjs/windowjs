@@ -8,6 +8,15 @@
 // which have a Window struct that clashes with our Window class.
 extern "C" unsigned int eglWaitClient();
 
+// TODO unrelated bug:
+// Removing keepAspectRatio from squares.js and sokoban.js messes up the size!
+
+// TODO: some red banding during resizes. Also slow resizes close to max resolution.
+// File bug on github.
+
+// TODO: test eglWaitClient from OnLoadingFinished in other platforms.
+// TODO: test offscreen rendering on macOS.
+
 // static
 void Window::Init() {
   // See Main::OnResize. This hint makes GLFW pump the main event loop during
@@ -157,6 +166,8 @@ void Window::OnLoadingFinished() {
   if (width != width_ || height != height_) {
     glfwSetWindowSize(window_, width_, height_);
   }
+  // Makes sure that ANGLE sees the current dimensions for the first paint.
+  eglWaitClient();
 }
 
 void Window::SetWindowCanvas(RenderCanvas* canvas) {
