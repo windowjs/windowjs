@@ -279,7 +279,7 @@ export async function copyPath() {
   path2.arc(170, 60, 50, 0, 2 * Math.PI);
   canvas.strokeStyle = 'white';
   canvas.stroke(path2);
-  await diffCanvasToFile('data/copy_path.png', 800);
+  await diffCanvasToFile('data/copy_path.png', 1000);
 }
 
 export async function svgPath() {
