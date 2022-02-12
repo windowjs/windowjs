@@ -112,9 +112,6 @@ void RenderCanvas::Resize(int width, int height) {
       surface_->draw(surface->getCanvas(), 0, 0);
       // Nothing gets drawn before the texture is deleted without this flush:
       surface_->flush();
-      // Workaround for examples/p5/image-copy-method.js; it blits a corrupted
-      // image without this reset. Why?
-      shared_context_->skia_context()->resetContext(kView_GrGLBackendState);
 
       surface_.reset();
       shared_context_->skia_context()->deleteBackendTexture(texture_);
