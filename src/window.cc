@@ -8,8 +8,6 @@
 // which have a Window struct that clashes with our Window class.
 extern "C" unsigned int eglWaitClient();
 
-// TODO: test eglWaitClient from OnLoadingFinished in other platforms.
-
 // static
 void Window::Init() {
   // See Main::OnResize. This hint makes GLFW pump the main event loop during
@@ -71,12 +69,9 @@ Window::Window(Delegate* delegate, int width, int height)
   }
 
 #if defined(WINDOWJS_WIN)
-  // TODO: on Windows, the first window paint sometimes flashes white before
-  // showing the first frame. This hint prevents that from happening but isn't
-  // a proper fix; figure a better solution.
-  // glfwWindowHint(GLFW_DECORATED , GL_FALSE);
-  // These hacks makes the flicker appear less often.
-  block_visibility_for_n_frames_ = 2;
+  // On Windows, the first window paint sometimes flashes white before
+  // showing the first frame. That is fixed by disabling GLFW_DECORATED, or
+  // by focusing the window from here.
   glfwFocusWindow(window_);
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] focusing window hack: " << glfwGetTime();
