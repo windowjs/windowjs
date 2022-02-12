@@ -11,7 +11,7 @@ the `gclient` tool, which also fetches the skia and v8 dependencies.
 
 The main dependencies are listed at the top, in the `vars` object:
 
-*  [GLAD](https://github.com/Dav1dde/glad.git)
+*  [ANGLE](https://github.com/google/angle)
 *  [GLFW](https://github.com/glfw/glfw.git)
 *  [Skia](https://skia.googlesource.com/skia.git)
 *  [V8](https://chromium.googlesource.com/v8/v8.git)
@@ -19,9 +19,9 @@ The main dependencies are listed at the top, in the `vars` object:
 
 The commit hash for each one is the version that gets checked out.
 
-The Skia and v8 dependencies are copied *manually* to `.gclient`, for a couple
-of reasons: it's easier to skip unnecessary (and large) dependencies, and
-`gclient --no-history` makes smaller checkouts this way.
+The ANGLE, Skia and v8 dependencies are copied *manually* to `.gclient`,
+for a couple of reasons: it's easier to skip unnecessary (and large)
+dependencies, and `gclient --no-history` makes smaller checkouts this way.
 
 
 Reused dependencies from v8 and Skia
@@ -47,8 +47,12 @@ build for Window.js.
 *  `libraries/v8.patch`: fixes the build with clang.
 *  `libraries/v8_build.patch`: fixes the build with clang.
 *  `libraries/v8_build.py`: removes a stale file.
-*  `libraries/glfw.patch`: from https://github.com/glfw/glfw/pull/1426.
-*  `libraries/glad.patch`: makes the build quiet.
+*  `libraries/glfw.patch`:
+   * draw during resizes on Windows [#1426](https://github.com/glfw/glfw/pull/1426)
+   * fix threading issue on Linux [#2033](https://github.com/glfw/glfw/pull/2033)
+   * link EGL statically
+*  `libraries/angle.patch`: build ANGLE statically.
+*  `libraries/skia.patch`: link EGL statically.
 
 
 Updating v8

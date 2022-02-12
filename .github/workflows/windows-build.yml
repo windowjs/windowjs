@@ -45,14 +45,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            libraries/angle
             libraries/depot_tools
             libraries/gn
-            libraries/glad
             libraries/glfw
             libraries/skia
             libraries/v8
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.bat', 'libraries/skia-args-windows.gn', 'libraries/build_v8.bat', 'libraries/v8-args-windows.gn', 'libraries/glfw.patch') }}
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.bat', 'libraries/skia-args-windows.gn', 'libraries/skia.patch', 'libraries/build_v8.bat', 'libraries/v8-args-windows.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.bat', 'libraries/angle-args-windows.gn', 'libraries/angle.patch') }}
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'
@@ -65,6 +65,12 @@ jobs:
         run: |
           libraries/setup_build_env.ps1
           libraries/build_skia.bat
+
+      - name: Build ANGLE
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          libraries/setup_build_env.ps1
+          libraries/build_angle.bat
 
       - name: Build v8
         if: steps.cache-libraries.outputs.cache-hit != 'true'

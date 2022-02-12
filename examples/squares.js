@@ -2,9 +2,25 @@ console.log('Loading squares.js');
 
 let tilesheet = null;
 let boxBitmap = null;
+let animate = true;
 
-function draw(now) {
-  requestAnimationFrame(draw);
+let requestedDraw = false;
+
+function requestDraw() {
+  if (!requestedDraw) {
+    requestAnimationFrame(draw);
+    requestedDraw = true;
+  }
+}
+
+function draw() {
+  requestedDraw = false;
+
+  const now = performance.now();
+
+  if (animate) {
+    requestDraw();
+  }
 
   const canvas = window.canvas;
 
@@ -65,6 +81,11 @@ window.addEventListener('keydown', function(event) {
   } else if (key == 'v') {
     window.vsync = !window.vsync;
     console.info('vsync is now ' + window.vsync);
+  } else if (key == 'a') {
+    animate = !animate;
+    if (animate) {
+      requestDraw();
+    }
   } else if (key == 'e') {
     throw new Error('Test exception');
   } else if (key == 'u') {
@@ -85,7 +106,7 @@ function logEvent(event) {
   console.log('Event: ' + event.type);
 }
 
-window.addEventListener('resize', logEvent);
+window.addEventListener('resize', requestDraw);
 window.addEventListener('maximize', logEvent);
 window.addEventListener('minimize', logEvent);
 window.addEventListener('restore', logEvent);
@@ -93,10 +114,12 @@ window.addEventListener('focus', logEvent);
 window.addEventListener('blur', logEvent);
 window.addEventListener('mousedown', logEvent);
 window.addEventListener('mouseup', logEvent);
-window.addEventListener('wheel', logEvent);
+window.addEventListener('click', logEvent);
 
-window.addEventListener('click', function(event) {
-  console.log('Event: click: ' + event.x + ', ' + event.y);
+window.addEventListener('wheel', function(event) {
+  logEvent(event);
+  window.keepAspectRatio = false;
+  window.width = window.width == 1000 ? 2000 : 1000;
 });
 
 window.addEventListener('drop', function(event) {
@@ -114,7 +137,7 @@ async function init() {
   boxBitmap = new ImageBitmap(box);
   window.icon = [ box ];
 
-  requestAnimationFrame(draw);
+  requestDraw();
 
   window.debug.showOverlayConsole = true;
   window.debug.overlayConsoleTextColor = 'yellow';
@@ -123,6 +146,7 @@ async function init() {
                ' RetinaScale ' + window.retinaScale);
   console.log('j/p/w: save screenshots as Jpeg, Png or Webp.');
   console.log('v: toggle vsync.');
+  console.log('a: toggle animation.');
   console.log('e: throw an exception.');
   console.log('u: use undefined variable.');
   console.log('a: request attention.');

@@ -267,7 +267,7 @@ void Main::GcThread() {
     }
     v8::Locker locker(js_->isolate());
     js_->isolate()->IdleNotificationDeadline(Js::MonotonicallyIncreasingTime() +
-                                             0.01);
+                                             0.001);
   }
 }
 

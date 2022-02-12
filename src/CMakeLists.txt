@@ -144,7 +144,7 @@ add_executable(windowjs
 )
 
 target_include_directories(windowjs-library PRIVATE ../libraries/v8/third_party/zlib)
-target_link_libraries(windowjs-library PRIVATE glad glfw skia uv_a v8)
+target_link_libraries(windowjs-library PRIVATE glfw skia uv_a v8 angle)
 target_link_libraries(windowjs PRIVATE windowjs-library)
 
 if(MSVC)

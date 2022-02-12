@@ -12,7 +12,7 @@ echo.
 echo Fetching dependencies (this may take a long time, the first time)
 echo.
 echo.
-call gclient sync --shallow --no-history -D -R
+call gclient sync --shallow --no-history -D -R --force
 
 if %errorlevel% neq 0 (
   echo.

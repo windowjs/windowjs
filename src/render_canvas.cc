@@ -1,9 +1,8 @@
 #include "render_canvas.h"
 
-// Must come before glfw3.h.
-#include <glad/glad.h>
-// Comes after glad.h.
+#include <GLES3/gl3.h>
 #include <GLFW/glfw3.h>
+#include <skia/include/gpu/gl/egl/GrGLMakeEGLInterface.h>
 
 #include "args.h"
 #include "console.h"
@@ -18,7 +17,7 @@ RenderCanvasSharedContext::RenderCanvasSharedContext(Window* window)
            << glfwGetTime();
   }
 
-  gr_interface_ = GrGLMakeNativeInterface();
+  gr_interface_ = GrGLMakeEGLInterface();
   ASSERT(gr_interface_);
   gr_context_ = GrDirectContext::MakeGL(gr_interface_);
   ASSERT(gr_context_);
@@ -33,10 +32,7 @@ RenderCanvasSharedContext::RenderCanvasSharedContext(Window* window)
 RenderCanvasSharedContext::~RenderCanvasSharedContext() {}
 
 void RenderCanvasSharedContext::Flush() {
-  gr_context_->flushAndSubmit();
-  // TODO: is this still needed?
-  // flushAndSubmit doesn't call glFlush; this causes rendering issues on MacOS.
-  glFlush();
+  gr_context_->flush();
 }
 
 RenderCanvas::RenderCanvas(RenderCanvasSharedContext* shared_context, int width,
@@ -68,6 +64,7 @@ void RenderCanvas::Resize(int width, int height) {
 
   const SkColorType color_type = kRGBA_8888_SkColorType;
   // TODO: consider using 1, 2 or 4 sample_counts.
+  // See also the GLFW_SAMPLES hint.
   const int sample_count = 0;
 
   std::vector<SkM44> transforms;
@@ -115,9 +112,6 @@ void RenderCanvas::Resize(int width, int height) {
       surface_->draw(surface->getCanvas(), 0, 0);
       // Nothing gets drawn before the texture is deleted without this flush:
       surface_->flush();
-      // Workaround for examples/p5/image-copy-method.js; it blits a corrupted
-      // image without this reset. Why?
-      shared_context_->skia_context()->resetContext(kView_GrGLBackendState);
 
       surface_.reset();
       shared_context_->skia_context()->deleteBackendTexture(texture_);

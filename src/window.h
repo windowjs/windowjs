@@ -5,9 +5,7 @@
 #include <string>
 #include <vector>
 
-// Must come before glfw3.h.
-#include <glad/glad.h>
-// Comes after glad.h.
+#include <GLES3/gl3.h>
 #include <GLFW/glfw3.h>
 
 #include "console.h"

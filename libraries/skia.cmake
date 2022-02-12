@@ -28,7 +28,6 @@ if (WIN32)
     Gdi32.dll
     Ole32.dll
     OleAut32.dll
-    OpenGL32.dll
     User32.dll
     Usp10.dll
   )
@@ -50,6 +49,5 @@ else()
     webpdemux
     fontconfig
     freetype
-    GL
   )
 endif()

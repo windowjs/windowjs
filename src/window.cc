@@ -4,6 +4,10 @@
 #include "fail.h"
 #include "platform.h"
 
+// Forward declared because <EGL/egl.h> includes X11 headers on Linux,
+// which have a Window struct that clashes with our Window class.
+extern "C" unsigned int eglWaitClient();
+
 // static
 void Window::Init() {
   // See Main::OnResize. This hint makes GLFW pump the main event loop during
@@ -32,11 +36,10 @@ Window::Window(Delegate* delegate, int width, int height)
       canvas_(nullptr),
       console_overlay_(new ConsoleOverlay(this)),
       stats_(new Stats(this)) {
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+  glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
   glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -66,12 +69,9 @@ Window::Window(Delegate* delegate, int width, int height)
   }
 
 #if defined(WINDOWJS_WIN)
-  // TODO: on Windows, the first window paint sometimes flashes white before
-  // showing the first frame. This hint prevents that from happening but isn't
-  // a proper fix; figure a better solution.
-  // glfwWindowHint(GLFW_DECORATED , GL_FALSE);
-  // These hacks makes the flicker appear less often.
-  block_visibility_for_n_frames_ = 2;
+  // On Windows, the first window paint sometimes flashes white before
+  // showing the first frame. That is fixed by disabling GLFW_DECORATED, or
+  // by focusing the window from here.
   glfwFocusWindow(window_);
   if (Args().profile_startup) {
     $(DEV) << "[profile-startup] focusing window hack: " << glfwGetTime();
@@ -101,26 +101,13 @@ Window::Window(Delegate* delegate, int width, int height)
   // Enable waiting for vsync.
   glfwSwapInterval(1);
 
-  static bool loaded_gl_loader = false;
-  if (!loaded_gl_loader) {
-    if (Args().profile_startup) {
-      $(DEV) << "[profile-startup] GL loader start: " << glfwGetTime();
-    }
-    ASSERT(gladLoadGLLoader((GLADloadproc) glfwGetProcAddress));
-    loaded_gl_loader = true;
-    if (Args().profile_startup) {
-      $(DEV) << "[profile-startup] GL loader end: " << glfwGetTime();
-    }
-  }
-
   int window_width;
   glfwGetFramebufferSize(window_, &width_, &height_);
   glfwGetWindowSize(window_, &window_width, nullptr);
   retina_scale_ = (float) width_ / window_width;
 
-  glEnable(GL_BLEND);
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glViewport(0, 0, width_, height_);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   ASSERT_NO_GL_ERROR();
 
@@ -165,8 +152,10 @@ void Window::OnLoadingFinished() {
   width *= retina_scale_;
   height *= retina_scale_;
   if (width != width_ || height != height_) {
-    glfwSetWindowSize(window_, width_, height_);
+    glfwSetWindowSize(window_, width_ / retina_scale_, height_ / retina_scale_);
   }
+  // Makes sure that ANGLE sees the current dimensions for the first paint.
+  eglWaitClient();
 }
 
 void Window::SetWindowCanvas(RenderCanvas* canvas) {
@@ -461,7 +450,6 @@ void Window::SetY(int y) {
 void Window::OnResize(int width, int height) {
   width_ = width;
   height_ = height;
-  glViewport(0, 0, width, height);
   ASSERT_NO_GL_ERROR();
   if (canvas_ && (width != canvas_->width() || height != canvas_->height())) {
     canvas_->Resize(width, height);
@@ -523,13 +511,21 @@ void Window::CursorEnterCallback(GLFWwindow* window, int entered) {
 
 // static
 void Window::ResizeCallback(GLFWwindow* window, int width, int height) {
+  // Note: this is the callback for _framebuffer_ resizes.
+  // The width and height are already scaled appropriately.
+
   Window* w = Get(window);
   if (width == 0 && height == 0 && w->minimized()) {
     return;
   }
+
   if (width != w->width_ || height != w->height_) {
     w->OnResize(width, height);
+
     if (!w->loading_) {
+      // Flush the size updates and notify ANGLE before drawing again.
+      w->shared_context_->Flush();
+      eglWaitClient();
       w->delegate_->OnResize(width, height);
     }
   }

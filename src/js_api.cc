@@ -821,9 +821,18 @@ void JsApi::RequestAnimationFrame(
     args.GetReturnValue().Set(-1);
     return;
   }
+
   JsApi* api = JsApi::Get(args.GetIsolate());
-  api->animation_frame_callbacks_.emplace_back(api->isolate(),
-                                               args[0].As<v8::Function>());
+  v8::Local<v8::Function> callback = args[0].As<v8::Function>();
+
+  for (const auto& pending : api->animation_frame_callbacks_) {
+    if (pending == callback) {
+      $(WARN) << "Scheduling the same requestAnimationFrame callback degrades "
+                 "performance";
+    }
+  }
+
+  api->animation_frame_callbacks_.emplace_back(api->isolate(), callback);
   uint32_t id = api->animation_frame_next_id_++;
   args.GetReturnValue().Set(id);
 }
@@ -867,8 +876,7 @@ void JsApi::CallAnimationFrameCallbacks(const JsScope& scope) {
       continue;
     }
 
-    v8::Local<v8::Function> f =
-        v8::Local<v8::Function>::New(scope.isolate, callback);
+    v8::Local<v8::Function> f = callback.Get(scope.isolate);
     IGNORE_RESULT(f->Call(scope.context, scope.context->Global(), 1, args));
 
     if (try_catch.HasCaught()) {

@@ -2,15 +2,20 @@ is_official_build = true
 is_component_build = false
 is_debug = false
 
+skia_use_egl = true
+skia_gl_standard = "gles"
+
 clang_win = "../../../v8/third_party/llvm-build/Release+Asserts"
 
 skia_enable_android_utils = false
 skia_enable_skvm_jit_when_possible = false
 skia_enable_tools = false
 skia_enable_gpu_debug_layers = false
+skia_enable_particles = false
 skia_use_libheif = false
 skia_use_lua = false
 skia_use_expat = false
+skia_use_xps = false
 
 # skia_use_system_expat = false
 # skia_use_system_harfbuzz = false

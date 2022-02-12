@@ -1,7 +1,4 @@
 vars = {
-  'glad_git': 'https://github.com/Dav1dde/glad.git',
-  'glad_commit': '7ece538856bf124d798ab323c8e1e64ebb83cb50',
-
   'glfw_git': 'https://github.com/glfw/glfw.git',
   # Tag 3.3.5. Using commit hash to support gclient --no-history.
   'glfw_commit': 'd3b73abba0cab8cbb2a638151477f54d8502a07e',
@@ -18,6 +15,39 @@ vars = {
   'libuv_git': 'https://github.com/libuv/libuv.git',
   # Tag v1.42.0. Using commit hash to support gclient --no-history.
   'libuv_commit': '6ce14710da7079eb248868171f6343bc409ea3a4',
+
+  'angle_git': 'https://github.com/google/angle.git',
+  'angle_commit': '9bf5716c84d9c3bc8a3e47c9f5452d90b4f9898c',
+
+  'chromium_git': 'https://chromium.googlesource.com',
+}
+
+# ANGLE dependencies. Copied from libraries/angle/DEPS.
+angle_deps = {
+  'build': 'https://chromium.googlesource.com/chromium/src/build.git@c033fc477ff9e5a9513a6df537f6de4ba67eceec',
+  'testing': 'https://chromium.googlesource.com/chromium/src/testing@df87133fcb31f773a418c933d372ea7262de95ca',
+  'tools/protoc_wrapper': 'https://chromium.googlesource.com/chromium/src/tools/protoc_wrapper@c16b0dc8db35e95a04eaef88079237634c7f20c2',
+  'third_party/abseil-cpp': 'https://chromium.googlesource.com/chromium/src/third_party/abseil-cpp@ce12c7a75aa6aa689667e66189d9f0a42a5ccf08',
+  'third_party/catapult': 'https://chromium.googlesource.com/catapult.git@d90eeee99383928afa92d6960ad9d3b5f51f8b76',
+  'third_party/jsoncpp': 'https://chromium.googlesource.com/chromium/src/third_party/jsoncpp@30a6ac108e24dabac7c2e0df4d33d55032af4ee7',
+  'third_party/googletest': 'https://chromium.googlesource.com/chromium/src/third_party/googletest@17bbed2084d3127bd7bcd27283f18d7a5861bea8',
+  'third_party/libjpeg_turbo': 'https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git@02959c3ee17abacfd1339ec22ea93301292ffd56',
+  'third_party/nasm': 'https://chromium.googlesource.com/chromium/deps/nasm.git@9215e8e1d0fe474ffd3e16c1a07a0f97089e6224',
+  'third_party/protobuf': 'https://chromium.googlesource.com/chromium/src/third_party/protobuf@2dc9e853e138fdec5d56bf750c180ebb2365639e',
+  'third_party/SwiftShader': 'https://swiftshader.googlesource.com/SwiftShader@518c5780ac4fdc4a7957e9bd2727a6cc4df54750',
+  'third_party/vulkan_memory_allocator': 'https://chromium.googlesource.com/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator@5e49f57a6e71a026a54eb42e366de09a4142d24e',
+  'third_party/zlib': 'https://chromium.googlesource.com/chromium/src/third_party/zlib@fc5cfd78a357d5bb7735a58f383634faaafe706a',
+  'tools/clang': 'https://chromium.googlesource.com/chromium/src/tools/clang.git@00a9400ecf1021b2414c9a40549b5d31049e6443',
+
+  'third_party/vulkan-deps': 'https://chromium.googlesource.com/vulkan-deps@a19b5047ffcafc95fcba3f39e53f229acca6debc',
+  'third_party/vulkan-deps/glslang/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/glslang@81cc10a498b25a90147cccd6e8939493c1e9e20e',
+  'third_party/vulkan-deps/spirv-cross/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Cross@53d94a982e1d654515b44db5391de37f85489204',
+  'third_party/vulkan-deps/spirv-headers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Headers@b42ba6d92faf6b4938e6f22ddd186dbdacc98d78',
+  'third_party/vulkan-deps/spirv-tools/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Tools@a73e724359a274d7cf4f4248eba5be1e7764fbfd',
+  'third_party/vulkan-deps/vulkan-headers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-Headers@1dace16d8044758d32736eb59802d171970e9448',
+  'third_party/vulkan-deps/vulkan-loader/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-Loader@8aad559a09388ceb5b968af64a2b965d3886e5a0',
+  'third_party/vulkan-deps/vulkan-tools/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-Tools@b69bea34466e746f919388ff88a783fae64ca43a',
+  'third_party/vulkan-deps/vulkan-validation-layers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-ValidationLayers@a6c1ddca49331d8addde052554487180ee8aec13',
 }
 
 # Skia dependencies. Copied from libraries/skia/DEPS.
@@ -116,14 +146,17 @@ solutions = [
     "url": None,
     "managed": False,
     "custom_deps": {
-      "libraries/glad": vars['glad_git'] + '@' + vars['glad_commit'],
+      "libraries/angle": vars['angle_git'] + '@' + vars['angle_commit'],
       "libraries/glfw": vars['glfw_git'] + '@' + vars['glfw_commit'],
+      "libraries/libuv": vars['libuv_git'] + '@' + vars['libuv_commit'],
       "libraries/skia": vars['skia_git'] + '@' + vars['skia_commit'],
       "libraries/v8": vars['v8_git'] + '@' + vars['v8_commit'],
-      "libraries/libuv": vars['libuv_git'] + '@' + vars['libuv_commit'],
     },
   },
 ]
+
+for (k, v) in angle_deps.items():
+  solutions[0]['custom_deps']['libraries/angle/' + k] = v
 
 for (k, v) in skia_deps.items():
   solutions[0]['custom_deps']['libraries/skia/' + k] = v
@@ -132,6 +165,50 @@ for (k, v) in v8_deps.items():
   solutions[0]['custom_deps']['libraries/v8/' + k] = v
 
 hooks = [
+  # From libraries/angle/DEPS:
+  {
+    'cwd': 'libraries/angle',
+    'name': 'win_toolchain',
+    'pattern': '.',
+    'condition': 'checkout_win',
+    'action': ['python3', 'build/vs_toolchain.py', 'update', '--force'],
+  },
+  {
+    'cwd': 'libraries/angle',
+    'name': 'clang',
+    'pattern': '.',
+    'action': ['python3', 'tools/clang/scripts/update.py'],
+  },
+  {
+    'cwd': 'libraries/angle',
+    # Update LASTCHANGE.
+    'name': 'lastchange',
+    'pattern': '.',
+    'action': ['python3', 'build/util/lastchange.py',
+               '-o', 'build/util/LASTCHANGE'],
+  },
+  {
+    'cwd': 'libraries/angle',
+    'name': 'rc_win',
+    'pattern': '.',
+    'condition': 'checkout_win',
+    'action': [ 'python3',
+                '../depot_tools/download_from_google_storage.py',
+                '--no_resume',
+                '--no_auth',
+                '--bucket', 'chromium-browser-clang/rc',
+                '-s', 'build/toolchain/win/rc/win/rc.exe.sha1',
+    ],
+  },
+  {
+    'cwd': 'libraries/angle',
+    'name': 'sysroot_x64',
+    'pattern': '.',
+    'condition': 'checkout_linux',
+    'action': ['python3', 'build/linux/sysroot_scripts/install-sysroot.py',
+               '--arch=x64'],
+  },
+
   # From libraries/v8/DEPS:
   {
     # Update LASTCHANGE.
@@ -189,15 +266,6 @@ hooks = [
       "git",
       "apply",
       "--directory",
-      "libraries/glad",
-      "libraries/glad.patch",
-    ],
-  },
-  {
-    "action": [
-      "git",
-      "apply",
-      "--directory",
       "libraries/v8",
       "libraries/v8.patch",
     ],
@@ -215,6 +283,48 @@ hooks = [
     "action": [
       "python",
       "libraries/v8_build.py",
+    ],
+  },
+  {
+    "action": [
+      "git",
+      "apply",
+      "--directory",
+      "libraries/skia",
+      "libraries/skia.patch",
+    ],
+  },
+  {
+    "action": [
+      "git",
+      "apply",
+      "--directory",
+      "libraries/angle",
+      "libraries/angle.patch",
+    ],
+  },
+  {
+    "action": [
+      "git",
+      "apply",
+      "--directory",
+      "libraries/angle/build",
+      "libraries/angle_build.patch",
+    ],
+  },
+  {
+    "action": [
+      "git",
+      "apply",
+      "--directory",
+      "libraries/angle/third_party/vulkan-deps/glslang/src",
+      "libraries/angle_glslang.patch",
+    ],
+  },
+  {
+    "action": [
+      "python",
+      "libraries/angle_build.py",
     ],
   },
 ]

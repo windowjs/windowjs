@@ -5,7 +5,7 @@ Write-Host ""
 Write-Host ""
 
 try {
-  Invoke-Expression "gclient sync --shallow --no-history -D -R"
+  Invoke-Expression "gclient sync --shallow --no-history -D -R --force"
 } catch {
   Write-Host ""
   Write-Host "FAILED (are the depot_tools in PATH? Try running libraries\setup_build_env.ps1 first)"
