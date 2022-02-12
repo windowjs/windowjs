@@ -83,9 +83,16 @@ jobs:
           cmake --build out -t windowjs -t windowjs-p5
           strip out/windowjs
 
+      - name: Debug build
+        run: |
+          source libraries/setup_build_env.sh
+          cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
+          cmake --build out-debug -t windowjs -t windowjs-p5
+
       - name: Tests
         run: |
-          out/windowjs tests/run_tests.js
+          # Note: run tests in Debug to have more assertions.
+          out-debug/windowjs tests/run_tests.js
 
       - name: Binary size
         run: |
