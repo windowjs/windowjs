@@ -1,5 +1,7 @@
 #include "js_api_process.h"
 
+#include <cstdlib>
+
 #include <uv.h>
 
 #include "args.h"
@@ -240,6 +242,7 @@ void ProcessApi::Exit(const v8::FunctionCallbackInfo<v8::Value>& info) {
     // The crash reproes under high contention on debug builds with MSVC.
     // It's a crash in a destructor at shutdown; using std::quick_exit to
     // bypass atexit callbacks as a temporary workaround.
+    // https://github.com/windowjs/windowjs/issues/86
     // std::exit(code);
     std::quick_exit(code);
   } else {
