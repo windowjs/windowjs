@@ -44,7 +44,7 @@ class Window final {
   ~Window();
 
   GLFWwindow* window() const { return window_; }
-  RenderCanvas* canvas() const { return canvas_; }
+  RenderCanvas* canvas() const { return canvas_; }  // May be null!
   RenderCanvasSharedContext* shared_context() const {
     return shared_context_.get();
   }
@@ -164,9 +164,10 @@ class Window final {
   std::unique_ptr<RenderCanvasSharedContext> shared_context_;
 
   // The canvas that renders to the screen.
-  std::unique_ptr<RenderCanvas> screen_canvas_;
+  std::unique_ptr<RenderCanvas> framebuffer_;
 
   // The canvas that backs window.canvas in Javascript.
+  // This may be null!
   RenderCanvas* canvas_;
 
   std::unique_ptr<ConsoleOverlay> console_overlay_;

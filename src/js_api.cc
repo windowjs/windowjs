@@ -552,6 +552,31 @@ void GetPlatform(v8::Local<v8::Name> property,
 #endif
 }
 
+void GetLazyCanvas(v8::Local<v8::Name> property,
+                   const v8::PropertyCallbackInfo<v8::Value>& info) {
+  ASSERT(IsMainThread());
+
+  v8::Isolate* isolate = info.GetIsolate();
+  JsApi* api = JsApi::Get(isolate);
+
+  v8::Local<v8::Function> constructor =
+      api->GetCanvasRenderingContext2DConstructor();
+
+  v8::Local<v8::Value> args[2] = {
+      v8::Number::New(isolate, api->window()->width()),
+      v8::Number::New(isolate, api->window()->height()),
+  };
+
+  v8::Local<v8::Object> canvas =
+      constructor->NewInstance(api->js()->context(), 2, args).ToLocalChecked();
+
+  CanvasApi* canvas_api = api->GetCanvasApi(canvas);
+  ASSERT(canvas_api);
+  api->window()->SetWindowCanvas(canvas_api->canvas());
+
+  info.GetReturnValue().Set(canvas);
+}
+
 }  // namespace
 
 JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
@@ -689,26 +714,15 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   canvas_pattern_constructor_.Reset(scope.isolate, canvas_pattern);
   scope.Set(global, StringId::CanvasPattern, canvas_pattern);
 
-  v8::Local<v8::Function> canvas_context =
-      CanvasApi::GetConstructor(this, scope);
-  canvas_rendering_context_2d_constructor_.Reset(scope.isolate, canvas_context);
-  scope.Set(global, StringId::CanvasRenderingContext2D, canvas_context);
+  v8::Local<v8::Function> canvas = CanvasApi::GetConstructor(this, scope);
+  canvas_rendering_context_2d_constructor_.Reset(scope.isolate, canvas);
+  scope.Set(global, StringId::CanvasRenderingContext2D, canvas);
 
   v8::Local<v8::Function> path2d = Path2DApi::GetConstructor(this, scope);
   path2d_constructor_.Reset(scope.isolate, path2d);
   scope.Set(global, StringId::Path2D, path2d);
 
-  v8::Local<v8::Value> args[2] = {
-      v8::Number::New(scope.isolate, window_->width()),
-      v8::Number::New(scope.isolate, window_->height()),
-  };
-
-  v8::Local<v8::Object> canvas =
-      canvas_context->NewInstance(scope.context, 2, args).ToLocalChecked();
-  scope.Set(window, StringId::canvas, canvas);
-  CanvasApi* window_canvas = GetCanvasApi(canvas);
-  ASSERT(window_canvas);
-  window_->SetWindowCanvas(window_canvas->canvas());
+  scope.SetLazy(window, StringId::canvas, GetLazyCanvas);
 
   scope.Set(global, StringId::Codec, MakeCodecApi(this, scope));
   scope.Set(global, StringId::File, MakeFileApi(this, scope));

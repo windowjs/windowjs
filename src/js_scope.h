@@ -184,6 +184,12 @@ struct JsScope {
     templ->Set(GetConstantString(id),
                v8::FunctionTemplate::New(isolate, function));
   }
+
+  void SetLazy(v8::Local<v8::Object> object, StringId id,
+               v8::AccessorNameGetterCallback get) const {
+    ASSERT(object->SetLazyDataProperty(context, GetConstantString(id), get)
+               .FromJust());
+  }
 };
 
 #endif  // WINDOWJS_JS_SCOPE_H

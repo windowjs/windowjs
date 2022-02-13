@@ -116,12 +116,12 @@ Window::Window(Delegate* delegate, int width, int height)
   }
 
   shared_context_.reset(new RenderCanvasSharedContext(this));
-  screen_canvas_.reset(new RenderCanvas(shared_context_.get(), width_, height_,
-                                        RenderCanvas::FRAMEBUFFER_0));
+  framebuffer_.reset(new RenderCanvas(shared_context_.get(), width_, height_,
+                                      RenderCanvas::FRAMEBUFFER_0));
 }
 
 Window::~Window() {
-  screen_canvas_.reset();
+  framebuffer_.reset();
   console_overlay_.reset();
   stats_.reset();
   shared_context_.reset();
@@ -137,7 +137,9 @@ void Window::OnLoadingStart() {
   // Reloading.
   loading_ = true;
   reloading_ = true;
-  canvas_->Reset();
+  if (canvas_) {
+    canvas_->Reset();
+  }
 }
 
 void Window::OnLoadingFinished() {
@@ -168,26 +170,31 @@ void Window::SetWindowCanvas(RenderCanvas* canvas) {
 }
 
 void Window::RenderAndSwapBuffers() {
-  if (!canvas_) {
+  if (loading_) {
     return;
   }
 
-  // Clear the screen, in case it was resized or swapped and not cleared yet.
-  screen_canvas_->canvas()->clear(SK_ColorTRANSPARENT);
+  if (canvas_) {
+    // Clear the screen, in case it was resized or swapped and not cleared yet.
+    framebuffer_->canvas()->clear(SK_ColorTRANSPARENT);
 
-  // Blit the main content.
-  canvas_->surface()->draw(screen_canvas_->canvas(), 0, 0);
+    // Blit the main content.
+    canvas_->surface()->draw(framebuffer_->canvas(), 0, 0);
+  } else {
+    // No canvas used: clear in black instead.
+    framebuffer_->canvas()->clear(SK_ColorBLACK);
+  }
 
   if (console_overlay_->is_enabled()) {
     console_overlay_->Draw();
     console_overlay_->canvas()->surface()->draw(
-        screen_canvas_->canvas(), 0,
-        screen_canvas_->height() - console_overlay_->canvas()->height());
+        framebuffer_->canvas(), 0,
+        framebuffer_->height() - console_overlay_->canvas()->height());
   }
 
   if (stats_->is_enabled()) {
     stats_->Draw();
-    stats_->canvas()->surface()->draw(screen_canvas_->canvas(), 0, 0);
+    stats_->canvas()->surface()->draw(framebuffer_->canvas(), 0, 0);
   }
 
   // Make sure that all Skia operations are sent to the GPU before swapping.
@@ -451,11 +458,11 @@ void Window::OnResize(int width, int height) {
   width_ = width;
   height_ = height;
   ASSERT_NO_GL_ERROR();
-  if (canvas_ && (width != canvas_->width() || height != canvas_->height())) {
+  if (canvas_) {
     canvas_->Resize(width, height);
-    screen_canvas_->Resize(width, height);
-    ASSERT_NO_GL_ERROR();
   }
+  framebuffer_->Resize(width, height);
+  ASSERT_NO_GL_ERROR();
 }
 
 // static
