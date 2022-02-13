@@ -7,6 +7,7 @@
 #include "args.h"
 #include "fail.h"
 #include "file.h"
+#include "platform.h"
 #include "subprocess.h"
 #include "thread.h"
 
@@ -243,8 +244,11 @@ void ProcessApi::Exit(const v8::FunctionCallbackInfo<v8::Value>& info) {
     // It's a crash in a destructor at shutdown; using std::quick_exit to
     // bypass atexit callbacks as a temporary workaround.
     // https://github.com/windowjs/windowjs/issues/86
-    // std::exit(code);
+#if defined(WINDOWJS_WIN)
     std::quick_exit(code);
+#else
+    std::exit(code);
+#endif
   } else {
     JsApi* api = JsApi::Get(info.GetIsolate());
     glfwSetWindowShouldClose(api->glfw_window(), GLFW_TRUE);
