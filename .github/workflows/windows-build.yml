@@ -43,14 +43,19 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            libraries/angle
+            libraries/angle/include
+            libraries/angle/out/Release/obj/libEGL_static.lib
             libraries/depot_tools
             libraries/gn
             libraries/glfw
-            libraries/skia
-            libraries/v8
+            libraries/skia/include
+            libraries/skia/out/Release/skia.lib
+            libraries/v8/include
+            libraries/v8/src
+            libraries/v8/third_party/zlib
+            libraries/v8/out/Release/obj/v8_monolith.lib
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.bat', 'libraries/skia-args-windows.gn', 'libraries/skia.patch', 'libraries/build_v8.bat', 'libraries/v8-args-windows.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.bat', 'libraries/angle-args-windows.gn', 'libraries/angle.patch') }}
+          key: ${{ runner.os }}-build-cache-v2-${{ hashFiles('.gclient', 'libraries/build_skia.bat', 'libraries/skia-args-windows.gn', 'libraries/skia.patch', 'libraries/build_v8.bat', 'libraries/v8-args-windows.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.bat', 'libraries/angle-args-windows.gn', 'libraries/angle.patch') }}
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'

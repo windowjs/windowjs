@@ -39,20 +39,19 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            libraries/angle
-            !libraries/angle/out
-            libraries/angle/out/Release/libEGL_static.a
+            libraries/angle/include
+            libraries/angle/out/Release/obj/libEGL_static.a
             libraries/depot_tools
             libraries/gn
             libraries/glfw
-            libraries/skia
-            !libraries/skia/out
+            libraries/skia/include
             libraries/skia/out/Release/libskia.a
-            libraries/v8
-            !libraries/v8/out
+            libraries/v8/include
+            libraries/v8/src
+            libraries/v8/third_party/zlib
             libraries/v8/out/Release/obj/libv8_monolith.a
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-mac.gn', 'libraries/skia.patch', 'libraries/build_v8.sh', 'libraries/v8-args-mac.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.sh', 'libraries/angle-args-mac.gn', 'libraries/angle.patch') }}
+          key: ${{ runner.os }}-build-cache-v2-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-mac.gn', 'libraries/skia.patch', 'libraries/build_v8.sh', 'libraries/v8-args-mac.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.sh', 'libraries/angle-args-mac.gn', 'libraries/angle.patch') }}
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'
