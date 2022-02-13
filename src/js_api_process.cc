@@ -236,7 +236,12 @@ void ProcessApi::Exit(const v8::FunctionCallbackInfo<v8::Value>& info) {
     code = info[0].As<v8::Int32>()->Value();
   }
   if (Args().headless || code != 0) {
-    std::exit(code);
+    // TODO: this crashes on Github when running tests.
+    // The crash reproes under high contention on debug builds with MSVC.
+    // It's a crash in a destructor at shutdown; using std::quick_exit to
+    // bypass atexit callbacks as a temporary workaround.
+    // std::exit(code);
+    std::quick_exit(code);
   } else {
     JsApi* api = JsApi::Get(info.GetIsolate());
     glfwSetWindowShouldClose(api->glfw_window(), GLFW_TRUE);
