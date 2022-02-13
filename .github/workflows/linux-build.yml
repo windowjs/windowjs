@@ -102,9 +102,11 @@ jobs:
           echo "Size after build:"
           du -b out/windowjs
           strip out/windowjs
+          strip out/windowjs-p5
           echo "Size after strip:"
           du -b out/windowjs
           upx -9 out/windowjs
+          upx -9 out/windowjs-p5
           echo "Size after upx:"
           du -b out/windowjs
 

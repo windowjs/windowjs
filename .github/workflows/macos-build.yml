@@ -84,6 +84,7 @@ jobs:
           cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
           cmake --build out -t windowjs -t windowjs-p5
           strip out/windowjs
+          strip out/windowjs-p5
 
 # Tests are disabled in the macOS workflow because GLFW fails to initialize:
 # https://github.com/windowjs/windowjs/issues/64
@@ -104,6 +105,7 @@ jobs:
           echo "Binary size after build:"
           stat -f%z out/windowjs
           upx -9 out/windowjs
+          upx -9 out/windowjs-p5
           echo "Binary size after upx:"
           stat -f%z out/windowjs
 

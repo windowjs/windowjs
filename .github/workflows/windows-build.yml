@@ -103,6 +103,7 @@ jobs:
           Write-Host "Size after build:"
           Write-Host((Get-Item out/windowjs.exe).length)
           upx -9 out/windowjs.exe
+          upx -9 out/windowjs-p5.exe
           Write-Host "Size after upx:"
           Write-Host((Get-Item out/windowjs.exe).length)
 
