@@ -50,7 +50,7 @@ These tools must be installed and available in the `PATH` in a terminal.
 -------------------------
 
 ```shell
-$ git checkout https://github.com/windowjs/windowjs
+$ git clone https://github.com/windowjs/windowjs
 ```
 
 
