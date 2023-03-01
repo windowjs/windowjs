@@ -189,8 +189,13 @@ void ProcessApi::Spawn(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   v8::Local<v8::Object> object =
       api->GetProcessConstructor()->NewInstance(context).ToLocalChecked();
+
   ProcessApi* process = api->GetProcessApi(object);
   ASSERT(process);
+
+  // Hold a reference to this object until the child process quits,
+  // to prevent the GC from destroying it and its Pipe.
+  process->SetStrong();
 
   process->pipe_ = Pipe::Spawn(
       std::move(exe), std::move(args), log,
@@ -361,6 +366,8 @@ void ProcessApi::HandleChildProcessExit(int64_t status, std::string error) {
     api()->js()->ReportException(try_catch.Message());
   }
   pipe_.reset();
+  // No more events will happen to this object, so it can be GCed now.
+  SetWeak();
 }
 
 void ProcessApi::HandleMessageFromParentProcess(uint32_t type,

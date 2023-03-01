@@ -271,6 +271,14 @@ class JsApiWrapper {
     return api_->js()->GetConstantString(id);
   }
 
+  // Makes this a weak reference, so that the object can get garbage collected.
+  // This is the default for new JsApiWrapper instances.
+  void SetWeak();
+
+  // Makes this a strong reference, so that the Javascript object won't get
+  // garbage-collected until this becomes weak.
+  void SetStrong();
+
  private:
   static void Destructor(const v8::WeakCallbackInfo<JsApiWrapper>& info);
 

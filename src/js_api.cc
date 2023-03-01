@@ -1244,8 +1244,7 @@ JsApiWrapper::JsApiWrapper(v8::Isolate* isolate, v8::Local<v8::Object> thiz)
     : api_(JsApi::Get(isolate)) {
   thiz->SetAlignedPointerInInternalField(0, this);
   thiz_.Reset(isolate, thiz);
-  thiz_.SetWeak(this, JsApiWrapper::Destructor,
-                v8::WeakCallbackType::kParameter);
+  SetWeak();
   thiz_.SetWrapperClassId(wrapper_class_id_for_destructors);
 }
 
@@ -1254,4 +1253,15 @@ void JsApiWrapper::Destructor(const v8::WeakCallbackInfo<JsApiWrapper>& info) {
   // This gets called when the Javascript object gets garbage collected.
   JsApiWrapper* thiz = static_cast<JsApiWrapper*>(info.GetParameter());
   delete thiz;
+}
+
+void JsApiWrapper::SetWeak() {
+  thiz_.SetWeak(this, JsApiWrapper::Destructor,
+                v8::WeakCallbackType::kParameter);
+  ASSERT(thiz_.IsWeak());
+}
+
+void JsApiWrapper::SetStrong() {
+  thiz_.ClearWeak();
+  ASSERT(!thiz_.IsWeak());
 }
