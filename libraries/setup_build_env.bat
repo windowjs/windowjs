@@ -68,7 +68,7 @@ if not exist libraries\depot_tools\ (
   echo.
   echo Checking out the Chrome depot_tools at libraries\depot_tools
   echo.
-  git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git libraries/depot_tools
+  call git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git libraries/depot_tools
 )
 
 if %errorlevel% neq 0 (
@@ -85,10 +85,44 @@ set DEPOT_TOOLS_WIN_TOOLCHAIN=0
 echo.
 echo Verifying depot_tools gclient version (this may download additional tools)
 echo.
-call %depot_tools%/gclient --version
+call %depot_tools%/gclient validate --version
 
 if %errorlevel% neq 0 (
   echo.
+  echo FAILED
+  exit /b 1
+)
+
+
+if not exist libraries\ninja\ (
+  echo.
+  echo Checking out the ninja build tool
+  echo.
+  call git clone https://github.com/ninja-build/ninja libraries/ninja
+  if %errorlevel% neq 0 (
+    echo.
+    echo FAILED
+    exit /b 1
+  )
+)
+
+if not exist libraries\ninja\ninja.exe (
+  echo.
+  echo Building the ninja build tool
+  echo.
+  pushd libraries\ninja
+  call %depot_tools%/python configure.py --bootstrap
+  if %errorlevel% neq 0 (
+    echo.
+    echo FAILED
+    exit /b 1
+  )
+  popd
+)
+
+if not exist libraries\ninja\ninja.exe (
+  echo.
+  echo Ninja build failed.
   echo FAILED
   exit /b 1
 )
@@ -98,9 +132,13 @@ if not exist libraries\gn\ (
   echo.
   echo Checking out the gn build tool
   echo.
-  git clone https://gn.googlesource.com/gn libraries\gn
+  call git clone https://gn.googlesource.com/gn libraries\gn
+  if %errorlevel% neq 0 (
+    echo.
+    echo FAILED
+    exit /b 1
+  )
 )
-
 
 if not exist libraries\gn\out\gn.exe (
   echo.
@@ -108,7 +146,7 @@ if not exist libraries\gn\out\gn.exe (
   echo.
   pushd libraries\gn
   call %depot_tools%/python build/gen.py
-  call %depot_tools%/ninja -C out gn.exe
+  call %depot_tools%/../ninja/ninja -C out gn.exe
   if %errorlevel% neq 0 (
     echo.
     echo FAILED
@@ -136,6 +174,7 @@ for /f "tokens=* USEBACKQ" %%f in (`%depot_tools%/python libraries\update_path.p
 echo.
 echo Verifying gn and ninja in PATH
 echo.
+
 gn --version
 ninja --version
 
