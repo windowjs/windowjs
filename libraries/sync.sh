@@ -8,7 +8,7 @@ echo
 gclient sync --shallow --no-history -D -R --force
 
 if [ $? -ne 0 ]; then
-  echo.
+  echo
   echo FAILED
   exit 1
 fi
