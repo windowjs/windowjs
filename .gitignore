@@ -1,6 +1,7 @@
 *.swp
 .cipd
 .gclient_entries
+.gclient_previous_sync_commits
 doc/.jekyll-cache
 doc/_site
 libraries/angle
@@ -8,6 +9,7 @@ libraries/depot_tools
 libraries/glfw
 libraries/gn
 libraries/libuv
+libraries/ninja
 libraries/skia
 libraries/v8
 tags

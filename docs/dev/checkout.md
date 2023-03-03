@@ -38,7 +38,7 @@ These tools must be installed and available in the `PATH` in a terminal.
 
 **Linux**
 
-*  `apt-get install cmake clang libfontconfig-dev libjpeg-turbo8-dev libwebp-dev libgl-dev libglx-dev libxrandr-dev xorg-dev`
+*  `apt-get install cmake clang libfontconfig-dev libjpeg-turbo8-dev libwebp-dev libgl-dev libglx-dev libxrandr-dev re2c xorg-dev`
 
 
 **Mac**

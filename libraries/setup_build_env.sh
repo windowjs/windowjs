@@ -3,6 +3,7 @@
 
 if [ ! -f "libraries/setup_build_env.sh" ]; then
   echo "Invoke this script from the root directory of the checkout."
+  echo
   echo "FAILED"
   return 1
 fi
@@ -47,7 +48,6 @@ if [ ! -d "libraries/depot_tools" ]; then
   if [ $? -ne 0 ]; then
     echo
     echo FAILED
-    echo
     return 1
   fi
 fi
@@ -57,11 +57,48 @@ depot_tools="$PWD/libraries/depot_tools"
 # Update PATH before the gclient --version check, to use cipd.
 export PATH="${depot_tools}:$PATH"
 
-
 echo
 echo "Verifying depot_tools gclient version (this may download additional tools)"
 echo
-"${depot_tools}/gclient" --version
+"${depot_tools}/gclient" validate --version
+
+if [ $? -ne 0 ]; then
+  echo
+  echo "Failed to initialize gclient tools"
+  echo
+  echo FAILED
+  return 1
+fi
+
+
+if [ ! -d "libraries/ninja" ]; then
+  echo
+  echo "Checking out the ninja build tool"
+  echo
+  git clone https://github.com/ninja-build/ninja libraries/ninja
+  if [ $? -ne 0 ]; then
+    echo
+    echo FAILED
+    return 1
+  fi
+fi
+
+if [ ! -f "libraries/ninja/ninja" ]; then
+  echo
+  echo "Building the ninja build tool"
+  echo
+  pushd libraries/ninja
+  "${depot_tools}/vpython" configure.py --bootstrap
+  popd
+fi
+
+if [ ! -f "libraries/ninja/ninja" ]; then
+  echo
+  echo "Ninja build failed."
+  echo
+  echo FAILED
+  return 1
+fi
 
 
 if [ ! -d "libraries/gn" ]; then
@@ -72,7 +109,6 @@ if [ ! -d "libraries/gn" ]; then
   if [ $? -ne 0 ]; then
     echo
     echo FAILED
-    echo
     return 1
   fi
 fi
@@ -83,16 +119,18 @@ if [ ! -f "libraries/gn/out/gn" ]; then
   echo
   pushd libraries/gn
   "${depot_tools}/vpython" build/gen.py
-  "${depot_tools}/ninja" -C out gn
+  "${depot_tools}/../ninja/ninja" -C out gn
   popd
 fi
 
 if [ ! -f "libraries/gn/out/gn" ]; then
   echo
   echo "GN build failed."
+  echo
   echo FAILED
   return 1
 fi
+
 
 echo
 echo "Updating PATH to use depot_tools and gn"
@@ -106,8 +144,26 @@ hash -r
 echo
 echo "Verifying gn and ninja in PATH"
 echo
+
 gn --version
+
+if [ $? -ne 0 ]; then
+  echo
+  echo "Failed to check GN version"
+  echo
+  echo FAILED
+  return 1
+fi
+
 ninja --version
+
+if [ $? -ne 0 ]; then
+  echo
+  echo "Failed to check ninja version"
+  echo
+  echo FAILED
+  return 1
+fi
 
 
 export CC=clang
