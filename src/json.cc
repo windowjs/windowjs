@@ -32,7 +32,17 @@ Json& Json::operator=(Json&& json) {
 
   Nullify();
   type_ = json.type_;
-  o_ = json.o_;
+
+  switch (type_) {
+    case NUL: break;
+    case BOOL: b_ = json.b_; break;
+    case INT: i_ = json.i_; break;
+    case DOUBLE: d_ = json.d_; break;
+    case STRING: s_ = json.s_; break;
+    case LIST: l_ = json.l_; break;
+    case DICTIONARY: o_ = json.o_; break;
+  }
+
   json.type_ = NUL;
 
   return *this;
