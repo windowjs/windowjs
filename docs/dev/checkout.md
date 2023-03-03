@@ -84,8 +84,16 @@ $ source libraries/setup_build_env.sh
 
 **Windows**
 
+Command prompt terminals:
+
 ```shell
 $ libraries\sync.bat
+```
+
+Powershell terminals:
+
+```shell
+$ libraries\sync.ps1
 ```
 
 

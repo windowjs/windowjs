@@ -71,7 +71,42 @@ $env:DEPOT_TOOLS_WIN_TOOLCHAIN = "0"
 Write-Host ""
 Write-Host "Verifying depot_tools gclient version (this may download additional tools)"
 Write-Host ""
-Invoke-Expression "${depot_tools}/gclient.bat --version"
+
+try {
+  Invoke-Expression "${depot_tools}/gclient.bat validate --version"
+} catch {
+  Write-Host ""
+  Write-Host "Failed to initialize gclient."
+  Write-Host ""
+  Write-Host "FAILED"
+  exit 1
+}
+
+
+if (-not(Test-Path -Path 'libraries\ninja' -PathType Container)) {
+  Write-Host ""
+  Write-Host "Checking out the ninja build tool"
+  Write-Host ""
+  git clone https://github.com/ninja-build/ninja libraries/ninja
+}
+
+
+if (-not(Test-Path -Path 'libraries\ninja\ninja.exe' -PathType Leaf)) {
+  Write-Host ""
+  Write-Host "Building the ninja build tool"
+  Write-Host ""
+  pushd libraries\ninja
+  try {
+    Invoke-Expression "${depot_tools}/python.bat configure.py --bootstrap"
+    popd
+  } catch {
+    Write-Host ""
+    Write-Host "Ninja build failed."
+    Write-Host ""
+    Write-Host "FAILED"
+    exit 1
+  }
+}
 
 
 if (-not(Test-Path -Path 'libraries\gn' -PathType Container)) {
@@ -89,7 +124,7 @@ if (-not(Test-Path -Path 'libraries\gn\out\gn.exe' -PathType Leaf)) {
   pushd libraries\gn
   try {
     Invoke-Expression "${depot_tools}/python.bat build/gen.py"
-    Invoke-Expression "${depot_tools}/ninja.exe -C out gn.exe"
+    Invoke-Expression "${depot_tools}/../ninja/ninja.exe -C out gn.exe"
     popd
   } catch {
     Write-Host ""
@@ -107,8 +142,26 @@ $env:path = Invoke-Expression "${depot_tools}/python.bat libraries\update_path.p
 Write-Host ""
 Write-Host "Verifying gn and ninja in PATH"
 Write-Host ""
-gn --version
-ninja --version
+
+try {
+  gn --version
+} catch {
+  Write-Host ""
+  Write-Host "Failed to verify GN version."
+  Write-Host ""
+  Write-Host "FAILED"
+  exit 1
+}
+
+try {
+  ninja --version
+} catch {
+  Write-Host ""
+  Write-Host "Failed to verify Ninja version."
+  Write-Host ""
+  Write-Host "FAILED"
+  exit 1
+}
 
 Write-Host ""
 Write-Host "FINISHED -- ready to fetch dependencies with libraries\sync.ps1"
