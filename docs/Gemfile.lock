@@ -1,12 +1,12 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.0.6.1)
+    activesupport (6.1.7.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
-      i18n (>= 0.7, < 2)
-      minitest (~> 5.1)
-      tzinfo (~> 1.1)
-      zeitwerk (~> 2.2, >= 2.2.2)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
+      zeitwerk (~> 2.3)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
     coffee-script (2.4.1)
@@ -244,11 +244,10 @@ GEM
       unf (~> 0.1.4)
     terminal-table (1.8.0)
       unicode-display_width (~> 1.1, >= 1.1.1)
-    thread_safe (0.3.6)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
-    tzinfo (1.2.11)
-      thread_safe (~> 0.1)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
     tzinfo-data (1.2022.7)
       tzinfo (>= 1.0.0)
     unf (0.1.4)
@@ -265,10 +264,11 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  activesupport (~> 6.1.7.1)
   github-pages (~> 228)
   jekyll-feed (~> 0.12)
   minima (~> 2.5)
-  tzinfo (~> 1.2)
+  tzinfo (~> 2)
   tzinfo-data
   wdm (~> 0.1.1)
   webrick (~> 1.7)
