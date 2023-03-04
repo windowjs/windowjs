@@ -146,7 +146,7 @@ index b4aa28673..62dca6179 100644
  
  }  // namespace rx
 diff --git a/src/libANGLE/renderer/gl/cgl/WindowSurfaceCGL.mm b/src/libANGLE/renderer/gl/cgl/WindowSurfaceCGL.mm
-index b10af4e9e..8ce145b8c 100644
+index b10af4e9e..35afeb893 100644
 --- a/src/libANGLE/renderer/gl/cgl/WindowSurfaceCGL.mm
 +++ b/src/libANGLE/renderer/gl/cgl/WindowSurfaceCGL.mm
 @@ -38,10 +38,15 @@
@@ -205,7 +205,7 @@ index b10af4e9e..8ce145b8c 100644
  @end
  
  namespace rx
-@@ -156,18 +173,26 @@ namespace rx
+@@ -156,18 +173,25 @@ namespace rx
  WindowSurfaceCGL::WindowSurfaceCGL(const egl::SurfaceState &state,
                                     RendererGL *renderer,
                                     EGLNativeWindowType layer,
@@ -233,7 +233,7 @@ index b10af4e9e..8ce145b8c 100644
  }
  
  WindowSurfaceCGL::~WindowSurfaceCGL()
-@@ -203,6 +228,56 @@ WindowSurfaceCGL::~WindowSurfaceCGL()
+@@ -203,6 +227,56 @@ WindowSurfaceCGL::~WindowSurfaceCGL()
              mSwapState.textures[i].texture = 0;
          }
      }
@@ -290,7 +290,7 @@ index b10af4e9e..8ce145b8c 100644
  }
  
  egl::Error WindowSurfaceCGL::initialize(const egl::Display *display)
-@@ -236,6 +311,22 @@ egl::Error WindowSurfaceCGL::initialize(const egl::Display *display)
+@@ -236,6 +310,22 @@ egl::Error WindowSurfaceCGL::initialize(const egl::Display *display)
      mStateManager->bindRenderbuffer(GL_RENDERBUFFER, mDSRenderbuffer);
      mFunctions->renderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
  
@@ -313,7 +313,7 @@ index b10af4e9e..8ce145b8c 100644
      return egl::Error(EGL_SUCCESS);
  }
  
-@@ -244,6 +335,24 @@ egl::Error WindowSurfaceCGL::makeCurrent(const gl::Context *context)
+@@ -244,6 +334,24 @@ egl::Error WindowSurfaceCGL::makeCurrent(const gl::Context *context)
      return egl::Error(EGL_SUCCESS);
  }
  
@@ -338,7 +338,7 @@ index b10af4e9e..8ce145b8c 100644
  egl::Error WindowSurfaceCGL::swap(const gl::Context *context)
  {
      const FunctionsGL *functions = GetFunctionsGL(context);
-@@ -258,29 +367,23 @@ egl::Error WindowSurfaceCGL::swap(const gl::Context *context)
+@@ -258,29 +366,23 @@ egl::Error WindowSurfaceCGL::swap(const gl::Context *context)
      }
      pthread_mutex_unlock(&mSwapState.mutex);
  
@@ -379,7 +379,7 @@ index b10af4e9e..8ce145b8c 100644
      return egl::Error(EGL_SUCCESS);
  }
  
-@@ -316,7 +419,9 @@ egl::Error WindowSurfaceCGL::releaseTexImage(const gl::Context *context, EGLint
+@@ -316,7 +418,9 @@ egl::Error WindowSurfaceCGL::releaseTexImage(const gl::Context *context, EGLint
  
  void WindowSurfaceCGL::setSwapInterval(EGLint interval)
  {

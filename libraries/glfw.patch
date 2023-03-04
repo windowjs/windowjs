@@ -1,12 +1,11 @@
 diff --git a/docs/intro.dox b/docs/intro.dox
-index e563b505..73162605 100644
+index e563b505..4bd4ec5f 100644
 --- a/docs/intro.dox
 +++ b/docs/intro.dox
 @@ -101,14 +101,22 @@ __GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
  a nib or manually, when the first window is created, which is when AppKit is
  initialized.  Set this with @ref glfwInitHint.
  
--
 +@anchor GLFW_WIN32_MESSAGES_IN_FIBER_hint
 +__GLFW_WIN32_MESSAGES_IN_FIBER__ specifies whether to use separate fiber for
 +processing Windows message, and not the main thread. This allows to unblock
@@ -14,7 +13,7 @@ index e563b505..73162605 100644
 +in its main loop. __Warning__ - setting this hint is not safe for environments
 +or frameworks where stack inspection is required (for example, moving garbage
 +collected languages such as Java or C#).  Set this with @ref glfwInitHint.
-+ 
+ 
  @subsubsection init_hints_values Supported and default values
  
 -Initialization hint             | Default value | Supported values
