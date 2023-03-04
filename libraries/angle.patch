@@ -225,7 +225,6 @@ index b10af4e9e..8ce145b8c 100644
        mDSRenderbuffer(0),
 -      mFramebufferID(0)
 +      mFramebufferID(0),
-+      mDSRenderbuffer(0),
 +      mDisplayLink(nullptr)
  {
      pthread_mutex_init(&mSwapState.mutex, nullptr);
