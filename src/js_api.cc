@@ -737,10 +737,15 @@ JsApi::~JsApi() {
     glfwDestroyCursor(cursor_);
     cursor_ = nullptr;
   }
+
+  // TODO: https://github.com/windowjs/windowjs/issues/99
+  // isolate()->VisitHandlesWithClassIds has been removed. Find another way
+  // of doing this cleanup at shutdown.
+
   // Delete all of the wrapped C++ objects that weren't cleaned up by GC so far.
-  v8::Locker locker(isolate());
-  v8::HandleScope scope(isolate());
-  isolate()->VisitHandlesWithClassIds(this);
+  // v8::Locker locker(isolate());
+  // v8::HandleScope scope(isolate());
+  // isolate()->VisitHandlesWithClassIds(this);
 }
 
 void JsApi::VisitPersistentHandle(v8::Persistent<v8::Value>* value,
