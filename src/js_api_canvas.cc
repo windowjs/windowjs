@@ -2,8 +2,11 @@
 
 #include <unordered_map>
 
+#include <skia/include/core/SkEncodedImageFormat.h>
 #include <skia/include/core/SkFontMetrics.h>
 #include <skia/include/core/SkFontMgr.h>
+#include <skia/include/core/SkPathEffect.h>
+#include <skia/include/core/SkPathUtils.h>
 #include <skia/include/effects/SkDashPathEffect.h>
 #include <skia/include/effects/SkGradientShader.h>
 #include <skia/include/effects/SkImageFilters.h>
@@ -163,7 +166,7 @@ void ImageBitmap(const v8::FunctionCallbackInfo<v8::Value>& info) {
     sk_sp<SkImage> image = SkImage::MakeRasterCopy(pixmap);
     texture =
         image->makeTextureImage(api->canvas_shared_context()->skia_context(),
-                                GrMipMapped::kNo, SkBudgeted::kNo);
+                                GrMipMapped::kNo, skgpu::Budgeted::kNo);
     ASSERT(texture);
     ASSERT(texture->isTextureBacked());
   } else if (info[0]->IsExternal()) {
@@ -1747,7 +1750,7 @@ void CanvasApi::IsPointInStroke(
   float y = info[1].As<v8::Number>()->Value();
 
   SkPath stroke;
-  api->state_.stroke_paint.getFillPath(api->path_, &stroke);
+  skpathutils::FillPathWithPaint(api->path_, api->state_.stroke_paint, &stroke);
   bool result = stroke.contains(x, y);
 
   info.GetReturnValue().Set(result);
@@ -2268,9 +2271,9 @@ CanvasGradientApi::CanvasGradientApi(
     const v8::FunctionCallbackInfo<v8::Value>& args)
     : JsApiWrapper(args.GetIsolate(), thiz), ref_count_(0) {
   if (args.Length() == 4) {
-    type_ = SkShader::kLinear_GradientType;
+    type_ = kLinear;
   } else if (args.Length() == 6) {
-    type_ = SkShader::kRadial_GradientType;
+    type_ = kRadial;
   } else {
     api->js()->ThrowIllegalConstructor();
   }
@@ -2285,7 +2288,7 @@ CanvasGradientApi::~CanvasGradientApi() {}
 sk_sp<SkShader> CanvasGradientApi::GetShader() {
   ASSERT(ref_count_ > 0);
   if (!shader_) {
-    if (type_ == SkShader::kLinear_GradientType) {
+    if (type_ == kLinear) {
       SkPoint points[2];
       points[0].fX = params_[0];
       points[0].fY = params_[1];
@@ -2295,7 +2298,7 @@ sk_sp<SkShader> CanvasGradientApi::GetShader() {
       const SkScalar* positions = positions_.data();
       shader_ = SkGradientShader::MakeLinear(
           points, colors, positions, colors_.size(), SkTileMode::kClamp);
-    } else if (type_ == SkShader::kRadial_GradientType) {
+    } else if (type_ == kRadial) {
       SkPoint start;
       start.fX = params_[0];
       start.fY = params_[1];
@@ -2768,7 +2771,7 @@ void ImageBitmapApi::Decode(const v8::FunctionCallbackInfo<v8::Value>& info) {
                        v8::Promise::Resolver* resolver) {
           RenderCanvasSharedContext* context = api->canvas_shared_context();
           sk_sp<SkImage> texture = image->makeTextureImage(
-              context->skia_context(), GrMipMapped::kNo, SkBudgeted::kNo);
+              context->skia_context(), GrMipMapped::kNo, skgpu::Budgeted::kNo);
           ASSERT(texture);
           ASSERT(texture->isTextureBacked());
           v8::Local<v8::Value> args[] = {

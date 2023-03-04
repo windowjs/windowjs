@@ -5,7 +5,7 @@ vars = {
 
   # Update skia_deps below when the Skia version is updated.
   'skia_git': 'https://skia.googlesource.com/skia.git',
-  'skia_commit': 'a63d89740ca8ab8572576d0ca07ab98201fe92d8',
+  'skia_commit': '9f561bc846d00e1e674987cc0f74ddd808c438f1',
 
   # Update v8_deps below when the v8 version is updated.
   'v8_git': 'https://chromium.googlesource.com/v8/v8.git',
@@ -54,10 +54,11 @@ angle_deps = {
 
 # Skia dependencies. Copied from libraries/skia/DEPS.
 skia_deps = {
-  "third_party/externals/expat"           : "https://chromium.googlesource.com/external/github.com/libexpat/libexpat.git@a28238bdeebc087071777001245df1876a11f5ee",
-  "third_party/externals/libjpeg-turbo"   : "https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git@24e310554f07c0fdb8ee52e3e708e4f3e9eb6e20",
+  "third_party/externals/expat"           : "https://chromium.googlesource.com/external/github.com/libexpat/libexpat.git@441f98d02deafd9b090aea568282b28f66a50e36",
+  "third_party/externals/libjpeg-turbo"   : "https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git@ed683925e4897a84b3bffc5c1414c85b97a129a3",
   "third_party/externals/libpng"          : "https://skia.googlesource.com/third_party/libpng.git@386707c6d19b974ca2e3db7f5c61873813c6fe44",
-  "third_party/externals/libwebp"         : "https://chromium.googlesource.com/webm/libwebp.git@69c7f16111ec582bf1e7cb4d0d4f8d127e28a715",
+  "third_party/externals/libwebp"         : "https://chromium.googlesource.com/webm/libwebp.git@fd7b5d48464475408d32d2611bdb6947d4246b97",
+  "third_party/externals/wuffs"           : "https://skia.googlesource.com/external/github.com/google/wuffs-mirror-release-c.git@a0041ac0310b3156b963e2f2bea09245f25ec073",
   "third_party/externals/zlib"            : "https://chromium.googlesource.com/chromium/src/third_party/zlib@c876c8f87101c5a75f6014b0f832499afeb65b73",
 }
 

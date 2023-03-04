@@ -251,8 +251,13 @@ class CanvasGradientApi final : public JsApiWrapper {
  private:
   static void AddColorStop(const v8::FunctionCallbackInfo<v8::Value>& info);
 
+  enum GradientType {
+    kLinear,
+    kRadial,
+  };
+
   sk_sp<SkShader> shader_;
-  SkShader::GradientType type_;
+  GradientType type_;
   std::vector<float> params_;
   std::vector<SkColor> colors_;
   std::vector<SkScalar> positions_;

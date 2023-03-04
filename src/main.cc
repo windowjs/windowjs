@@ -4,6 +4,8 @@
 #include <iostream>
 #include <memory>
 
+#include <skia/include/core/SkEncodedImageFormat.h>
+
 #include "args.h"
 #include "fail.h"
 #include "file.h"

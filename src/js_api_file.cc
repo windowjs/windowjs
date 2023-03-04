@@ -155,7 +155,7 @@ void ReadImageBitmap(const v8::FunctionCallbackInfo<v8::Value>& args) {
                        v8::Promise::Resolver* resolver) {
           RenderCanvasSharedContext* context = api->canvas_shared_context();
           sk_sp<SkImage> texture = image->makeTextureImage(
-              context->skia_context(), GrMipMapped::kNo, SkBudgeted::kNo);
+              context->skia_context(), GrMipMapped::kNo, skgpu::Budgeted::kNo);
           ASSERT(texture);
           ASSERT(texture->isTextureBacked());
           v8::Local<v8::Value> args[] = {

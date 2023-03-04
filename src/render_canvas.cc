@@ -2,6 +2,7 @@
 
 #include <GLES3/gl3.h>
 #include <GLFW/glfw3.h>
+#include <skia/include/core/SkColorSpace.h>
 #include <skia/include/gpu/gl/egl/GrGLMakeEGLInterface.h>
 
 #include "args.h"

@@ -25,7 +25,6 @@ skia_use_system_libwebp = true
 skia_enable_pdf = false
 skia_enable_skottie = false
 skia_enable_skparagraph = false
-skia_enable_skrive = false
 skia_enable_skshaper = false
 skia_enable_svg = false
 skia_use_icu = false
