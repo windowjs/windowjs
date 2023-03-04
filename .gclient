@@ -1,7 +1,7 @@
 vars = {
   'glfw_git': 'https://github.com/glfw/glfw.git',
-  # Tag 3.3.6. Using commit hash to support gclient --no-history.
-  'glfw_commit': '7d5a16ce714f0b5f4efa3262de22e4d948851525',
+  # Tag 3.3.8. Using commit hash to support gclient --no-history.
+  'glfw_commit': '7482de6071d21db77a7236155da44c172a7f6c9e',
 
   # Update skia_deps below when the Skia version is updated.
   'skia_git': 'https://skia.googlesource.com/skia.git',
