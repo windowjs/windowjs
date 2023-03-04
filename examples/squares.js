@@ -90,7 +90,7 @@ window.addEventListener('keydown', function(event) {
     throw new Error('Test exception');
   } else if (key == 'u') {
     callingSomethingThatDoesntExist();
-  } else if (key == 'a') {
+  } else if (key == 't') {
     window.requestAttention();
   } else if (key == 'm') {
     window.minimize();
@@ -149,7 +149,7 @@ async function init() {
   console.log('a: toggle animation.');
   console.log('e: throw an exception.');
   console.log('u: use undefined variable.');
-  console.log('a: request attention.');
+  console.log('t: request attention.');
   console.log('m: minimize.');
 }
 
