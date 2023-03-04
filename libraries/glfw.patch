@@ -1,11 +1,12 @@
 diff --git a/docs/intro.dox b/docs/intro.dox
-index e563b505..4bd4ec5f 100644
+index e563b505..73162605 100644
 --- a/docs/intro.dox
 +++ b/docs/intro.dox
 @@ -101,14 +101,22 @@ __GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
  a nib or manually, when the first window is created, which is when AppKit is
  initialized.  Set this with @ref glfwInitHint.
  
+-
 +@anchor GLFW_WIN32_MESSAGES_IN_FIBER_hint
 +__GLFW_WIN32_MESSAGES_IN_FIBER__ specifies whether to use separate fiber for
 +processing Windows message, and not the main thread. This allows to unblock
@@ -13,7 +14,7 @@ index e563b505..4bd4ec5f 100644
 +in its main loop. __Warning__ - setting this hint is not safe for environments
 +or frameworks where stack inspection is required (for example, moving garbage
 +collected languages such as Java or C#).  Set this with @ref glfwInitHint.
- 
++ 
  @subsubsection init_hints_values Supported and default values
  
 -Initialization hint             | Default value | Supported values
@@ -31,10 +32,10 @@ index e563b505..4bd4ec5f 100644
  
  @subsection intro_init_terminate Terminating GLFW
 diff --git a/include/GLFW/glfw3.h b/include/GLFW/glfw3.h
-index 9503dd0d..4aece364 100644
+index 31b201ae..0b80dcc3 100644
 --- a/include/GLFW/glfw3.h
 +++ b/include/GLFW/glfw3.h
-@@ -1124,6 +1124,11 @@ extern "C" {
+@@ -1123,6 +1123,11 @@ extern "C" {
   *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
   */
  #define GLFW_COCOA_MENUBAR          0x00051002
@@ -46,7 +47,7 @@ index 9503dd0d..4aece364 100644
  /*! @} */
  
  #define GLFW_DONT_CARE              -1
-@@ -1235,6 +1240,10 @@ typedef void (* GLFWerrorfun)(int error_code, const char* description);
+@@ -1234,6 +1239,10 @@ typedef void (* GLFWerrorfun)(int error_code, const char* description);
   *  @param[in] ypos The new y-coordinate, in screen coordinates, of the
   *  upper-left corner of the content area of the window.
   *
@@ -57,16 +58,16 @@ index 9503dd0d..4aece364 100644
   *  @sa @ref window_pos
   *  @sa @ref glfwSetWindowPosCallback
   *
-@@ -1256,6 +1265,10 @@ typedef void (* GLFWwindowposfun)(GLFWwindow* window, int xpos, int ypos);
-  *  @param[in] width The new width, in screen coordinates, of the window.
-  *  @param[in] height The new height, in screen coordinates, of the window.
+@@ -1258,6 +1267,10 @@ typedef void (* GLFWwindowposfun)(GLFWwindow* window, int xpos, int ypos);
+  *  @sa @ref window_size
+  *  @sa @ref glfwSetWindowSizeCallback
   *
 + *  @remark @win32 On Windows moving or resizing of window will block event
 + *  processing. Workaround for this is @ref GLFW_WIN32_MESSAGES_IN_FIBER init
 + *  hint.
 + *
-  *  @sa @ref window_size
-  *  @sa @ref glfwSetWindowSizeCallback
+  *  @since Added in version 1.0.
+  *  @glfw3 Added window handle parameter.
   *
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 index b6dd86c5..0704559a 100644
@@ -82,7 +83,7 @@ index b6dd86c5..0704559a 100644
                        OUTPUT_NAME ${GLFW_LIB_NAME}
                        VERSION ${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}
 diff --git a/src/egl_context.c b/src/egl_context.c
-index 6b34f724..5403fe62 100644
+index 58d9557b..ffb56060 100644
 --- a/src/egl_context.c
 +++ b/src/egl_context.c
 @@ -27,6 +27,7 @@
@@ -93,7 +94,7 @@ index 6b34f724..5403fe62 100644
  #include "internal.h"
  
  #include <stdio.h>
-@@ -302,6 +303,7 @@ static void destroyContextEGL(_GLFWwindow* window)
+@@ -308,6 +309,7 @@ static void destroyContextEGL(_GLFWwindow* window)
  //
  GLFWbool _glfwInitEGL(void)
  {
@@ -101,7 +102,7 @@ index 6b34f724..5403fe62 100644
      int i;
      const char* sonames[] =
      {
-@@ -319,10 +321,14 @@ GLFWbool _glfwInitEGL(void)
+@@ -327,10 +329,14 @@ GLFWbool _glfwInitEGL(void)
  #endif
          NULL
      };
@@ -116,7 +117,7 @@ index 6b34f724..5403fe62 100644
      for (i = 0;  sonames[i];  i++)
      {
          _glfw.egl.handle = _glfw_dlopen(sonames[i]);
-@@ -335,9 +341,12 @@ GLFWbool _glfwInitEGL(void)
+@@ -343,9 +349,12 @@ GLFWbool _glfwInitEGL(void)
          _glfwInputError(GLFW_API_UNAVAILABLE, "EGL: Library not found");
          return GLFW_FALSE;
      }
@@ -130,7 +131,7 @@ index 6b34f724..5403fe62 100644
      _glfw.egl.GetConfigAttrib = (PFN_eglGetConfigAttrib)
          _glfw_dlsym(_glfw.egl.handle, "eglGetConfigAttrib");
      _glfw.egl.GetConfigs = (PFN_eglGetConfigs)
-@@ -370,6 +379,24 @@ GLFWbool _glfwInitEGL(void)
+@@ -378,6 +387,24 @@ GLFWbool _glfwInitEGL(void)
          _glfw_dlsym(_glfw.egl.handle, "eglQueryString");
      _glfw.egl.GetProcAddress = (PFN_eglGetProcAddress)
          _glfw_dlsym(_glfw.egl.handle, "eglGetProcAddress");
@@ -155,7 +156,7 @@ index 6b34f724..5403fe62 100644
  
      if (!_glfw.egl.GetConfigAttrib ||
          !_glfw.egl.GetConfigs ||
-@@ -442,7 +469,7 @@ void _glfwTerminateEGL(void)
+@@ -452,7 +479,7 @@ void _glfwTerminateEGL(void)
  
      if (_glfw.egl.handle)
      {
@@ -165,20 +166,21 @@ index 6b34f724..5403fe62 100644
      }
  }
 diff --git a/src/egl_context.h b/src/egl_context.h
-index c8446dad..cf42c240 100644
+index 47493a6f..80efceff 100644
 --- a/src/egl_context.h
 +++ b/src/egl_context.h
-@@ -25,6 +25,9 @@
+@@ -25,6 +25,10 @@
  //
  //========================================================================
  
 +#include <EGL/egl.h>
 +
 +#if 0
++
  #if defined(_GLFW_USE_EGLPLATFORM_H)
   #include <EGL/eglplatform.h>
  #elif defined(_GLFW_WIN32)
-@@ -90,6 +93,8 @@ typedef struct wl_egl_window* EGLNativeWindowType;
+@@ -90,6 +94,8 @@ typedef struct wl_egl_window* EGLNativeWindowType;
  #define EGL_NO_CONTEXT ((EGLContext) 0)
  #define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType) 0)
  
@@ -187,16 +189,15 @@ index c8446dad..cf42c240 100644
  #define EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR 0x00000002
  #define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR 0x00000001
  #define EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR 0x00000002
-@@ -109,6 +114,8 @@ typedef struct wl_egl_window* EGLNativeWindowType;
- #define EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR 0
+@@ -110,6 +116,7 @@ typedef struct wl_egl_window* EGLNativeWindowType;
  #define EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x2098
+ #define EGL_PRESENT_OPAQUE_EXT 0x31df
  
 +#if 0
-+
  typedef int EGLint;
  typedef unsigned int EGLBoolean;
  typedef unsigned int EGLenum;
-@@ -116,6 +123,7 @@ typedef void* EGLConfig;
+@@ -117,6 +124,7 @@ typedef void* EGLConfig;
  typedef void* EGLContext;
  typedef void* EGLDisplay;
  typedef void* EGLSurface;
@@ -204,7 +205,7 @@ index c8446dad..cf42c240 100644
  
  // EGL function pointer typedefs
  typedef EGLBoolean (EGLAPIENTRY * PFN_eglGetConfigAttrib)(EGLDisplay,EGLConfig,EGLint,EGLint*);
-@@ -134,6 +142,7 @@ typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
+@@ -135,6 +143,7 @@ typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
  typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapInterval)(EGLDisplay,EGLint);
  typedef const char* (EGLAPIENTRY * PFN_eglQueryString)(EGLDisplay,EGLint);
  typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
@@ -212,7 +213,7 @@ index c8446dad..cf42c240 100644
  #define eglGetConfigAttrib _glfw.egl.GetConfigAttrib
  #define eglGetConfigs _glfw.egl.GetConfigs
  #define eglGetDisplay _glfw.egl.GetDisplay
-@@ -150,6 +159,7 @@ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
+@@ -151,6 +160,7 @@ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
  #define eglSwapInterval _glfw.egl.SwapInterval
  #define eglQueryString _glfw.egl.QueryString
  #define eglGetProcAddress _glfw.egl.GetProcAddress
@@ -220,16 +221,11 @@ index c8446dad..cf42c240 100644
  
  #define _GLFW_EGL_CONTEXT_STATE            _GLFWcontextEGL egl
  #define _GLFW_EGL_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
-@@ -212,4 +222,3 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
-                               const _GLFWfbconfig* fbconfig,
-                               Visual** visual, int* depth);
- #endif /*_GLFW_X11*/
--
 diff --git a/src/init.c b/src/init.c
-index aebbece4..19857e49 100644
+index cfdd512d..c20546fb 100644
 --- a/src/init.c
 +++ b/src/init.c
-@@ -55,6 +55,9 @@ static _GLFWinitconfig _glfwInitHints =
+@@ -54,6 +54,9 @@ static _GLFWinitconfig _glfwInitHints =
      {
          GLFW_TRUE,  // macOS menu bar
          GLFW_TRUE   // macOS bundle chdir
@@ -239,7 +235,7 @@ index aebbece4..19857e49 100644
      }
  };
  
-@@ -274,6 +277,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
+@@ -367,6 +370,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
          case GLFW_COCOA_MENUBAR:
              _glfwInitHints.ns.menubar = value;
              return;
@@ -250,7 +246,7 @@ index aebbece4..19857e49 100644
  
      _glfwInputError(GLFW_INVALID_ENUM,
 diff --git a/src/internal.h b/src/internal.h
-index ad619b4e..5fd27be0 100644
+index 7734caa3..a0d7c3c5 100644
 --- a/src/internal.h
 +++ b/src/internal.h
 @@ -244,6 +244,9 @@ struct _GLFWinitconfig
@@ -284,10 +280,10 @@ index 72ad11de..bfb41e00 100644
      {
          _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
 diff --git a/src/win32_init.c b/src/win32_init.c
-index 40eb795f..cb9a06c9 100644
+index 885f32fa..6178c7fe 100644
 --- a/src/win32_init.c
 +++ b/src/win32_init.c
-@@ -325,8 +325,6 @@ static void createKeyTables(void)
+@@ -336,8 +336,6 @@ static void createKeyTables(void)
  //
  static GLFWbool createHelperWindow(void)
  {
@@ -296,7 +292,7 @@ index 40eb795f..cb9a06c9 100644
      _glfw.win32.helperWindowHandle =
          CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
                          _GLFW_WNDCLASSNAME,
-@@ -362,13 +360,21 @@ static GLFWbool createHelperWindow(void)
+@@ -373,13 +371,21 @@ static GLFWbool createHelperWindow(void)
                                          DEVICE_NOTIFY_WINDOW_HANDLE);
      }
  
@@ -322,7 +318,7 @@ index 40eb795f..cb9a06c9 100644
  }
  
  
-@@ -537,6 +543,44 @@ BOOL _glfwIsWindows10BuildOrGreaterWin32(WORD build)
+@@ -551,6 +557,44 @@ BOOL _glfwIsWindows10BuildOrGreaterWin32(WORD build)
      return RtlVerifyVersionInfo(&osvi, mask, cond) == 0;
  }
  
@@ -367,7 +363,7 @@ index 40eb795f..cb9a06c9 100644
  
  //////////////////////////////////////////////////////////////////////////
  //////                       GLFW platform API                      //////
-@@ -565,6 +609,17 @@ int _glfwPlatformInit(void)
+@@ -579,6 +623,17 @@ int _glfwPlatformInit(void)
      else if (IsWindowsVistaOrGreater())
          SetProcessDPIAware();
  
@@ -385,7 +381,7 @@ index 40eb795f..cb9a06c9 100644
      if (!_glfwRegisterWindowClassWin32())
          return GLFW_FALSE;
  
-@@ -588,6 +643,12 @@ void _glfwPlatformTerminate(void)
+@@ -602,6 +657,12 @@ void _glfwPlatformTerminate(void)
  
      _glfwUnregisterWindowClassWin32();
  
@@ -399,7 +395,7 @@ index 40eb795f..cb9a06c9 100644
      SystemParametersInfoW(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
                            UIntToPtr(_glfw.win32.foregroundLockTimeout),
 diff --git a/src/win32_platform.h b/src/win32_platform.h
-index b964e135..4a663796 100644
+index bf703d7e..ef2abdf3 100644
 --- a/src/win32_platform.h
 +++ b/src/win32_platform.h
 @@ -70,6 +70,9 @@
@@ -412,7 +408,7 @@ index b964e135..4a663796 100644
  // HACK: Define macros that some windows.h variants don't
  #ifndef WM_MOUSEHWHEEL
   #define WM_MOUSEHWHEEL 0x020E
-@@ -324,6 +327,11 @@ typedef struct _GLFWwindowWin32
+@@ -328,6 +331,10 @@ typedef struct _GLFWwindowWin32
      int                 lastCursorPosX, lastCursorPosY;
      // The last recevied high surrogate when decoding pairs of UTF-16 messages
      WCHAR               highSurrogate;
@@ -420,11 +416,10 @@ index b964e135..4a663796 100644
 +    // If user pressed mouse button on window title bar
 +    UINT                ncMouseButton;
 +    LPARAM              ncMousePos;
-+
  } _GLFWwindowWin32;
  
  // Win32-specific global data
-@@ -345,6 +353,8 @@ typedef struct _GLFWlibraryWin32
+@@ -350,6 +357,8 @@ typedef struct _GLFWlibraryWin32
      RAWINPUT*           rawInput;
      int                 rawInputSize;
      UINT                mouseTrailSize;
@@ -433,16 +428,16 @@ index b964e135..4a663796 100644
  
      struct {
          HINSTANCE                       instance;
-@@ -450,3 +460,4 @@ void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+@@ -456,3 +465,4 @@ void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
  void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor);
  void _glfwGetMonitorContentScaleWin32(HMONITOR handle, float* xscale, float* yscale);
  
 +void _glfwPollMessageLoopWin32(void);
 diff --git a/src/win32_window.c b/src/win32_window.c
-index 2fa4f2e1..f3d53c52 100644
+index 073ceee9..b3f38b7d 100644
 --- a/src/win32_window.c
 +++ b/src/win32_window.c
-@@ -821,11 +821,46 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
+@@ -883,11 +883,46 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
              return 0;
          }
  
@@ -489,7 +484,7 @@ index 2fa4f2e1..f3d53c52 100644
              if (!window->win32.cursorTracked)
              {
                  TRACKMOUSEEVENT tme;
-@@ -937,6 +972,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
+@@ -999,6 +1034,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
          case WM_ENTERSIZEMOVE:
          case WM_ENTERMENULOOP:
          {
@@ -499,7 +494,7 @@ index 2fa4f2e1..f3d53c52 100644
              if (window->win32.frameAction)
                  break;
  
-@@ -951,6 +989,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
+@@ -1013,6 +1051,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
          case WM_EXITSIZEMOVE:
          case WM_EXITMENULOOP:
          {
@@ -509,7 +504,7 @@ index 2fa4f2e1..f3d53c52 100644
              if (window->win32.frameAction)
                  break;
  
-@@ -962,6 +1003,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
+@@ -1024,6 +1065,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
              break;
          }
  
@@ -523,7 +518,7 @@ index 2fa4f2e1..f3d53c52 100644
          case WM_SIZE:
          {
              const int width = LOWORD(lParam);
-@@ -1397,6 +1445,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
+@@ -1484,6 +1532,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
      {
          if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
          {
@@ -531,7 +526,7 @@ index 2fa4f2e1..f3d53c52 100644
              if (!_glfwInitWGL())
                  return GLFW_FALSE;
              if (!_glfwCreateContextWGL(window, ctxconfig, fbconfig))
-@@ -1923,31 +1972,13 @@ GLFWbool _glfwPlatformRawMouseMotionSupported(void)
+@@ -2028,31 +2077,13 @@ GLFWbool _glfwPlatformRawMouseMotionSupported(void)
  
  void _glfwPlatformPollEvents(void)
  {
@@ -567,79 +562,11 @@ index 2fa4f2e1..f3d53c52 100644
  
      // HACK: Release modifier keys that the system did not emit KEYUP for
      // NOTE: Shift keys on Windows tend to "stick" when both are pressed as
-diff --git a/src/window.c b/src/window.c
-index b87a2609..6aed705e 100644
---- a/src/window.c
-+++ b/src/window.c
-@@ -221,6 +221,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
-         return NULL;
-     }
- 
-+    // TODO: slow step, 50ms.
-     if (ctxconfig.client != GLFW_NO_API)
-     {
-         if (!_glfwRefreshContextAttribs(window, &ctxconfig))
 diff --git a/src/x11_init.c b/src/x11_init.c
-index 87b3eb78..4aa335a7 100644
+index 6049904a..6e8aa8ca 100644
 --- a/src/x11_init.c
 +++ b/src/x11_init.c
-@@ -36,6 +36,7 @@
- #include <limits.h>
- #include <stdio.h>
- #include <locale.h>
-+#include <fcntl.h>
- 
- 
- // Translate the X11 KeySyms for a key to a GLFW key code
-@@ -963,6 +964,35 @@ static int errorHandler(Display *display, XErrorEvent* event)
-     return 0;
- }
- 
-+static inline GLFWbool selfPipe(int fds[2])
-+{
-+    if (pipe(fds) != 0)
-+        return GLFW_FALSE;
-+
-+    int i;
-+    for (i = 0; i < 2; i++)
-+    {
-+        int flags = fcntl(fds[i], F_GETFD);
-+        if (flags == -1)
-+            break;
-+        if (fcntl(fds[i], F_SETFD, flags | FD_CLOEXEC) == -1)
-+            break;
-+        flags = fcntl(fds[i], F_GETFL);
-+        if (flags == -1)
-+            break;
-+        if (fcntl(fds[i], F_SETFL, flags | O_NONBLOCK) == -1)
-+            break;
-+    }
-+
-+    if (i == 2)
-+        return GLFW_TRUE;
-+
-+    close(fds[0]);
-+    close(fds[1]);
-+
-+    return GLFW_FALSE;
-+}
-+
- 
- //////////////////////////////////////////////////////////////////////////
- //////                       GLFW internal API                      //////
-@@ -1102,11 +1132,21 @@ int _glfwPlatformInit(void)
-     _glfwInitTimerPOSIX();
- 
-     _glfwPollMonitorsX11();
-+
-+    if (!selfPipe(_glfw.x11.eventLoopData.pipe))
-+    {
-+        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: failed to create pipe");
-+        return GLFW_FALSE;
-+    }
-+
-     return GLFW_TRUE;
- }
+@@ -1163,6 +1163,9 @@ int _glfwPlatformInit(void)
  
  void _glfwPlatformTerminate(void)
  {
@@ -649,131 +576,3 @@ index 87b3eb78..4aa335a7 100644
      if (_glfw.x11.helperWindowHandle)
      {
          if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) ==
-@@ -1182,9 +1222,20 @@ void _glfwPlatformTerminate(void)
-         _glfw.x11.xi.handle = NULL;
-     }
- 
-+    if (_glfw.x11.eventLoopData.pipe[0] > 0)
-+    {
-+        close(_glfw.x11.eventLoopData.pipe[0]);
-+        _glfw.x11.eventLoopData.pipe[0] = -1;
-+    }
-+
-+    if (_glfw.x11.eventLoopData.pipe[1] > 0)
-+    {
-+        close(_glfw.x11.eventLoopData.pipe[1]);
-+        _glfw.x11.eventLoopData.pipe[1] = -1;
-+    }
-+
-     // NOTE: These need to be unloaded after XCloseDisplay, as they register
-     //       cleanup callbacks that get called by that function
--    _glfwTerminateEGL();
-     _glfwTerminateGLX();
- 
- #if defined(__linux__)
-diff --git a/src/x11_platform.h b/src/x11_platform.h
-index 37946a29..369d6d05 100644
---- a/src/x11_platform.h
-+++ b/src/x11_platform.h
-@@ -404,6 +404,10 @@ typedef struct _GLFWlibraryX11
-         PFN_XRenderQueryVersion QueryVersion;
-         PFN_XRenderFindVisualFormat FindVisualFormat;
-     } xrender;
-+
-+    struct {
-+        int pipe[2];
-+    } eventLoopData;
- } _GLFWlibraryX11;
- 
- // X11-specific per-monitor data
-diff --git a/src/x11_window.c b/src/x11_window.c
-index e6b7e1b9..9f8dfbc3 100644
---- a/src/x11_window.c
-+++ b/src/x11_window.c
-@@ -57,6 +57,16 @@
- #define _GLFW_XDND_VERSION 5
- 
- 
-+static inline void drainPipe(int fd)
-+{
-+    static char buf[256];
-+    ssize_t len;
-+    do
-+    {
-+        len = read(fd, buf, sizeof(buf));
-+    } while (len > 0 || (len < 0 && errno == EINTR));
-+}
-+
- // Wait for data to arrive using select
- // This avoids blocking other threads via the per-display Xlib lock that also
- // covers GLX functions
-@@ -65,16 +75,19 @@ static GLFWbool waitForEvent(double* timeout)
- {
-     fd_set fds;
-     const int fd = ConnectionNumber(_glfw.x11.display);
--    int count = fd + 1;
-+    const int pipe = _glfw.x11.eventLoopData.pipe[0];
-+    int max = fd > pipe ? fd : pipe;
- 
- #if defined(__linux__)
--    if (_glfw.linjs.inotify > fd)
--        count = _glfw.linjs.inotify + 1;
-+    if (_glfw.linjs.inotify > max)
-+        max = _glfw.linjs.inotify;
- #endif
-+
-     for (;;)
-     {
-         FD_ZERO(&fds);
-         FD_SET(fd, &fds);
-+        FD_SET(pipe, &fds);
- #if defined(__linux__)
-         if (_glfw.linjs.inotify > 0)
-             FD_SET(_glfw.linjs.inotify, &fds);
-@@ -87,9 +100,12 @@ static GLFWbool waitForEvent(double* timeout)
-             struct timeval tv = { seconds, microseconds };
-             const uint64_t base = _glfwPlatformGetTimerValue();
- 
--            const int result = select(count, &fds, NULL, NULL, &tv);
-+            const int result = select(max + 1, &fds, NULL, NULL, &tv);
-             const int error = errno;
- 
-+            if (FD_ISSET(pipe, &fds))
-+                drainPipe(pipe);
-+
-             *timeout -= (_glfwPlatformGetTimerValue() - base) /
-                 (double) _glfwPlatformGetTimerFrequency();
- 
-@@ -98,8 +114,17 @@ static GLFWbool waitForEvent(double* timeout)
-             if ((result == -1 && error == EINTR) || *timeout <= 0.0)
-                 return GLFW_FALSE;
-         }
--        else if (select(count, &fds, NULL, NULL, NULL) != -1 || errno != EINTR)
--            return GLFW_TRUE;
-+        else
-+        {
-+          const int result = select(max + 1, &fds, NULL, NULL, NULL);
-+          const int error = errno;
-+
-+          if (FD_ISSET(pipe, &fds))
-+              drainPipe(pipe);
-+
-+          if (result != -1 || error != EINTR)
-+              return GLFW_TRUE;
-+        }
-     }
- }
- 
-@@ -2833,6 +2858,12 @@ void _glfwPlatformPostEmptyEvent(void)
- 
-     XSendEvent(_glfw.x11.display, _glfw.x11.helperWindowHandle, False, 0, &event);
-     XFlush(_glfw.x11.display);
-+
-+    int result;
-+    do
-+    {
-+        result = write(_glfw.x11.eventLoopData.pipe[1], "x", 1);
-+    } while (result < 0 && errno == EINTR);
- }
- 
- void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
