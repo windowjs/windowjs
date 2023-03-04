@@ -14,7 +14,6 @@ angle_debug_layers_enabled = false
 angle_enable_d3d11 = false
 angle_enable_d3d9 = false
 angle_enable_gl = true
-angle_enable_gl_desktop = true
 angle_enable_null = false
 angle_enable_vulkan = false
 angle_enable_metal = false

@@ -17,38 +17,39 @@ vars = {
   'libuv_commit': '988f2bfc4defb9a85a536a3e645834c161143ee0',
 
   'angle_git': 'https://github.com/google/angle.git',
-  'angle_commit': '06edae72ba692eaf34aaca2d9a96168b5c13d2b2',
+  'angle_commit': '51ddcabfd3abe64b392767828375ae688e5d4f3f',
 
   'chromium_git': 'https://chromium.googlesource.com',
 }
 
 # ANGLE dependencies. Copied from libraries/angle/DEPS.
 angle_deps = {
-  'build': 'https://chromium.googlesource.com/chromium/src/build.git@3408ba573710d8e87858cc8297a07b9460b513c6',
-  'testing': 'https://chromium.googlesource.com/chromium/src/testing@3ff9ded26319369788b1c025154f587271c15c89',
-  'tools/protoc_wrapper': 'https://chromium.googlesource.com/chromium/src/tools/protoc_wrapper@c16b0dc8db35e95a04eaef88079237634c7f20c2',
-  'third_party/abseil-cpp': 'https://chromium.googlesource.com/chromium/src/third_party/abseil-cpp@47dfacfcce5673b4bab6121b30c801550d78c577',
-  'third_party/catapult': 'https://chromium.googlesource.com/catapult.git@7b5325d761f0819d2e774df3e21ebe6e340342ac',
-  'third_party/jsoncpp': 'https://chromium.googlesource.com/chromium/src/third_party/jsoncpp@30a6ac108e24dabac7c2e0df4d33d55032af4ee7',
+  'build': 'https://chromium.googlesource.com/chromium/src/build.git@bdadc3003bd013080450432ed97e0afa30e50f2c',
+  'testing': 'https://chromium.googlesource.com/chromium/src/testing@235da779448dadfb48ae6f503339066d56385dad',
+  'tools/protoc_wrapper': 'https://chromium.googlesource.com/chromium/src/tools/protoc_wrapper@30392509cfa0f370f1df55dfb75bc37e3fad19ae',
+  'third_party/abseil-cpp': 'https://chromium.googlesource.com/chromium/src/third_party/abseil-cpp@28c6deacabb12fb4c6823562b4693ab984c3f116',
+  'third_party/catapult': 'https://chromium.googlesource.com/catapult.git@dabfa7bf23b8995e8b45f9c0f4c3ced4d1c04203',
+  'third_party/jsoncpp': 'https://chromium.googlesource.com/chromium/src/third_party/jsoncpp@f62d44704b4da6014aa231cfc116e7fd29617d2a',
   'third_party/googletest': 'https://chromium.googlesource.com/chromium/src/third_party/googletest@17bbed2084d3127bd7bcd27283f18d7a5861bea8',
-  'third_party/libjpeg_turbo': 'https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git@02959c3ee17abacfd1339ec22ea93301292ffd56',
-  'third_party/nasm': 'https://chromium.googlesource.com/chromium/deps/nasm.git@9215e8e1d0fe474ffd3e16c1a07a0f97089e6224',
-  'third_party/protobuf': 'https://chromium.googlesource.com/chromium/src/third_party/protobuf@d29d689c1d9446e0623af9693fe1945ecfab9c45',
-  'third_party/SwiftShader': 'https://swiftshader.googlesource.com/SwiftShader@cbd31d271e4cedc709192d02b946aee9cdfe4653',
-  'third_party/vulkan_memory_allocator': 'https://chromium.googlesource.com/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator@5e49f57a6e71a026a54eb42e366de09a4142d24e',
-  'third_party/zlib': 'https://chromium.googlesource.com/chromium/src/third_party/zlib@dd9a1330e5aeb2f194d711746a03e01391d6f17c',
-  'tools/clang': 'https://chromium.googlesource.com/chromium/src/tools/clang.git@b9894ca3bc6596a03cb033ddbdd36990f11b8ce7',
+  'third_party/libjpeg_turbo': 'https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git@aa4075f116e4312537d0d3e9dbd5e31096539f94',
+  'third_party/nasm': 'https://chromium.googlesource.com/chromium/deps/nasm.git@7fc833e889d1afda72c06220e5bed8fb43b2e5ce',
+  'third_party/protobuf': 'https://chromium.googlesource.com/chromium/src/third_party/protobuf@57396ed0a2818b1ad68101832eecf53a38cd321f',
+  'third_party/SwiftShader': 'https://swiftshader.googlesource.com/SwiftShader@0ba0b45490cd209448c5f976f41b34a746c9de5d',
+  'third_party/vulkan_memory_allocator': 'https://chromium.googlesource.com/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator@ebe84bec02c041d28f902da0214bf442743fc907',
+  'third_party/zlib': 'https://chromium.googlesource.com/chromium/src/third_party/zlib@90e67ba3f8998a3532fc8e3db9539aada8060d43',
+  'third_party/astc-encoder/src': 'https://chromium.googlesource.com/external/github.com/ARM-software/astc-encoder@573c475389bf51d16a5c3fc8348092e094e50e8f',
+  'tools/clang': 'https://chromium.googlesource.com/chromium/src/tools/clang.git@64e9f9321c450d938fec79ef8e4431fd1a08f5ce',
 
   # Copied from libraries/angle/third_party/vulkan-deps/DEPS.
-  'third_party/vulkan-deps': 'https://chromium.googlesource.com/vulkan-deps@3a6f074dbd38e318d7b36551276c0dca5870808b',
-  'third_party/vulkan-deps/glslang/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/glslang@16e3b403aabc7681af428792ddbbfa8ae556b5bb',
-  'third_party/vulkan-deps/spirv-cross/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Cross@1a36968e5d92e08ba38335ad00701da21c627a13',
-  'third_party/vulkan-deps/spirv-headers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Headers@b42ba6d92faf6b4938e6f22ddd186dbdacc98d78',
-  'third_party/vulkan-deps/spirv-tools/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Tools@7fa9e746ef815b27f7747c9bab2689c113fb33d9',
-  'third_party/vulkan-deps/vulkan-headers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-Headers@1dace16d8044758d32736eb59802d171970e9448',
-  'third_party/vulkan-deps/vulkan-loader/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-Loader@cdebcc4ee08a8e18521cb0486db7201b8793bd4b',
-  'third_party/vulkan-deps/vulkan-tools/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-Tools@bb32aa13d4920261b5086219028ef329605d0126',
-  'third_party/vulkan-deps/vulkan-validation-layers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-ValidationLayers@54c295b067de5531867a842b4b3579ee1d3c8545',
+  'third_party/vulkan-deps': 'https://chromium.googlesource.com/vulkan-deps@5d7ca659e80483a7bd85a0bf2ca615cdb8902f05',
+  'third_party/vulkan-deps/glslang/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/glslang@9cdfc5a511e8fa9c0713a1c84503be74e7fae029',
+  'third_party/vulkan-deps/spirv-cross/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Cross@7512345f61e5f9b543ebb87df678f3fe7735587b',
+  'third_party/vulkan-deps/spirv-headers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Headers@aa331ab0ffcb3a67021caa1a0c1c9017712f2f31',
+  'third_party/vulkan-deps/spirv-tools/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Tools@9d71fb676491bc12be3398665236f407341b83c8',
+  'third_party/vulkan-deps/vulkan-headers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-Headers@a3dd2655a3a68c2a67c55a0f8b77dcb8b166ada2',
+  'third_party/vulkan-deps/vulkan-loader/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-Loader@3db19f3e3d8b0c96dc1ffcb5888c06e306df478c',
+  'third_party/vulkan-deps/vulkan-tools/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-Tools@5bcfa1605e110150710170bfe199aa60e7f048fe',
+  'third_party/vulkan-deps/vulkan-validation-layers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-ValidationLayers@b8eae8a7c87c837cbce9b49fdadc5ed3825e306d',
 }
 
 # Skia dependencies. Copied from libraries/skia/DEPS.
@@ -232,24 +233,6 @@ hooks = [
       "--directory",
       "libraries/angle",
       "libraries/angle.patch",
-    ],
-  },
-  {
-    "action": [
-      "git",
-      "apply",
-      "--directory",
-      "libraries/angle/build",
-      "libraries/angle_build.patch",
-    ],
-  },
-  {
-    "action": [
-      "git",
-      "apply",
-      "--directory",
-      "libraries/angle/third_party/vulkan-deps/glslang/src",
-      "libraries/angle_glslang.patch",
     ],
   },
   {
