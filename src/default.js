@@ -129,4 +129,4 @@ async function loadOleoFont() {
 }
 
 loadOleoFont();
-requestAnimationFrame(draw);
+draw();
