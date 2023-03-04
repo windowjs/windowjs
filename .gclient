@@ -9,8 +9,8 @@ vars = {
 
   # Update v8_deps below when the v8 version is updated.
   'v8_git': 'https://chromium.googlesource.com/v8/v8.git',
-  # Tag 10.0.124. Using commit hash to support gclient --no-history.
-  'v8_commit': '7d77940127204f858561c10b8aba06c78b1dcd29',
+  # Tag 11.3.81. Using commit hash to support gclient --no-history.
+  'v8_commit': 'a9f2a8e50aaf4e2f41ef38d3f3be3bf433c67973',
 
   'libuv_git': 'https://github.com/libuv/libuv.git',
   # Tag v1.43.0. Using commit hash to support gclient --no-history.
@@ -62,13 +62,13 @@ skia_deps = {
 
 # v8 dependencies. Copied from libraries/v8/DEPS.
 v8_deps = {
-  'base/trace_event/common'                : 'https://chromium.googlesource.com/chromium/src/base/trace_event/common.git@d115b033c4e53666b535cbd1985ffe60badad082',
-  'build'                                  : 'https://chromium.googlesource.com/chromium/src/build.git@a00adb7f311fb1320eab01d47f047a41a3896478',
-  'third_party/googletest/src'             : 'https://chromium.googlesource.com/external/github.com/google/googletest.git@0e402173c97aea7a00749e825b194bfede4f2e45',
-  'third_party/jinja2'                     : 'https://chromium.googlesource.com/chromium/src/third_party/jinja2.git@ee69aa00ee8536f61db6a451f3858745cf587de6',
-  'third_party/markupsafe'                 : 'https://chromium.googlesource.com/chromium/src/third_party/markupsafe.git@1b882ef6372b58bfd55a3285f37ed801be9137cd',
-  'third_party/zlib'                       : 'https://chromium.googlesource.com/chromium/src/third_party/zlib.git@d8f49e6ae1efe8618a088f0c872df2b1edf16436',
-  'tools/clang'                            : 'https://chromium.googlesource.com/chromium/src/tools/clang.git@b9894ca3bc6596a03cb033ddbdd36990f11b8ce7',
+  'base/trace_event/common'                : 'https://chromium.googlesource.com/chromium/src/base/trace_event/common.git@147f65333c38ddd1ebf554e89965c243c8ce50b3',
+  'build'                                  : 'https://chromium.googlesource.com/chromium/src/build.git@ec8c8d82bdd61434e1e66c3f248200a900944ab0',
+  'third_party/googletest/src'             : 'https://chromium.googlesource.com/external/github.com/google/googletest.git@af29db7ec28d6df1c7f0f745186884091e602e07',
+  'third_party/jinja2'                     : 'https://chromium.googlesource.com/chromium/src/third_party/jinja2.git@264c07d7e64f2874434a3b8039e101ddf1b01e7e',
+  'third_party/markupsafe'                 : 'https://chromium.googlesource.com/chromium/src/third_party/markupsafe.git@13f4e8c9e206567eeb13bf585406ddc574005748',
+  'third_party/zlib'                       : 'https://chromium.googlesource.com/chromium/src/third_party/zlib.git@90e67ba3f8998a3532fc8e3db9539aada8060d43',
+  'tools/clang'                            : 'https://chromium.googlesource.com/chromium/src/tools/clang.git@697c297330684462bbbccb2bead783b0d94f6d50',
 }
 
 solutions = [

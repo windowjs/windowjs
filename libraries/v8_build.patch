@@ -1,61 +1,13 @@
-diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 8048ec5e8..dff19c179 100644
---- a/config/compiler/BUILD.gn
-+++ b/config/compiler/BUILD.gn
-@@ -314,7 +314,7 @@ config("compiler") {
-   # .comment section or debug info taking up binary size, and makes comparing
-   # .o files built with different compiler versions harder.
-   if (!is_win || is_clang) {
--    cflags += [ "-fno-ident" ]
-+    cflags += [ "-Xclang", "-fno-ident" ]
-   }
+diff --git a/config/win/BUILD.gn b/config/win/BUILD.gn
+index 692e7ad..1772dc8 100644
+--- a/config/win/BUILD.gn
++++ b/config/win/BUILD.gn
+@@ -68,6 +68,8 @@ config("compiler") {
+     "/utf-8",  # Assume UTF-8 by default to avoid code page dependencies.
+   ]
  
-   # In general, Windows is totally different, but all the other builds share
-@@ -1249,7 +1249,7 @@ config("compiler_deterministic") {
-     } else {
-       # -ffile-compilation-dir is an alias for both -fdebug-compilation-dir=
-       # and -fcoverage-compilation-dir=.
--      cflags += [ "-ffile-compilation-dir=." ]
-+      # cflags += [ "-ffile-compilation-dir=." ]
-     }
-     if (!is_win) {
-       # We don't use clang -cc1as on Windows (yet? https://crbug.com/762167)
-@@ -1500,6 +1500,7 @@ config("default_warnings") {
-       # which we no longer use. Check if it makes sense to remove
-       # this as well. http://crbug.com/316352
-       "-Wno-unneeded-internal-declaration",
-+      "-Wno-builtin-assume-aligned-alignment",
-     ]
- 
-     if (!is_nacl || is_nacl_saigo) {
-@@ -1509,7 +1510,7 @@ config("default_warnings") {
-         cflags += [ "-Wno-nonportable-include-path" ]
- 
-         # Warns in ATL headers; see https://crbug.com/1208419.
--        cflags += [ "-Wno-null-pointer-subtraction" ]
-+        # cflags += [ "-Wno-null-pointer-subtraction" ]
-       }
- 
-       cflags += [
-@@ -1679,7 +1680,7 @@ config("no_chromium_code") {
-     if (!is_nacl) {
-       cflags += [
-         # Disabled for similar reasons as -Wunused-variable.
--        "-Wno-unused-but-set-variable",
-+        # "-Wno-unused-but-set-variable",
- 
-         # TODO(https://crbug.com/1202159): Clean up and enable.
-         "-Wno-misleading-indentation",
-diff --git a/toolchain/win/setup_toolchain.py b/toolchain/win/setup_toolchain.py
-index ec9e9eeda..e1b020396 100644
---- a/toolchain/win/setup_toolchain.py
-+++ b/toolchain/win/setup_toolchain.py
-@@ -153,7 +153,7 @@ def _LoadToolchainEnv(cpu, toolchain_root, sdk_dir, target_store):
-         del os.environ['VSINSTALLDIR']
-         if 'INCLUDE' in os.environ:
-           del os.environ['INCLUDE']
--        if 'LIB' in os.environ:
-+        if 'LIB__dont_do_this' in os.environ:
-           del os.environ['LIB']
-         if 'LIBPATH' in os.environ:
-           del os.environ['LIBPATH']
++  cflags += [ "/D_SILENCE_ALL_CXX20_DEPRECATION_WARNINGS" ]
++
+   if (is_clang) {
+     cflags += [
+       "/Zc:twoPhase",
