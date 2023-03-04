@@ -117,12 +117,14 @@ class Js final {
       const v8::FunctionCallbackInfo<v8::Value>& info);
 
   static v8::MaybeLocal<v8::Promise> ImportDynamic(
-      v8::Local<v8::Context> context, v8::Local<v8::ScriptOrModule> referrer,
+      v8::Local<v8::Context> context,
+      v8::Local<v8::Data> host_defined_options,
+      v8::Local<v8::Value> resource_name,
       v8::Local<v8::String> specifier,
       v8::Local<v8::FixedArray> import_assertions);
 
-  v8::MaybeLocal<v8::Promise> ImportDynamic(
-      v8::Local<v8::ScriptOrModule> referrer, v8::Local<v8::String> specifier);
+  v8::MaybeLocal<v8::Promise> ImportDynamic(v8::Local<v8::Value> resource_name,
+                                            v8::Local<v8::String> specifier);
 
   void ImportDynamic(std::string path_str);
 

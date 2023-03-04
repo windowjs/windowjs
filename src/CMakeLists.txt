@@ -7,6 +7,7 @@ if(MSVC)
   add_compile_options(-WX)
 
   # Disable RTTI.
+  string(REPLACE "/GR" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
   add_compile_options(/GR-)
 
   if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
