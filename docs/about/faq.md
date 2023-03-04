@@ -261,3 +261,13 @@ and has more APIs for desktop integration.
 
 There is [experimental support](/about/processing) to run p5.js scripts in
 Window.js.
+
+
+Does Window.js run on Windows Subsystem for Linux (WSL)?
+--------------------------------------------------------
+
+Yes! Use an X server like [VcXsrv](https://sourceforge.net/projects/vcxsrv/)
+and make sure to have Mesa version 23 or later installed, to support GLES3.
+
+When using VcXsrv, disable `Native opengl` and don't set
+`LIBGL_ALWAYS_INDIRECT`.

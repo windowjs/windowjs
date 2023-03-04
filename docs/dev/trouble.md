@@ -41,3 +41,11 @@ list of Windows Defender:
 *  Open "Manage Settings" under "Virus & threat protection settings"
 *  Open "Add or remove exclusions" under "Exclusions"
 *  Click on "Add an exclusion" to add the `windowjs` checkout directory.
+
+
+###### glfwCreateWindow failed (65543): EGL: Failed to create context: Arguments are inconsistent
+
+This happens if the native platform doesn't support OpenGL ES 3. It might happen
+when running the Linux version on WSL on Windows.
+
+Make sure the Mesa drivers are updated to version 23 or later.
