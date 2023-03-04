@@ -6,6 +6,7 @@ skia_use_egl = true
 skia_gl_standard = "gles"
 
 clang_win = "../../../v8/third_party/llvm-build/Release+Asserts"
+clang_win_version = "17"
 
 skia_enable_android_utils = false
 skia_enable_skvm_jit_when_possible = false
