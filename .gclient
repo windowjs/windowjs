@@ -13,8 +13,8 @@ vars = {
   'v8_commit': 'a9f2a8e50aaf4e2f41ef38d3f3be3bf433c67973',
 
   'libuv_git': 'https://github.com/libuv/libuv.git',
-  # Tag v1.43.0. Using commit hash to support gclient --no-history.
-  'libuv_commit': '988f2bfc4defb9a85a536a3e645834c161143ee0',
+  # Tag v1.44.2. Using commit hash to support gclient --no-history.
+  'libuv_commit': '0c1fa696aa502eb749c2c4735005f41ba00a27b8',
 
   'angle_git': 'https://github.com/google/angle.git',
   'angle_commit': '51ddcabfd3abe64b392767828375ae688e5d4f3f',
