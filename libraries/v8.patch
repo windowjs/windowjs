@@ -1,3 +1,18 @@
+diff --git a/src/common/globals.h b/src/common/globals.h
+index 9725aeae88a..5f0a01d0e3a 100644
+--- a/src/common/globals.h
++++ b/src/common/globals.h
+@@ -179,8 +179,8 @@ namespace internal {
+ #define V8_IF_USE_SIMULATOR(V) , V
+ #else
+ #define V8_IF_USE_SIMULATOR(V)
+-#endif  // defined(USE_SIMULATOR) && \
+-        // (defined(V8_TARGET_ARCH_ARM64) || defined(V8_TARGET_ARCH_MIPS64) || \
++#endif  // defined(USE_SIMULATOR) &&
++        // (defined(V8_TARGET_ARCH_ARM64) || defined(V8_TARGET_ARCH_MIPS64) ||
+         // defined(V8_TARGET_ARCH_LOONG64))
+ 
+ // Minimum stack size in KB required by compilers.
 diff --git a/src/deoptimizer/deoptimizer.h b/src/deoptimizer/deoptimizer.h
 index e8b3a5bb8a7..c9920dcbcd6 100644
 --- a/src/deoptimizer/deoptimizer.h

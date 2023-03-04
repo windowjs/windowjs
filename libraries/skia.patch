@@ -21,3 +21,16 @@ index bdcc4fc551..2545e7bd23 100644
      } else if (skia_use_webgl) {
        sources += [ "src/gpu/ganesh/gl/webgl/GrGLMakeNativeInterface_webgl.cpp" ]
      } else if (is_linux && skia_use_x11) {
+diff --git a/include/private/base/SkTArray.h b/include/private/base/SkTArray.h
+index c09aa0145d..979dfd7cda 100644
+--- a/include/private/base/SkTArray.h
++++ b/include/private/base/SkTArray.h
+@@ -514,7 +514,7 @@ private:
+     // unpredictable location in memory. Of course, TArray won't actually use fItemArray in this
+     // way, and we don't want to construct a T before the user requests one. There's no real risk
+     // here, so disable CFI when doing these casts.
+-    SK_NO_SANITIZE("cfi")
++    //SK_NO_SANITIZE("cfi")
+     static T* TCast(void* buffer) {
+         return (T*)buffer;
+     }
