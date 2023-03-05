@@ -46,7 +46,9 @@ jobs:
             libraries/depot_tools
             libraries/gn
             libraries/glfw
+            libraries/ninja
             libraries/skia/include
+            libraries/skia/modules
             libraries/skia/out/Release/libskia.a
             libraries/v8/include
             libraries/v8/src
