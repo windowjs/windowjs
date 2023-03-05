@@ -18,14 +18,20 @@
 
 #define WINDOWJS_MAC 1
 
-// TODO: exclude ARM64.
 #include <TargetConditionals.h>
-#if TARGET_OS_IPHONE
-#error "Only MacOS x64 is supported."
-#elif TARGET_OS_MAC
+
+#if TARGET_OS_MAC
+
+#if defined(__arm64__)
+#define WINDOWJS_MAC_ARM64 1
+#elif defined(__x86_64__)
 #define WINDOWJS_MAC_X64 1
 #else
-#error "Only MacOS x64 is supported."
+#error "Unknown macOS processor"
+#endif
+
+#else
+#error "Only macOS is supported."
 #endif
 
 #elif defined(__linux__)

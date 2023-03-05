@@ -2,8 +2,8 @@ is_component_build = false
 is_debug = false
 v8_monolithic = true
 
-target_cpu = "x64"
-v8_target_cpu="x64"
+# target_cpu = "x64"
+# v8_target_cpu="x64"
 
 v8_enable_backtrace = true
 v8_enable_slow_dchecks = false

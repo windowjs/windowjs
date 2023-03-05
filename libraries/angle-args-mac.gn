@@ -1,5 +1,5 @@
 is_component_build = false
-target_cpu = "x64"
+# target_cpu = "x64"
 is_debug = false
 angle_assert_always_on = false
 dcheck_always_on = false
@@ -9,6 +9,9 @@ clang_use_chrome_plugins = false
 symbol_level = 0
 angle_build_vulkan_system_info = false
 angle_debug_layers_enabled = false
+
+use_system_xcode = true
+mac_allow_system_xcode_for_official_builds_for_testing = true
 
 # macOS-specific:
 angle_enable_d3d11 = false
