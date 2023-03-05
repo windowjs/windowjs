@@ -9,7 +9,7 @@ Processing with p5.js
 Window.js can run Processing sources written for [p5.js](https://p5js.org).
 
 ```shell
-$ out/windowjs.exe examples/p5.js -- examples/p5/simulate-recursive-tree.js
+$ out/windowjs.exe src/p5/p5.js -- examples/p5/simulate-recursive-tree.js
 ```
 
 Support for p5.js sources is **highly experimental**.
@@ -22,7 +22,7 @@ p5.js builds on web APIs and mainly on the HTML5 Canvas API, which is also
 implemented by Window.js.
 
 Support for p5.js in Window.js is provided via a loader in
-[examples/p5.js](https://github.com/windowjs/windowjs/blob/main/examples/p5.js)
+[src/p5/p5.js](https://github.com/windowjs/windowjs/blob/main/src/p5/p5.js)
 that sets up the environment expected by p5.js:
 
 *  Sets `window` as the global object (`globalThis === window`)

@@ -4,7 +4,7 @@
 //
 // To work on this loader directly, it's easier to use windowjs.exe:
 //
-//   $ windowjs.exe src/p5.js -- examples/p5/image-copy-method.js
+//   $ windowjs.exe src/p5/p5.js -- examples/p5/image-copy-method.js
 
 const DEBUG = false;
 
