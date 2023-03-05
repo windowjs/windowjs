@@ -36,7 +36,7 @@ jobs:
 
       - name: Cache
         id: cache-libraries
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             libraries/angle/include
@@ -53,7 +53,7 @@ jobs:
             libraries/v8/third_party/zlib
             libraries/v8/out/Release/obj/libv8_monolith.a
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-v2-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-mac.gn', 'libraries/skia.patch', 'libraries/build_v8.sh', 'libraries/v8-args-mac.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.sh', 'libraries/angle-args-mac.gn', 'libraries/angle.patch') }}
+          key: ${{ runner.os }}-build-cache-v3-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-mac.gn', 'libraries/skia.patch', 'libraries/build_v8.sh', 'libraries/v8-args-mac.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.sh', 'libraries/angle-args-mac.gn', 'libraries/angle.patch') }}
 
       - name: Sync
         if: steps.cache-libraries.outputs.cache-hit != 'true'
