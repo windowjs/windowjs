@@ -23,7 +23,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-latest
 
     steps:
       # Prevent newline conversions on Windows checkouts.
