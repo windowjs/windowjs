@@ -11,9 +11,9 @@
 #include <skia/include/core/SkShader.h>
 #include <v8/include/v8.h>
 
+#include "canvas.h"
 #include "js_api.h"
 #include "js_scope.h"
-#include "render_canvas.h"
 
 class CanvasGradientApi;
 class CanvasPatternApi;
@@ -26,7 +26,7 @@ class CanvasRenderingContext2DApi final
                               int height);
   ~CanvasRenderingContext2DApi() override;
 
-  RenderCanvas* canvas() const { return canvas_.get(); }
+  Canvas* canvas() const { return canvas_.get(); }
   SkCanvas* skia_canvas() const { return canvas_->canvas(); }
 
   void OnGradientUpdated(CanvasGradientApi* gradient);
@@ -198,7 +198,7 @@ class CanvasRenderingContext2DApi final
   static void Encode(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void DrawImage(const v8::FunctionCallbackInfo<v8::Value>& info);
 
-  std::unique_ptr<RenderCanvas> canvas_;
+  std::unique_ptr<Canvas> canvas_;
   int64_t allocated_in_bytes_;
 
   SkPath path_;

@@ -41,8 +41,8 @@ class JsApi final : public v8::PersistentHandleVisitor {
   TaskQueue* task_queue() const { return task_queue_; }
   ThreadPoolTaskQueue* background_queue() const { return background_queue_; }
   ProcessApi* parent_process() const { return parent_process_; }
-  RenderCanvas* window_canvas() const { return window_->canvas(); }
-  RenderCanvasSharedContext* canvas_shared_context() const {
+  Canvas* window_canvas() const { return window_->canvas(); }
+  CanvasSharedContext* canvas_shared_context() const {
     return window_->shared_context();
   }
 

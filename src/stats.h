@@ -3,8 +3,8 @@
 
 #include <memory>
 
+#include "canvas.h"
 #include "js.h"
-#include "render_canvas.h"
 
 class JsApi;
 class Window;
@@ -19,7 +19,7 @@ class Stats {
 
   int width() const;
   int height() const;
-  RenderCanvas* canvas() { return canvas_.get(); }
+  Canvas* canvas() { return canvas_.get(); }
 
   void SetEnabled(bool enabled);
   void SetPrintFrameTimes(bool print) { print_frame_times_ = print; }
@@ -47,7 +47,7 @@ class Stats {
   Window* window_;
   Js* js_;
   JsApi* api_;
-  std::unique_ptr<RenderCanvas> canvas_;
+  std::unique_ptr<Canvas> canvas_;
 
   int frames_count_;
   double last_stats_update_;

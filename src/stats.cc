@@ -48,8 +48,8 @@ int Stats::height() const {
 void Stats::SetEnabled(bool enabled) {
   if (enabled) {
     if (!canvas_) {
-      canvas_.reset(new RenderCanvas(window_->shared_context(), width(),
-                                     height(), RenderCanvas::TEXTURE));
+      canvas_.reset(new Canvas(window_->shared_context(), width(), height(),
+                               Canvas::TEXTURE));
       redraw_ = true;
     }
   } else {

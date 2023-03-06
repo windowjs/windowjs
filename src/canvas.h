@@ -1,5 +1,5 @@
-#ifndef WINDOWJS_RENDER_CANVAS_H
-#define WINDOWJS_RENDER_CANVAS_H
+#ifndef WINDOWJS_CANVAS_H
+#define WINDOWJS_CANVAS_H
 
 #include <skia/include/core/SkCanvas.h>
 #include <skia/include/core/SkImage.h>
@@ -9,10 +9,10 @@
 
 class Window;
 
-class RenderCanvasSharedContext {
+class CanvasSharedContext final {
  public:
-  explicit RenderCanvasSharedContext(Window* window);
-  ~RenderCanvasSharedContext();
+  explicit CanvasSharedContext(Window* window);
+  ~CanvasSharedContext();
 
   void Flush();
 
@@ -26,23 +26,23 @@ class RenderCanvasSharedContext {
   sk_sp<GrDirectContext> gr_context_;
 };
 
-class RenderCanvas final {
+class Canvas final {
  public:
   enum Target {
     FRAMEBUFFER_0,
     TEXTURE,
   };
 
-  RenderCanvas(RenderCanvasSharedContext* shared_context, int width, int height,
-               Target target);
+  Canvas(CanvasSharedContext* shared_context, int width, int height,
+         Target target);
 
-  ~RenderCanvas();
+  ~Canvas();
 
   int width() const { return width_; }
   int height() const { return height_; }
   SkSurface* surface() const { return surface_.get(); }
   SkCanvas* canvas() const { return surface_->getCanvas(); }
-  RenderCanvasSharedContext* shared_context() const { return shared_context_; }
+  CanvasSharedContext* shared_context() const { return shared_context_; }
 
   void Reset();
   void Resize(int width, int height);
@@ -54,7 +54,7 @@ class RenderCanvas final {
                    int row_stride);
 
  private:
-  RenderCanvasSharedContext* shared_context_;
+  CanvasSharedContext* shared_context_;
   sk_sp<SkSurface> surface_;
   GrBackendTexture texture_;
   int width_;
@@ -62,4 +62,4 @@ class RenderCanvas final {
   Target target_;
 };
 
-#endif  // WINDOWJS_RENDER_CANVAS_H
+#endif  // WINDOWJS_CANVAS_H

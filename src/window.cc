@@ -115,9 +115,9 @@ Window::Window(Delegate* delegate, int width, int height)
     $(DEV) << "[profile-startup] Created texture shader: " << glfwGetTime();
   }
 
-  shared_context_.reset(new RenderCanvasSharedContext(this));
-  framebuffer_.reset(new RenderCanvas(shared_context_.get(), width_, height_,
-                                      RenderCanvas::FRAMEBUFFER_0));
+  shared_context_.reset(new CanvasSharedContext(this));
+  framebuffer_.reset(new Canvas(shared_context_.get(), width_, height_,
+                                Canvas::FRAMEBUFFER_0));
 }
 
 Window::~Window() {
@@ -160,7 +160,7 @@ void Window::OnLoadingFinished() {
   eglWaitClient();
 }
 
-void Window::SetWindowCanvas(RenderCanvas* canvas) {
+void Window::SetWindowCanvas(Canvas* canvas) {
   if (canvas) {
     ASSERT(canvas_ == nullptr);
     canvas_ = canvas;

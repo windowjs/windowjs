@@ -332,12 +332,12 @@ bool ParseDOMMatrix(const v8::FunctionCallbackInfo<v8::Value>& info,
 CanvasRenderingContext2DApi::CanvasRenderingContext2DApi(
     JsApi* api, v8::Local<v8::Object> thiz, int width, int height)
     : JsApiWrapper(api->isolate(), thiz),
-      canvas_(new RenderCanvas(api->canvas_shared_context(), width, height,
-                               RenderCanvas::TEXTURE)) {
-  // Each RenderCanvas has two render buffers with 4 bytes per pixel
-  // each. Tell v8 about the external size used to inform GC.
-  // Note that this class ignores resizes to the RenderCanvas.
-  allocated_in_bytes_ = 8 * canvas_->width() * canvas_->height();
+      canvas_(new Canvas(api->canvas_shared_context(), width, height,
+                         Canvas::TEXTURE)) {
+  // Each Canvas has an offscreen texture with 4 bytes per pixel.
+  // Tell v8 about the external size used to inform GC.
+  // Note that this class ignores resizes to the Canvas.
+  allocated_in_bytes_ = 4 * canvas_->width() * canvas_->height();
   api->isolate()->AdjustAmountOfExternalAllocatedMemory(allocated_in_bytes_);
 
   state_.fill_paint.setStyle(SkPaint::kFill_Style);
@@ -2976,7 +2976,7 @@ void ImageBitmapApi::Decode(const v8::FunctionCallbackInfo<v8::Value>& info) {
         }
         return [image](JsApi* api, const JsScope& scope,
                        v8::Promise::Resolver* resolver) {
-          RenderCanvasSharedContext* context = api->canvas_shared_context();
+          CanvasSharedContext* context = api->canvas_shared_context();
           sk_sp<SkImage> texture = image->makeTextureImage(
               context->skia_context(), GrMipMapped::kNo, skgpu::Budgeted::kNo);
           ASSERT(texture);

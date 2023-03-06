@@ -85,6 +85,8 @@ configure_file(version.cc.in generated_version.cc)
 add_library(windowjs-library STATIC
     args.cc
     args.h
+    canvas.cc
+    canvas.h
     config.h
     console.cc
     console.h
@@ -118,8 +120,6 @@ add_library(windowjs-library STATIC
     main.cc
     main.h
     platform.h
-    render_canvas.cc
-    render_canvas.h
     signal.h
     stats.cc
     stats.h

@@ -8,8 +8,8 @@
 #include <GLES3/gl3.h>
 #include <GLFW/glfw3.h>
 
+#include "canvas.h"
 #include "console.h"
-#include "render_canvas.h"
 #include "stats.h"
 
 class Window final {
@@ -44,8 +44,8 @@ class Window final {
   ~Window();
 
   GLFWwindow* window() const { return window_; }
-  RenderCanvas* canvas() const { return canvas_; }  // May be null!
-  RenderCanvasSharedContext* shared_context() const {
+  Canvas* canvas() const { return canvas_; }  // May be null!
+  CanvasSharedContext* shared_context() const {
     return shared_context_.get();
   }
   ConsoleOverlay* console_overlay() { return console_overlay_.get(); }
@@ -58,7 +58,7 @@ class Window final {
   void OnLoadingStart();
   void OnLoadingFinished();
 
-  void SetWindowCanvas(RenderCanvas* canvas);
+  void SetWindowCanvas(Canvas* canvas);
 
   void RenderAndSwapBuffers();
 
@@ -161,14 +161,14 @@ class Window final {
   bool reloading_;
   int block_visibility_for_n_frames_;
 
-  std::unique_ptr<RenderCanvasSharedContext> shared_context_;
+  std::unique_ptr<CanvasSharedContext> shared_context_;
 
   // The canvas that renders to the screen.
-  std::unique_ptr<RenderCanvas> framebuffer_;
+  std::unique_ptr<Canvas> framebuffer_;
 
-  // The canvas that backs window.canvas in Javascript.
-  // This may be null!
-  RenderCanvas* canvas_;
+  // The offscreen canvas that backs window.canvas in Javascript.
+  // This may be null, as its lazily created when first used.
+  Canvas* canvas_;
 
   std::unique_ptr<ConsoleOverlay> console_overlay_;
   std::unique_ptr<Stats> stats_;

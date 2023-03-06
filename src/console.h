@@ -54,7 +54,7 @@ class ConsoleLogHelper {
   ConsoleLogLevel level_;
 };
 
-class RenderCanvas;
+class Canvas;
 class Window;
 
 class ConsoleOverlay {
@@ -70,7 +70,7 @@ class ConsoleOverlay {
 
   int width() const;
   int height() const;
-  RenderCanvas* canvas() const { return canvas_.get(); }
+  Canvas* canvas() const { return canvas_.get(); }
 
   void SetEnabled(bool enabled);
   void SetEnableOnErrors(bool enable);
@@ -82,7 +82,7 @@ class ConsoleOverlay {
 
  private:
   Window* window_;
-  std::unique_ptr<RenderCanvas> canvas_;
+  std::unique_ptr<Canvas> canvas_;
   std::deque<std::pair<std::string, SkColor>> messages_;
   SkColor text_color_;
   bool redraw_;

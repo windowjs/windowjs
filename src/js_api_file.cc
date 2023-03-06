@@ -153,7 +153,7 @@ void ReadImageBitmap(const v8::FunctionCallbackInfo<v8::Value>& args) {
         }
         return [image](JsApi* api, const JsScope& scope,
                        v8::Promise::Resolver* resolver) {
-          RenderCanvasSharedContext* context = api->canvas_shared_context();
+          CanvasSharedContext* context = api->canvas_shared_context();
           sk_sp<SkImage> texture = image->makeTextureImage(
               context->skia_context(), GrMipMapped::kNo, skgpu::Budgeted::kNo);
           ASSERT(texture);

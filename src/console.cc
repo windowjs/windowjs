@@ -18,11 +18,11 @@
 #include <skia/include/core/SkFont.h>
 
 #include "args.h"
+#include "canvas.h"
 #include "css.h"
 #include "fail.h"
 #include "js.h"
 #include "platform.h"
-#include "render_canvas.h"
 #include "window.h"
 
 #if defined(WINDOWJS_WIN)
@@ -287,8 +287,8 @@ int ConsoleOverlay::height() const {
 void ConsoleOverlay::SetEnabled(bool enabled) {
   if (enabled) {
     if (!canvas_) {
-      canvas_.reset(new RenderCanvas(window_->shared_context(), width(),
-                                     height(), RenderCanvas::TEXTURE));
+      canvas_.reset(new Canvas(window_->shared_context(), width(), height(),
+                               Canvas::TEXTURE));
       redraw_ = true;
     }
   } else {
