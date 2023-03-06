@@ -1,7 +1,6 @@
 #ifndef WINDOWJS_JS_EVENTS_H
 #define WINDOWJS_JS_EVENTS_H
 
-#include <array>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -59,7 +58,7 @@ class JsEvents final {
                 const JsScope& scope);
 
  private:
-  std::array<Listeners, static_cast<int>(JsEventType::NO_EVENT)> listeners_;
+  std::unordered_map<JsEventType, Listeners> listeners_;
 };
 
 v8::Local<v8::Object> MakeEvent(StringId type, const JsScope& scope);

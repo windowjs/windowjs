@@ -41,7 +41,7 @@ void JsEvents::AddEventListener(std::string type, v8::Local<v8::Function> f,
                                 v8::Isolate* isolate) {
   JsEventType t = GetEventType(type);
   if (t != JsEventType::NO_EVENT) {
-    Listeners& list = listeners_[static_cast<int>(t)];
+    Listeners& list = listeners_[t];
     auto it = std::find(list.begin(), list.end(), f);
     if (it == list.end()) {
       list.emplace_back();
@@ -54,27 +54,28 @@ void JsEvents::RemoveEventListener(std::string type,
                                    v8::Local<v8::Function> f) {
   JsEventType t = GetEventType(type);
   if (t != JsEventType::NO_EVENT) {
-    Listeners& list = listeners_[static_cast<int>(t)];
+    Listeners& list = listeners_[t];
     list.erase(std::remove(list.begin(), list.end(), f), list.end());
   }
 }
 
 void JsEvents::RemoveAll() {
-  for (Listeners& listeners : listeners_) {
+  for (auto& [type, listeners] : listeners_) {
     listeners.clear();
   }
 }
 
 bool JsEvents::HasListeners(JsEventType type) const {
   ASSERT(type != JsEventType::NO_EVENT);
-  return !listeners_[static_cast<int>(type)].empty();
+  auto it = listeners_.find(type);
+  return it != listeners_.end() && !it->second.empty();
 }
 
 bool JsEvents::Dispatch(JsEventType type, v8::Local<v8::Value> event,
                         const JsScope& scope) {
   ASSERT(type != JsEventType::NO_EVENT);
   v8::Local<v8::Value> argv[] = {event};
-  const Listeners& listeners = listeners_[static_cast<int>(type)];
+  const Listeners& listeners = listeners_[type];
   bool any_handled = false;
   for (const auto& listener : listeners) {
     v8::Local<v8::Function> f = listener.Get(scope.isolate);
