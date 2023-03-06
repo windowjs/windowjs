@@ -33,7 +33,7 @@ jobs:
           git config --global core.eol lf
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install packages
         run: choco install upx
@@ -115,7 +115,7 @@ jobs:
           Write-Host((Get-Item out/windowjs.exe).length)
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: windowjs.exe
           path: |
