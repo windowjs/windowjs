@@ -18,10 +18,13 @@
 class CanvasGradientApi;
 class CanvasPatternApi;
 
-class CanvasApi final : public JsApiWrapper, public JsApiTracker<CanvasApi> {
+class CanvasRenderingContext2DApi final
+    : public JsApiWrapper,
+      public JsApiTracker<CanvasRenderingContext2DApi> {
  public:
-  CanvasApi(JsApi* api, v8::Local<v8::Object> thiz, int width, int height);
-  ~CanvasApi() override;
+  CanvasRenderingContext2DApi(JsApi* api, v8::Local<v8::Object> thiz, int width,
+                              int height);
+  ~CanvasRenderingContext2DApi() override;
 
   RenderCanvas* canvas() const { return canvas_.get(); }
   SkCanvas* skia_canvas() const { return canvas_->canvas(); }
@@ -151,7 +154,7 @@ class CanvasApi final : public JsApiWrapper, public JsApiTracker<CanvasApi> {
       const v8::PropertyCallbackInfo<void>& info);
   void UpdateImageSmoothing();
   static void DrawText(const v8::FunctionCallbackInfo<v8::Value>& info,
-                       const SkPaint& paint, CanvasApi* api);
+                       const SkPaint& paint, CanvasRenderingContext2DApi* api);
   static void FillText(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void StrokeText(const v8::FunctionCallbackInfo<v8::Value>& info);
   static void MeasureText(const v8::FunctionCallbackInfo<v8::Value>& info);

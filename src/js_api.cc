@@ -570,7 +570,8 @@ void GetLazyCanvas(v8::Local<v8::Name> property,
   v8::Local<v8::Object> canvas =
       constructor->NewInstance(api->js()->context(), 2, args).ToLocalChecked();
 
-  CanvasApi* canvas_api = api->GetCanvasApi(canvas);
+  CanvasRenderingContext2DApi* canvas_api =
+      api->GetCanvasRenderingContext2DApi(canvas);
   ASSERT(canvas_api);
   api->window()->SetWindowCanvas(canvas_api->canvas());
 
@@ -714,7 +715,8 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
   canvas_pattern_constructor_.Reset(scope.isolate, canvas_pattern);
   scope.Set(global, StringId::CanvasPattern, canvas_pattern);
 
-  v8::Local<v8::Function> canvas = CanvasApi::GetConstructor(this, scope);
+  v8::Local<v8::Function> canvas =
+      CanvasRenderingContext2DApi::GetConstructor(this, scope);
   canvas_rendering_context_2d_constructor_.Reset(scope.isolate, canvas);
   scope.Set(global, StringId::CanvasRenderingContext2D, canvas);
 

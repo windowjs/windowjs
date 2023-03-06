@@ -15,15 +15,16 @@
 #include "weak.h"
 #include "window.h"
 
-class CanvasApi;
 class CanvasGradientApi;
 class CanvasPatternApi;
+class CanvasRenderingContext2DApi;
 class ImageBitmapApi;
 class ImageDataApi;
 class Path2DApi;
 class ProcessApi;
 class SkTypeface;
 
+// Custom APIs added to v8 by Window.js.
 class JsApi final : public v8::PersistentHandleVisitor {
  public:
   // All of these dependencies must outlive JsApi.
@@ -106,8 +107,9 @@ class JsApi final : public v8::PersistentHandleVisitor {
     return canvas_rendering_context_2d_constructor_.Get(js_->isolate());
   }
 
-  CanvasApi* GetCanvasApi(v8::Local<v8::Value> thiz) {
-    return GetWrappedInstanceOrThrow<CanvasApi>(
+  CanvasRenderingContext2DApi* GetCanvasRenderingContext2DApi(
+      v8::Local<v8::Value> thiz) {
+    return GetWrappedInstanceOrThrow<CanvasRenderingContext2DApi>(
         thiz, GetCanvasRenderingContext2DConstructor());
   }
 
