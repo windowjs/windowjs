@@ -373,7 +373,7 @@ CanvasRenderingContext2DApi::~CanvasRenderingContext2DApi() {
     state.ResetFillStyle();
     state.ResetStrokeStyle();
   }
-  api()->isolate()->AdjustAmountOfExternalAllocatedMemory(-allocated_in_bytes_);
+  isolate()->AdjustAmountOfExternalAllocatedMemory(-allocated_in_bytes_);
 }
 
 // static

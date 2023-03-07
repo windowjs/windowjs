@@ -25,7 +25,7 @@ class ProcessApi;
 class SkTypeface;
 
 // Custom APIs added to v8 by Window.js.
-class JsApi final : public v8::PersistentHandleVisitor {
+class JsApi final {
  public:
   // All of these dependencies must outlive JsApi.
   // If the JsApi is deleted, then TaskQueue must *not* run any pending tasks
@@ -175,9 +175,6 @@ class JsApi final : public v8::PersistentHandleVisitor {
   void* GetWrappedInstanceOrThrow(v8::Local<v8::Value> thiz,
                                   v8::Local<v8::Function> constructor);
 
-  void VisitPersistentHandle(v8::Persistent<v8::Value>* value,
-                             uint16_t class_id) override;
-
   static void SetTimeout(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void ClearTimeout(const v8::FunctionCallbackInfo<v8::Value>& args);
   void CallTimeout(uint32_t id);
@@ -266,11 +263,12 @@ class JsApiWrapper {
   JsApiWrapper(v8::Isolate* isolate, v8::Local<v8::Object> thiz);
   virtual ~JsApiWrapper() {}
 
-  JsApi* api() const { return api_; }
-  Js* js() const { return api_->js(); }
+  v8::Isolate* isolate() const { return isolate_; }
+  JsApi* api() const { return JsApi::Get(isolate_); }
+  Js* js() const { return Js::Get(isolate_); }
 
   v8::Local<v8::String> GetConstantString(StringId id) const {
-    return api_->js()->GetConstantString(id);
+    return js()->GetConstantString(id);
   }
 
   // Makes this a weak reference, so that the object can get garbage collected.
@@ -284,7 +282,7 @@ class JsApiWrapper {
  private:
   static void Destructor(const v8::WeakCallbackInfo<JsApiWrapper>& info);
 
-  JsApi* api_;
+  v8::Isolate* isolate_;
   v8::Global<v8::Object> thiz_;
 };
 

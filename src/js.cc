@@ -74,6 +74,11 @@ v8::Local<v8::Message> MakeErrorMessage(v8::Isolate* isolate,
 
 // static
 void Js::Init(const char* program) {
+#if !defined(WINDOWJS_RELEASE_BUILD)
+  // Enables calling RequestGarbageCollectionForTesting to catch memory leaks
+  // at shutdown.
+  v8::V8::SetFlagsFromString("--expose_gc");
+#endif
   platform = v8::platform::NewDefaultPlatform().release();
   ASSERT(v8::V8::InitializeICUDefaultLocation(program));
   v8::V8::InitializeExternalStartupData(program);
@@ -135,10 +140,15 @@ Js::Js(Delegate* delegate, std::filesystem::path base_path,
 }
 
 Js::~Js() {
+  isolate_->SetData(0, nullptr);
   strings_.reset();
   dynamic_imports_.clear();
   modules_.clear();
   context_.Reset();
+#if !defined(WINDOWJS_RELEASE_BUILD)
+  isolate_->RequestGarbageCollectionForTesting(
+      v8::Isolate::kFullGarbageCollection);
+#endif
   isolate_->Dispose();
   delete allocator_;
 }

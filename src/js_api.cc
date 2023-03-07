@@ -26,8 +26,6 @@
 
 namespace {
 
-constexpr uint16_t wrapper_class_id_for_destructors = 12345;
-
 void Now(const v8::FunctionCallbackInfo<v8::Value>& args) {
   args.GetReturnValue().Set(glfwGetTime() * 1000);
 }
@@ -735,30 +733,11 @@ JsApi::JsApi(Window* win, Js* js, JsEvents* events, TaskQueue* task_queue,
 }
 
 JsApi::~JsApi() {
+  js_->isolate()->SetData(1, nullptr);
   if (cursor_) {
     glfwDestroyCursor(cursor_);
     cursor_ = nullptr;
   }
-
-  // TODO: https://github.com/windowjs/windowjs/issues/99
-  // isolate()->VisitHandlesWithClassIds has been removed. Find another way
-  // of doing this cleanup at shutdown.
-
-  // Delete all of the wrapped C++ objects that weren't cleaned up by GC so far.
-  // v8::Locker locker(isolate());
-  // v8::HandleScope scope(isolate());
-  // isolate()->VisitHandlesWithClassIds(this);
-}
-
-void JsApi::VisitPersistentHandle(v8::Persistent<v8::Value>* value,
-                                  uint16_t class_id) {
-  ASSERT(class_id == wrapper_class_id_for_destructors);
-  v8::Local<v8::Value> v = value->Get(isolate());
-  ASSERT(v->IsObject());
-  v8::Local<v8::Object> o = v.As<v8::Object>();
-  JsApiWrapper* w =
-      static_cast<JsApiWrapper*>(o->GetAlignedPointerFromInternalField(0));
-  delete w;
 }
 
 void* JsApi::GetWrappedInstanceOrThrow(v8::Local<v8::Value> thiz,
@@ -1248,11 +1227,10 @@ void JsApi::LoadFont(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 JsApiWrapper::JsApiWrapper(v8::Isolate* isolate, v8::Local<v8::Object> thiz)
-    : api_(JsApi::Get(isolate)) {
+    : isolate_(isolate) {
   thiz->SetAlignedPointerInInternalField(0, this);
   thiz_.Reset(isolate, thiz);
   SetWeak();
-  thiz_.SetWrapperClassId(wrapper_class_id_for_destructors);
 }
 
 // static
